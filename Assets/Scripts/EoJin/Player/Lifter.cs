@@ -9,7 +9,7 @@ public class Lifter : NetworkBehaviour, ILiftable
     [SerializeField] private Head head; //나의 머리
     public Head Head => head; //다른 객체에서 나의 머리 확인 가능
 
-    private IRideable curRideable; //현재 탑승한 타겟
+    private Rider curRider; //현재 탑승한 타겟
     private Rigidbody2D rb; //나의 리지드바디(몸무게 확인)
     public Rigidbody2D Rb => rb;
 
@@ -20,28 +20,11 @@ public class Lifter : NetworkBehaviour, ILiftable
         //머리에서 충돌이 일어났다면 확인합니다
         head.OnHit += OnHeadHit;
     }
+
     private void OnDestroy()
     {
         if (head != null)
             head.OnHit -= OnHeadHit;
-    }
-
-    private void FixedUpdate()
-    {
-        if (Object == null || !HasStateAuthority)
-            return;
-
-        //현재 누군가 타고 있다면
-        if (curRideable != null)
-            Lift(); //옮기기
-    }
-
-    /// <summary>
-    /// Ridable 을 옮기기
-    /// </summary>
-    public void Lift()
-    {
-        curRideable.Ride(this);
     }
 
     /// <summary>
@@ -50,31 +33,33 @@ public class Lifter : NetworkBehaviour, ILiftable
     /// <param name="target">머리에 부딪힌 오브젝트</param>
     private void OnHeadHit(GameObject target)
     {
-        if (Object == null || !HasStateAuthority)
-            return;
-
-        //이미 누군가 타고 있다면 리턴
-        if (curRideable != null)
-            return;
-
         //탈 수 있음 속성이 없으면 리턴
-        var newRideable = target.GetComponent<IRideable>();
+        var newRider = target.GetComponent<Rider>();
 
-        if (newRideable == null)
+        if (newRider == null)
             return;
 
-        var targetRb = target.GetComponent<Rigidbody2D>();
+        Lift(newRider);
+    }
+
+    public void OnRiderDrop(IRideable rideable)
+    {
+        
+    }
+
+    public void Lift(Rider rider)
+    {
+        //이미 누군가 타고 있다면 리턴
+        if (curRider != null)
+            return;
+
+        var targetRb = rider.gameObject.GetComponent<Rigidbody2D>();
 
         //나보다 몸무게가 무겁다면 탑승할 수 없음
         if (rb != null && targetRb != null && targetRb.mass > rb.mass)
             return;
 
-        curRideable = newRideable;
-    }
-
-    public void OnRiderDrop(IRideable rideable)
-    {
-        if (curRideable == rideable)
-            curRideable = null;
+        curRider = rider;
+        curRider.Ride(this);
     }
 }

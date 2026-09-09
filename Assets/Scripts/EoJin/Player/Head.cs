@@ -18,6 +18,7 @@ public class Head : MonoBehaviour
         {
             if (contact.point.y > transform.position.y)
             {
+                Debug.Log($"{gameObject.name} ÀÇ ¸Ó¸®¿¡ {collision.gameObject.name} ÀÌ ºÎµúÈû");
                 OnHit?.Invoke(collision.gameObject);
                 return;
             }

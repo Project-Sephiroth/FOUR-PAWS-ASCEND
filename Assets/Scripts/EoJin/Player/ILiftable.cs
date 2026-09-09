@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface ILiftable
 {
-    public void Lift();
+    public void Lift(Rider rider);
 }

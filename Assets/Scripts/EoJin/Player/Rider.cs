@@ -1,6 +1,5 @@
 using Fusion;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
 /// <summary>
@@ -21,12 +20,11 @@ public class Rider : NetworkBehaviour, IRideable
 
     private void Update()
     {
-        if (Object == null || !HasStateAuthority)
-            return;
-
-        //탑승 중이라면
+        //탑승 중이 아니라면
         if (curLifter == null)
             return;
+
+        Ride();
 
         if (input != null && input.JumpInput) //인풋을 받을 수 있고 점프했다면
         {
@@ -40,25 +38,26 @@ public class Rider : NetworkBehaviour, IRideable
     /// </summary>
     public void Ride(Lifter lifter)
     {
-        if (curLifter != lifter)
-            return;
-
         curLifter = lifter;
+
+        //Lifter와 물리적으로 연결
+        Debug.Log($"{gameObject.name} 이 {lifter.gameObject.name} 과 물리적으로 연결 됨");
+        rideJoint = gameObject.AddComponent<FixedJoint2D>();
+
+        rideJoint.connectedBody = curLifter.Rb;
+        rideJoint.enableCollision = false;
 
         if (input != null)
         {
             input.CanMoveInput = false;
             input.MoveInput = Vector2.zero; //이동 입력이 있었다면 제거
         }
+    }
 
+    void Ride()
+    {
         //머리 위치로 이동
-        rb.position = curLifter.Head.transform.position; 
-
-        //Lifter와 물리적으로 연결
-        rideJoint = gameObject.AddComponent<FixedJoint2D>();
-
-        rideJoint.connectedBody = lifter.Rb;
-        rideJoint.enableCollision = false;
+        rb.position = curLifter.Head.transform.position;
     }
 
     /// <summary>
