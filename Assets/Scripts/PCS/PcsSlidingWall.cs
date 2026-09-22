@@ -13,6 +13,7 @@ public class PcsSlidingWall : MonoBehaviour
     private Vector2 openPosition;
     private bool openRequested;
     private bool initialized;
+    private bool externalDrive;
 
     private void Awake()
     {
@@ -22,6 +23,13 @@ public class PcsSlidingWall : MonoBehaviour
         if (body.bodyType != RigidbodyType2D.Kinematic || !body.simulated)
         {
             Fail("requires a simulated Kinematic Rigidbody2D.");
+            return;
+        }
+
+        if (externalDrive)
+        {
+            initialized = true;
+            StopMotion();
             return;
         }
 
@@ -65,9 +73,25 @@ public class PcsSlidingWall : MonoBehaviour
         openRequested = open;
     }
 
+    public void UseExternalDrive() { externalDrive = true; }
+
+    public Vector2 MoveAuthority(Vector2 from, Vector2 target, float movementSpeed, float deltaTime)
+    {
+        Vector2 next = Vector2.MoveTowards(from, target, movementSpeed * deltaTime);
+        if (body != null) body.MovePosition(next);
+        return next;
+    }
+
+    public void ApplyNetworkPose(Vector2 position)
+    {
+        if (body == null) body = GetComponent<Rigidbody2D>();
+        body.position = position;
+        StopMotion();
+    }
+
     private void FixedUpdate()
     {
-        if (!initialized)
+        if (!initialized || externalDrive)
             return;
 
         if (body.bodyType != RigidbodyType2D.Kinematic || !body.simulated)

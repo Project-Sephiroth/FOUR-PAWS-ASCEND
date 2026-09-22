@@ -1,85 +1,151 @@
 using Fusion;
 using UnityEngine;
-using UnityEngine.Rendering;
 
-/// <summary>
-/// Liftable 에 탈 수 있습니다
-/// </summary>
 public class Rider : NetworkBehaviour, IRideable
 {
-    private PlayerInput input; //input 을 받는 Player 객체
-    private Lifter curLifter; //현재 타고 있는 태울 수 있는 객체
-    private Rigidbody2D rb;
-    private FixedJoint2D rideJoint;
+    [Networked] public NetworkObject CarrierObject { get; private set; }
+    [Networked] private TickTimer PickupCooldown { get; set; }
+    public bool IsRiding => Object != null && Object.IsValid && CarrierObject != null;
+    public bool CanBePickedUp => Object != null && Object.IsValid && !IsRiding && PickupCooldown.ExpiredOrNotRunning(Runner);
+    private Rigidbody2D body;
+    private Collider2D bodyCollider;
+    private PlayerInput input;
+    private Mover mover;
+    private Lifter ignoredCarrier;
+    private Collider2D[] riderColliders;
+    private Collider2D[] carrierColliders;
 
     private void Awake()
     {
+        body = GetComponent<Rigidbody2D>();
+        bodyCollider = GetComponent<Collider2D>();
         input = GetComponent<PlayerInput>();
-        rb = GetComponent<Rigidbody2D>();
+        mover = GetComponent<Mover>();
+        riderColliders = GetComponentsInChildren<Collider2D>();
     }
 
-    private void Update()
+    public override void Render()
     {
-        //탑승 중이 아니라면
-        if (curLifter == null)
-            return;
-
-        Ride();
-
-        if (input != null && input.JumpInput) //인풋을 받을 수 있고 점프했다면
-        {
-            input.JumpInput = false;
-            Drop(); //내리기
-        }
+        if (Object != null && Object.IsValid)
+            SetCollisionCarrier(CarrierObject != null ? CarrierObject.GetComponent<Lifter>() : null);
     }
 
-    /// <summary>
-    /// 태울 수 있는 객체에 탑승합니다
-    /// </summary>
     public void Ride(Lifter lifter)
     {
-        curLifter = lifter;
+        if (lifter != null)
+            lifter.Lift(this);
+    }
 
-        //Lifter와 물리적으로 연결
-        Debug.Log($"{gameObject.name} 이 {lifter.gameObject.name} 과 물리적으로 연결 됨");
-        rideJoint = gameObject.AddComponent<FixedJoint2D>();
+    public void RequestRide(Lifter lifter)
+    {
+        if (Object == null || !Object.IsValid || lifter == null || lifter.Object == null || !lifter.HasStateAuthority)
+            return;
+        RPC_Attach(lifter.Object);
+    }
 
-        rideJoint.connectedBody = curLifter.Rb;
-        rideJoint.enableCollision = false;
-
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_Attach(NetworkObject carrier, RpcInfo info = default)
+    {
+        Lifter lifter = carrier != null ? carrier.GetComponent<Lifter>() : null;
+        Lifter ownLifter = GetComponent<Lifter>();
+        if (lifter == null || lifter.Head == null || lifter.Rb == null || info.Source != carrier.StateAuthority ||
+            body == null || !body.simulated || !CanBePickedUp || body.mass > lifter.Rb.mass ||
+            (ownLifter != null && ownLifter.CarriedObject == carrier) ||
+            !PcsPlayerAbilities.CanParticipate(Object) || !PcsPlayerAbilities.CanParticipate(carrier) ||
+            Vector2.Distance(lifter.Head.transform.position, body.position) > 2f)
+        {
+            if (lifter != null)
+                lifter.OnRiderDrop(this);
+            return;
+        }
+        CarrierObject = carrier;
+        SetCollisionCarrier(lifter);
         if (input != null)
         {
             input.CanMoveInput = false;
-            input.MoveInput = Vector2.zero; //이동 입력이 있었다면 제거
+            input.MoveInput = Vector2.zero;
         }
     }
 
-    void Ride()
+    // Mover alone applies this pose, on the passenger's state authority.
+    public bool TryGetCarryPosition(out Vector2 position)
     {
-        //머리 위치로 이동
-        rb.position = curLifter.Head.transform.position;
+        position = body != null ? body.position : (Vector2)transform.position;
+        if (!HasStateAuthority || !IsRiding)
+            return false;
+        Lifter lifter = CarrierObject.GetComponent<Lifter>();
+        if (lifter == null || lifter.Head == null || !CarrierObject.gameObject.activeInHierarchy)
+        {
+            Drop();
+            return false;
+        }
+        SetCollisionCarrier(lifter);
+        float footOffset = bodyCollider != null ? bodyCollider.bounds.min.y - body.position.y : 0f;
+        position = new Vector2(lifter.Head.transform.position.x, lifter.Head.Top - footOffset + 0.015f);
+        return true;
     }
 
-    /// <summary>
-    /// 현재 탑승한 개체에서 내립니다
-    /// </summary>
+    public void RequestRelease(Lifter lifter, Vector2 velocity)
+    {
+        if (Object != null && Object.IsValid && lifter != null && lifter.Object != null && lifter.HasStateAuthority)
+            RPC_Release(lifter.Object, velocity);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_Release(NetworkObject carrier, Vector2 velocity, RpcInfo info = default)
+    {
+        if (carrier == null || CarrierObject != carrier || info.Source != carrier.StateAuthority ||
+            float.IsNaN(velocity.x) || float.IsInfinity(velocity.x) ||
+            float.IsNaN(velocity.y) || float.IsInfinity(velocity.y))
+            return;
+        Drop();
+        if (mover != null && velocity.sqrMagnitude > 0f)
+            mover.QueueLaunch(Vector2.ClampMagnitude(velocity, 16f));
+    }
+
     public void Drop()
     {
-        if (curLifter != null)
+        if (Object == null || !Object.IsValid || !HasStateAuthority)
+            return;
+        Lifter lifter = CarrierObject != null ? CarrierObject.GetComponent<Lifter>() : null;
+        CarrierObject = null;
+        PickupCooldown = TickTimer.CreateFromSeconds(Runner, 0.5f);
+        SetCollisionCarrier(null);
+        if (lifter != null)
+            lifter.OnRiderDrop(this);
+        if (input != null)
         {
-            curLifter.OnRiderDrop(this);
-            curLifter = null;
+            input.MoveInput = Vector2.zero;
+            input.CanMoveInput = true;
         }
-
-        if (rideJoint != null)
-        {
-            Destroy(rideJoint);
-            rideJoint = null;
-        }
-
-        //내린 후엔 move input 을 받습니다
-        input.MoveInput = Vector2.zero;
-        input.CanMoveInput = true;
     }
 
+    private void SetCollisionCarrier(Lifter lifter)
+    {
+        if (ignoredCarrier == lifter)
+            return;
+        IgnorePairs(false);
+        ignoredCarrier = lifter;
+        carrierColliders = lifter != null ? lifter.GetComponentsInChildren<Collider2D>() : null;
+        IgnorePairs(true);
+    }
+
+    private void IgnorePairs(bool ignore)
+    {
+        if (riderColliders == null || carrierColliders == null)
+            return;
+        foreach (Collider2D own in riderColliders)
+            foreach (Collider2D other in carrierColliders)
+                if (own != null && other != null)
+                    Physics2D.IgnoreCollision(own, other, ignore);
+    }
+
+    private void OnDisable()
+    {
+        if (Object != null && Object.IsValid && HasStateAuthority)
+            Drop();
+        IgnorePairs(false);
+        ignoredCarrier = null;
+        carrierColliders = null;
+    }
 }

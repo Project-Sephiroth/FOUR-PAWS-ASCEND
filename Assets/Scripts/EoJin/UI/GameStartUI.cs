@@ -1,25 +1,48 @@
-using Fusion;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameStartUI : MonoBehaviour
 {
-    [SerializeField] GameObject startButton;
+    [SerializeField] private GameObject startButton;
+    [SerializeField] private string gameplayScene = "GameScene";
 
-    private void Start()
+    private Button button;
+
+    private void Awake()
     {
-        startButton.SetActive(GameManager.Instance.MyPlayerId == 0);
+        if (startButton != null)
+            button = startButton.GetComponent<Button>();
+    }
+
+    private void Update()
+    {
+        var manager = NetworkGameManager.Instance;
+        bool isSceneAuthority = manager != null && manager.IsReady && manager.Runner.IsSceneAuthority;
+        if (startButton != null && startButton.activeSelf != isSceneAuthority)
+            startButton.SetActive(isSceneAuthority);
+        if (button != null)
+            button.interactable = isSceneAuthority && manager.CanStartGame;
     }
 
     public void StartGame()
     {
-        NetworkGameManager.Instance.LoadScene("GameScene");
+        var manager = NetworkGameManager.Instance;
+        if (manager != null)
+            manager.LoadScene(gameplayScene);
+    }
+
+    public void StartLegacyGame()
+    {
+        var manager = NetworkGameManager.Instance;
+        if (manager != null)
+            manager.LoadScene("GameScene");
     }
 
     public async void QuitGame()
     {
-        if (NetworkGameManager.Instance.Runner != null)
-            await NetworkGameManager.Instance.Runner.Shutdown();
+        var manager = NetworkGameManager.Instance;
+        if (manager != null && manager.Runner != null)
+            await manager.Runner.Shutdown();
 
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;

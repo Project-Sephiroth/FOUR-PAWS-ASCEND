@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: -8583611898088411976}
   - component: {fileID: 8210023519212137742}
   - component: {fileID: -1734148059368601399}
+  - component: {fileID: 2022282209777133024}
   m_Layer: 3
   m_Name: Player_Rabbit
   m_TagString: Untagged
@@ -96,6 +97,7 @@ MonoBehaviour:
   - {fileID: -8583611898088411976}
   - {fileID: 8210023519212137742}
   - {fileID: -1734148059368601399}
+  - {fileID: 2022282209777133024}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &9100768190659140526
 MonoBehaviour:
@@ -213,8 +215,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50932fa9129160445b78de05b550c049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  speed: 2
-  jumpForce: 5
+  speed: 4
+  jumpForce: 12
   CanJump: 1
   canDoubleJump: 1
   groundCheck: {fileID: 695113933997386881}
@@ -235,6 +237,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lifter
   head: {fileID: 4630356534473329264}
+  pickupRange: 1.8
+  _CarriedObject: {fileID: 0}
 --- !u!114 &8210023519212137742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,6 +251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22ef2bc076fc51a43b685bafd805f6cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Rider
+  _CarrierObject: {fileID: 0}
 --- !u!114 &-1734148059368601399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,6 +268,25 @@ MonoBehaviour:
   JumpInput: 0
   CanMoveInput: 1
   CanJumpInput: 1
+--- !u!114 &2022282209777133024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2817390880039839120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc9fcf341a0c4166a2e379c656f321c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PcsPlayerAbilities
+  characterType: 1
+  interactionRange: 1.8
+  pullRange: 7
+  pullSpeed: 6
+  ladderSpeed: 2.5
+  abilityCooldown: 0.35
+  throwSpeed: 10
 --- !u!1 &7128324174896953473
 GameObject:
   m_ObjectHideFlags: 0

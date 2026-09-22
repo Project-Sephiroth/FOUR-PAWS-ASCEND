@@ -1,24 +1,22 @@
 using Fusion;
 using UnityEngine;
 
-/// <summary>
-/// Rideable 을 옮깁니다
-/// </summary>
 public class Lifter : NetworkBehaviour, ILiftable
 {
-    [SerializeField] private Head head; //나의 머리
-    public Head Head => head; //다른 객체에서 나의 머리 확인 가능
+    [SerializeField] private Head head;
+    [SerializeField, Min(0.1f)] private float pickupRange = 1.8f;
+    [Networked] public NetworkObject CarriedObject { get; private set; }
+    public Head Head => head;
+    public Rigidbody2D Rb { get; private set; }
+    public Rider CurrentRider => Object != null && Object.IsValid && CarriedObject != null
+        ? CarriedObject.GetComponent<Rider>() : null;
+    private float reservationDeadline;
 
-    private Rider curRider; //현재 탑승한 타겟
-    private Rigidbody2D rb; //나의 리지드바디(몸무게 확인)
-    public Rigidbody2D Rb => rb;
-
-    private void Start()
+    private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-
-        //머리에서 충돌이 일어났다면 확인합니다
-        head.OnHit += OnHeadHit;
+        Rb = GetComponent<Rigidbody2D>();
+        if (head != null)
+            head.OnHit += OnHeadHit;
     }
 
     private void OnDestroy()
@@ -27,39 +25,93 @@ public class Lifter : NetworkBehaviour, ILiftable
             head.OnHit -= OnHeadHit;
     }
 
-    /// <summary>
-    /// 나의 머리에 무언가가 충돌했다면 Rideable 인지 확인합니다
-    /// </summary>
-    /// <param name="target">머리에 부딪힌 오브젝트</param>
     private void OnHeadHit(GameObject target)
     {
-        //탈 수 있음 속성이 없으면 리턴
-        var newRider = target.GetComponent<Rider>();
-
-        if (newRider == null)
+        if (Object == null || !Object.IsValid || !HasStateAuthority)
             return;
-
-        Lift(newRider);
-    }
-
-    public void OnRiderDrop(IRideable rideable)
-    {
-        
+        Rider rider = target.GetComponentInParent<Rider>();
+        if (rider != null)
+            Lift(rider);
     }
 
     public void Lift(Rider rider)
     {
-        //이미 누군가 타고 있다면 리턴
-        if (curRider != null)
+        if (Object == null || !Object.IsValid || rider == null || rider.Object == null || !rider.Object.IsValid)
             return;
+        if (HasStateAuthority)
+            TryReserve(rider);
+        else
+            RPC_RequestLift(rider.Object);
+    }
 
-        var targetRb = rider.gameObject.GetComponent<Rigidbody2D>();
-
-        //나보다 몸무게가 무겁다면 탑승할 수 없음
-        if (rb != null && targetRb != null && targetRb.mass > rb.mass)
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RequestLift(NetworkObject passenger, RpcInfo info = default)
+    {
+        if (passenger == null || (info.Source != Object.StateAuthority && info.Source != passenger.StateAuthority))
             return;
+        TryReserve(passenger.GetComponent<Rider>());
+    }
 
-        curRider = rider;
-        curRider.Ride(this);
+    private void TryReserve(Rider rider)
+    {
+        if (!HasStateAuthority || head == null || Rb == null || rider == null || rider.Object == Object ||
+            CarriedObject != null || !rider.CanBePickedUp || !PcsPlayerAbilities.CanParticipate(Object) ||
+            !PcsPlayerAbilities.CanParticipate(rider.Object))
+            return;
+        Rigidbody2D other = rider.GetComponent<Rigidbody2D>();
+        if (other == null || !other.simulated || other.mass > Rb.mass ||
+            Vector2.Distance(head.transform.position, other.position) > pickupRange)
+            return;
+        Rider ancestor = GetComponent<Rider>();
+        for (int i = 0; ancestor != null && ancestor.IsRiding && i < 8; i++)
+        {
+            if (ancestor.CarrierObject == rider.Object)
+                return;
+            ancestor = ancestor.CarrierObject.GetComponent<Rider>();
+        }
+        CarriedObject = rider.Object;
+        reservationDeadline = Time.time + 2f;
+        rider.RequestRide(this);
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (!HasStateAuthority || CarriedObject == null)
+            return;
+        Rider rider = CurrentRider;
+        if (!CarriedObject.gameObject.activeInHierarchy || rider == null ||
+            (Time.time > reservationDeadline && rider.CarrierObject != Object))
+            CarriedObject = null;
+    }
+
+    public void OnRiderDrop(IRideable rideable)
+    {
+        Rider rider = rideable as Rider;
+        if (Object == null || !Object.IsValid || rider == null || rider.Object == null)
+            return;
+        if (HasStateAuthority)
+        {
+            if (CarriedObject == rider.Object)
+                CarriedObject = null;
+        }
+        else
+            RPC_ClearRider(rider.Object);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_ClearRider(NetworkObject passenger, RpcInfo info = default)
+    {
+        if (passenger != null && CarriedObject == passenger &&
+            (info.Source == passenger.StateAuthority || info.Source == Object.StateAuthority))
+            CarriedObject = null;
+    }
+
+    public void Release(Vector2 launchVelocity)
+    {
+        if (Object == null || !Object.IsValid || !HasStateAuthority)
+            return;
+        Rider rider = CurrentRider;
+        if (rider != null)
+            rider.RequestRelease(this, launchVelocity);
     }
 }

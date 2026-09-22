@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5979646818477590581}
   - component: {fileID: 6915601152231682938}
   - component: {fileID: 770997016811775920}
-  - component: {fileID: 4262799345299022743}
+  - component: {fileID: 2608331585452135489}
   m_Layer: 0
   m_Name: Network Runner
   m_TagString: Untagged
@@ -141,7 +141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Fusion.Unity::Fusion.NetworkObjectProviderDefault
   DelayIfSceneManagerIsBusy: 1
---- !u!114 &4262799345299022743
+--- !u!114 &2608331585452135489
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -150,12 +150,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 88890954706559317}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d70f47df79ce794dac6c4c1711a4c1a, type: 3}
+  m_Script: {fileID: 11500000, guid: ed3df14bba0a476f9843563cf2cb1f12, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
-  SpawnPos:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  myPrefab: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::PcsPlayerSpawner
+  characters:
+  - {fileID: 11400000, guid: 7eb75c99aead7ff4f886cf8829d7323f, type: 2}
+  - {fileID: 11400000, guid: cb39576307bbb5b419b924f8dcbdfe1a, type: 2}
+  - {fileID: 11400000, guid: d3ab53e4b1723004f82d874bc5a47798, type: 2}
+  - {fileID: 11400000, guid: 70a0555b3f49ebc4880ea0587f8b555e, type: 2}
+  legacyGameplayScene: GameScene
+  legacySpawnPosition: {x: 0, y: 1, z: 0}

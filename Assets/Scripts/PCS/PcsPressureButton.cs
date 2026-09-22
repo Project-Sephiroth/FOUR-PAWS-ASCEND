@@ -16,6 +16,7 @@ public class PcsPressureButton : MonoBehaviour
     private ContactFilter2D playerFilter;
     private int playerLayer;
     private PcsSlidingWall requestedWall;
+    private bool externalDrive;
 
     public bool IsPressed { get; private set; }
 
@@ -24,7 +25,7 @@ public class PcsPressureButton : MonoBehaviour
         sensor = GetComponent<BoxCollider2D>();
         playerLayer = LayerMask.NameToLayer("Player");
 
-        if (wall == null || supportCollider == null || supportCollider == sensor ||
+        if ((!externalDrive && wall == null) || supportCollider == null || supportCollider == sensor ||
             supportCollider.isTrigger || !sensor.isTrigger || gameObject.layer != 0 ||
             playerLayer < 0 || !IsValidTolerance())
         {
@@ -41,10 +42,18 @@ public class PcsPressureButton : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (externalDrive) return;
         SetPressed(HasStandingPlayer());
     }
 
-    private bool HasStandingPlayer()
+    public void UseExternalDrive() { externalDrive = true; }
+    public bool EvaluatePressure(bool dummyOnly = false, MyEnum.CharacterType requiredRole = MyEnum.CharacterType.None)
+    {
+        return enabled && sensor != null && HasStandingPlayer(dummyOnly, requiredRole);
+    }
+    public void SetNetworkPressed(bool pressed) { IsPressed = pressed; }
+
+    private bool HasStandingPlayer(bool dummyOnly = false, MyEnum.CharacterType requiredRole = MyEnum.CharacterType.None)
     {
         if (!IsAvailable(sensor) || !sensor.isTrigger || gameObject.layer != 0 ||
             !IsAvailable(supportCollider) || supportCollider.isTrigger || !IsValidTolerance())
@@ -66,6 +75,13 @@ public class PcsPressureButton : MonoBehaviour
             if (!IsAvailable(candidate) || candidate.isTrigger || candidate.gameObject.layer != playerLayer ||
                 candidate.attachedRigidbody == null)
                 continue;
+            PcsPuzzleDevice device = candidate.GetComponentInParent<PcsPuzzleDevice>();
+            bool isDummy = device != null && device.Kind == PcsDeviceKind.Dummy;
+            PcsPlayerAbilities actor = candidate.GetComponentInParent<PcsPlayerAbilities>();
+            if (dummyOnly && !isDummy) continue;
+            if (actor != null && !PcsPlayerAbilities.CanParticipate(actor.Object)) continue;
+            if (requiredRole != MyEnum.CharacterType.None &&
+                (isDummy ? device.RequiredRole != requiredRole : actor == null || actor.CharacterType != requiredRole)) continue;
 
             Bounds bodyBounds = candidate.bounds;
             if (bodyBounds.center.y <= top || Mathf.Abs(bodyBounds.min.y - top) > topTolerance ||
@@ -113,7 +129,8 @@ public class PcsPressureButton : MonoBehaviour
 
     private void OnDisable()
     {
-        SetPressed(false);
+        if (externalDrive) IsPressed = false;
+        else SetPressed(false);
         overlaps.Clear();
         contacts.Clear();
     }

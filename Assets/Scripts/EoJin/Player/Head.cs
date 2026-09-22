@@ -1,25 +1,32 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-/// <summary>
-/// 머리는 누군가를 태울 수 있고, 맞으면 기절 하기도 합니다
-/// </summary>
 public class Head : MonoBehaviour
 {
-    /// <summary>
-    /// 충돌한 물체를 리턴
-    /// </summary>
     public event UnityAction<GameObject> OnHit;
+    private Collider2D support;
+    private Rigidbody2D ownerBody;
+    public float Top => support != null ? support.bounds.max.y : transform.position.y;
+
+    private void Awake()
+    {
+        support = GetComponent<Collider2D>();
+        ownerBody = GetComponentInParent<Rigidbody2D>();
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //머리 위에서 충돌 됐는가
-        foreach (ContactPoint2D contact in collision.contacts)
+        if (collision.rigidbody == null || collision.rigidbody == ownerBody)
+            return;
+        Collider2D otherBody = collision.rigidbody.GetComponent<Collider2D>();
+        if (otherBody == null || otherBody.bounds.center.y <= Top || Mathf.Abs(otherBody.bounds.min.y - Top) > 0.15f)
+            return;
+        for (int i = 0; i < collision.contactCount; i++)
         {
-            if (contact.point.y > transform.position.y)
+            ContactPoint2D contact = collision.GetContact(i);
+            if (contact.point.y >= Top - 0.08f && Mathf.Abs(contact.normal.y) > 0.5f)
             {
-                Debug.Log($"{gameObject.name} 의 머리에 {collision.gameObject.name} 이 부딪힘");
-                OnHit?.Invoke(collision.gameObject);
+                OnHit?.Invoke(collision.rigidbody.gameObject);
                 return;
             }
         }

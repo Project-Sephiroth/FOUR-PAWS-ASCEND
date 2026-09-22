@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 1636461825933733836}
   - component: {fileID: -7504433427466975150}
   - component: {fileID: -5486389460404889778}
+  - component: {fileID: 1238936830198390451}
   m_Layer: 3
   m_Name: Player_Mouse
   m_TagString: Untagged
@@ -185,6 +186,7 @@ MonoBehaviour:
   - {fileID: 1636461825933733836}
   - {fileID: -7504433427466975150}
   - {fileID: -5486389460404889778}
+  - {fileID: 1238936830198390451}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &9211547091637837329
 MonoBehaviour:
@@ -302,8 +304,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50932fa9129160445b78de05b550c049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  speed: 2
-  jumpForce: 5
+  speed: 3.2
+  jumpForce: 8
   CanJump: 1
   canDoubleJump: 0
   groundCheck: {fileID: 6350647796864866439}
@@ -323,6 +325,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22ef2bc076fc51a43b685bafd805f6cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Rider
+  _CarrierObject: {fileID: 0}
 --- !u!114 &-5486389460404889778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -339,6 +342,25 @@ MonoBehaviour:
   JumpInput: 0
   CanMoveInput: 1
   CanJumpInput: 1
+--- !u!114 &1238936830198390451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4353250075812841545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc9fcf341a0c4166a2e379c656f321c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PcsPlayerAbilities
+  characterType: 3
+  interactionRange: 1.8
+  pullRange: 7
+  pullSpeed: 6
+  ladderSpeed: 2.5
+  abilityCooldown: 0.35
+  throwSpeed: 10
 --- !u!1 &8275741618073531482
 GameObject:
   m_ObjectHideFlags: 0

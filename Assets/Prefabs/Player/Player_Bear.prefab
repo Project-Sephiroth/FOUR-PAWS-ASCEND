@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: -4307343292715752888}
   - component: {fileID: 7068273570364407957}
   - component: {fileID: -1808502300984293614}
+  - component: {fileID: 8295558647796284906}
   m_Layer: 3
   m_Name: Player_Bear
   m_TagString: Untagged
@@ -94,6 +95,7 @@ MonoBehaviour:
   - {fileID: -4307343292715752888}
   - {fileID: 7068273570364407957}
   - {fileID: -1808502300984293614}
+  - {fileID: 8295558647796284906}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &943017836470292750
 MonoBehaviour:
@@ -211,8 +213,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50932fa9129160445b78de05b550c049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  speed: 2
-  jumpForce: 5
+  speed: 2.6
+  jumpForce: 8
   CanJump: 1
   canDoubleJump: 0
   groundCheck: {fileID: 7123006224735479535}
@@ -233,6 +235,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lifter
   head: {fileID: 2758368488505099682}
+  pickupRange: 1.8
+  _CarriedObject: {fileID: 0}
 --- !u!114 &-1808502300984293614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -249,6 +253,25 @@ MonoBehaviour:
   JumpInput: 0
   CanMoveInput: 1
   CanJumpInput: 1
+--- !u!114 &8295558647796284906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7809413871449971425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc9fcf341a0c4166a2e379c656f321c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PcsPlayerAbilities
+  characterType: 2
+  interactionRange: 1.8
+  pullRange: 7
+  pullSpeed: 6
+  ladderSpeed: 2.5
+  abilityCooldown: 0.35
+  throwSpeed: 10
 --- !u!1 &8080396380600934420
 GameObject:
   m_ObjectHideFlags: 0

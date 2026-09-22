@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkGameManager
   _PlayerIdIndex: 0
+  _TeamLocked:
+    RawValue: 0
 --- !u!114 &6296112739901852298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,7 +63,7 @@ MonoBehaviour:
   SortKey: 3271361728
   SendPriority: 1
   EnableInterpolation: 1
-  Flags: 262146
+  Flags: 131074
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 2026983194365432550}

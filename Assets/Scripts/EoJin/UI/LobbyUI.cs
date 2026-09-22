@@ -21,6 +21,24 @@ public class LobbyUI : MonoBehaviour
     {
         launcher.OnLobbyJoined += ShowUI;
         launcher.OnSessionUpdated += SetUI;
+        launcher.OnSessionAccessFinished += OnSessionAccessFinished;
+    }
+
+    private void OnDestroy()
+    {
+        if (launcher == null)
+            return;
+        launcher.OnLobbyJoined -= ShowUI;
+        launcher.OnSessionUpdated -= SetUI;
+        launcher.OnSessionAccessFinished -= OnSessionAccessFinished;
+    }
+
+    private void OnSessionAccessFinished(bool joined)
+    {
+        if (joined)
+            HideUI();
+        else
+            ShowUI();
     }
 
     private void Start()
@@ -77,6 +95,10 @@ public class LobbyUI : MonoBehaviour
 
     public void SetUI()
     {
+        index = 0;
+        if (elementPool == null || launcher.Sessions == null)
+            return;
+
         foreach (var element in elementPool)
             element.gameObject.SetActive(false);
 
@@ -106,7 +128,6 @@ public class LobbyUI : MonoBehaviour
     public void JoinSession(string sessionName)
     {
         launcher.TryAccessSession(sessionName);
-        HideUI();
     }
 
     public void CreatNewSession()

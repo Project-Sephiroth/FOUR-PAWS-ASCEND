@@ -16,21 +16,28 @@ public class PcsElevator : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float columnBottom = 237f / 1886f;
     [Tooltip("Visible top edge within the Sprite rect. Defaults exclude the faint padding in the current GIDONG image.")]
     [SerializeField, Range(0f, 1f)] private float columnTop = 1704f / 1886f;
+    [Tooltip("Keep the visible upper end fixed for a hanging platform. Otherwise keep the lower end fixed. Captured at Play start.")]
+    [SerializeField] private bool columnFixedAtTop;
 
     private const float AlignmentTolerance = 0.001f;
     private Rigidbody2D body;
     private Vector2 lowerPosition;
     private Vector2 upperPosition;
     private bool initialized;
+    private bool externalDrive;
 
     private Transform columnTransform;
     private Sprite columnSprite;
     private Vector3 initialColumnScale;
     private Vector3 initialColumnPosition;
     private Vector3 initialPlatformScale;
-    private Vector3 columnBottomWorld;
-    private float initialPlatformY;
-    private float initialColumnHeight;
+    private Quaternion initialPlatformRotation;
+    private Vector3 initialPlatformPosition;
+    private Vector3 fixedColumnEndWorld;
+    private Vector3 initialMovingColumnEndWorld;
+    private bool fixedEndIsLocalTop;
+    private bool fixedEndIsWorldTop;
+    private float visibleColumnLocalHeight;
     private float columnLocalBottomY;
 
     private void Awake()
@@ -45,6 +52,15 @@ public class PcsElevator : MonoBehaviour
         if ((body.constraints & RigidbodyConstraints2D.FreezePositionY) != 0)
         {
             Fail("Uncheck Rigidbody2D Freeze Position Y so the platform can move vertically.");
+            return;
+        }
+
+        if (externalDrive)
+        {
+            lowerPosition = body.position;
+            if (column != null && !InitializeColumn()) return;
+            initialized = true;
+            StopMotion();
             return;
         }
 
@@ -108,9 +124,11 @@ public class PcsElevator : MonoBehaviour
             return Fail("column must be visual-only. Put the platform's Collider2D and Rigidbody2D on the platform root.");
 
         initialPlatformScale = transform.lossyScale;
+        initialPlatformRotation = transform.rotation;
         initialColumnScale = columnTransform.localScale;
-        if (!IsPositiveScale(initialPlatformScale) || !IsPositiveScale(initialColumnScale) || !IsUpright())
-            return Fail("Use positive, finite scales and zero world rotation for the platform and zero local rotation for column.");
+        if (!IsPositiveScale(initialPlatformScale) || !IsPositiveScale(initialColumnScale) ||
+            !IsPlanarRotation(initialPlatformRotation) || !IsPlanarRotation(columnTransform.localRotation))
+            return Fail("Use positive, finite scales and only 2D Z rotations for the platform and column.");
 
         columnSprite = column.sprite;
         float pixelHeight = columnSprite.rect.height;
@@ -121,16 +139,24 @@ public class PcsElevator : MonoBehaviour
         // GIDONG has faint pixels in otherwise empty padding. Sprite bounds do not identify
         // the visible cap and foot; use their measured positions inside the untrimmed Sprite rect.
         columnLocalBottomY = (pixelHeight * columnBottom - columnSprite.pivot.y) / pixelsPerUnit;
-        float visibleLocalHeight = pixelHeight * (columnTop - columnBottom) / pixelsPerUnit;
-        initialColumnHeight = visibleLocalHeight * columnTransform.lossyScale.y;
-        columnBottomWorld = columnTransform.TransformPoint(new Vector3(0f, columnLocalBottomY, 0f));
+        visibleColumnLocalHeight = pixelHeight * (columnTop - columnBottom) / pixelsPerUnit;
+        Vector3 bottomWorld = columnTransform.TransformPoint(new Vector3(0f, columnLocalBottomY, 0f));
+        Vector3 topWorld = columnTransform.TransformPoint(new Vector3(0f, columnLocalBottomY + visibleColumnLocalHeight, 0f));
         initialColumnPosition = columnTransform.localPosition;
-        initialPlatformY = transform.position.y;
+        initialPlatformPosition = transform.position;
 
-        if (!IsFinite(initialColumnHeight) || initialColumnHeight <= 0f ||
-            !IsFinite(columnLocalBottomY) || !IsFinite(columnBottomWorld) || !IsFinite(initialColumnPosition))
+        if (!IsFinite(visibleColumnLocalHeight) || visibleColumnLocalHeight <= 0f ||
+            !IsFinite(columnLocalBottomY) || !IsFinite(bottomWorld) || !IsFinite(topWorld) ||
+            !IsFinite(initialColumnPosition) || !IsFinite(initialPlatformPosition) ||
+            Mathf.Abs(topWorld.y - bottomWorld.y) <= AlignmentTolerance)
             return Fail("column must have a finite position and a positive Sprite height.");
 
+        // A rotated platform can put the Sprite's local bottom at the ceiling.
+        // Choose the fixed end in world space without flipping or replacing its artwork.
+        fixedEndIsWorldTop = columnFixedAtTop;
+        fixedEndIsLocalTop = (topWorld.y > bottomWorld.y) == fixedEndIsWorldTop;
+        fixedColumnEndWorld = fixedEndIsLocalTop ? topWorld : bottomWorld;
+        initialMovingColumnEndWorld = fixedEndIsLocalTop ? bottomWorld : topWorld;
         return true;
     }
 
@@ -139,9 +165,25 @@ public class PcsElevator : MonoBehaviour
         raised = value;
     }
 
+    public void UseExternalDrive() { externalDrive = true; }
+
+    public Vector2 MoveAuthority(Vector2 from, Vector2 target, float movementSpeed, float deltaTime)
+    {
+        Vector2 next = Vector2.MoveTowards(from, target, movementSpeed * deltaTime);
+        if (body != null) body.MovePosition(next);
+        return next;
+    }
+
+    public void ApplyNetworkPose(Vector2 position)
+    {
+        if (body == null) body = GetComponent<Rigidbody2D>();
+        body.position = position;
+        StopMotion();
+    }
+
     private void FixedUpdate()
     {
-        if (!initialized)
+        if (!initialized || externalDrive)
             return;
 
         if (body == null || body.bodyType != RigidbodyType2D.Kinematic || !body.simulated ||
@@ -172,43 +214,53 @@ public class PcsElevator : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!initialized)
+        if (!initialized || (externalDrive && column == null))
             return;
 
         if (column == null || columnTransform == null || columnTransform.parent != transform ||
             column.sprite != columnSprite || column.drawMode != SpriteDrawMode.Simple || column.flipY ||
             !IsFinite(transform.lossyScale) ||
-            (transform.lossyScale - initialPlatformScale).sqrMagnitude > 0.000001f || !IsUpright())
+            (transform.lossyScale - initialPlatformScale).sqrMagnitude > 0.000001f ||
+            Quaternion.Angle(transform.rotation, initialPlatformRotation) > 0.01f)
         {
-            Fail("Keep the column's parent, Sprite, draw mode, Flip Y, platform scale and rotations unchanged during Play.");
+            Fail("Keep the column's parent, Sprite, draw mode, Flip Y, platform scale and platform rotation unchanged during Play.");
             return;
         }
 
         // Use the displayed platform pose, including Rigidbody interpolation, not its next physics target.
-        float displacement = transform.position.y - initialPlatformY;
-        float height = initialColumnHeight + displacement;
+        Vector3 movingEndWorld = initialMovingColumnEndWorld + transform.position - initialPlatformPosition;
+        float verticalSpan = fixedEndIsWorldTop ? fixedColumnEndWorld.y - movingEndWorld.y :
+            movingEndWorld.y - fixedColumnEndWorld.y;
+        Vector3 fixedEndLocal = transform.InverseTransformPoint(fixedColumnEndWorld);
+        Vector3 movingEndLocal = transform.InverseTransformPoint(movingEndWorld);
+        Vector3 bottomLocal = fixedEndIsLocalTop ? movingEndLocal : fixedEndLocal;
+        Vector3 topLocal = fixedEndIsLocalTop ? fixedEndLocal : movingEndLocal;
+        Vector3 columnAxis = topLocal - bottomLocal;
         Vector3 scale = initialColumnScale;
-        scale.y *= height / initialColumnHeight;
-        Vector3 position = initialColumnPosition;
-        position.y = transform.InverseTransformPoint(columnBottomWorld).y - columnLocalBottomY * scale.y;
+        scale.y = columnAxis.magnitude / visibleColumnLocalHeight;
+        float angle = Mathf.Atan2(-columnAxis.x, columnAxis.y) * Mathf.Rad2Deg;
+        Quaternion rotation = Quaternion.Euler(0f, 0f, angle);
+        Vector3 position = bottomLocal - rotation * new Vector3(0f, columnLocalBottomY * scale.y, 0f);
+        position.z = initialColumnPosition.z;
 
-        if (!IsFinite(height) || height <= 0f || !IsFinite(scale) || !IsFinite(position))
+        if (!IsFinite(verticalSpan) || verticalSpan <= 0f || !IsPositiveScale(scale) ||
+            !IsFinite(angle) || !IsFinite(position))
         {
-            Fail("The platform moved below the column base or produced an invalid column height.");
+            Fail("The platform crossed the fixed column end or produced an invalid column height.");
             return;
         }
 
-        // Recompute from the original scale and visible edges so the drawn foot stays fixed
-        // and the drawn cap follows the platform, regardless of padding or Sprite pivot.
+        // Resolve both visible ends in the parent's coordinates. This also preserves their
+        // attachment for inverted artwork and non-uniform platform scale, without an initial snap.
         // Only the visual child changes scale/position; the platform is moved exclusively by MovePosition.
+        columnTransform.localRotation = rotation;
         columnTransform.localScale = scale;
         columnTransform.localPosition = position;
     }
 
-    private bool IsUpright()
+    private static bool IsPlanarRotation(Quaternion rotation)
     {
-        return Quaternion.Angle(transform.rotation, Quaternion.identity) < 0.01f &&
-            Quaternion.Angle(columnTransform.localRotation, Quaternion.identity) < 0.01f;
+        return Vector3.Dot(rotation * Vector3.forward, Vector3.forward) > 0.999999f;
     }
 
     private static bool IsPositiveScale(Vector3 value)

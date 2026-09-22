@@ -15,7 +15,9 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public UnityAction OnLobbyJoined;
 
-    private List<SessionInfo> sessions;
+    private List<SessionInfo> sessions = new List<SessionInfo>();
+    private bool joiningSession;
+    public event UnityAction<bool> OnSessionAccessFinished;
     public List<SessionInfo> Sessions => sessions;
     public event UnityAction OnSessionUpdated;
 
@@ -31,16 +33,23 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
     /// </summary>
     public async void JoinLobby()
     {
+        if (runner != null || runnerPrefab == null)
+            return;
+
         runner = Instantiate(runnerPrefab);
-
+        DontDestroyOnLoad(runner.gameObject);
         runner.AddCallbacks(this);
-
         var result = await runner.JoinSessionLobby(SessionLobby.Shared);
-
-        Debug.Log($"로비 접속: {result.Ok}");
-
         if (result.Ok)
             OnLobbyJoined?.Invoke();
+        else
+            Debug.LogError("Unable to join the Shared lobby.", this);
+    }
+
+    private void OnDestroy()
+    {
+        if (runner != null)
+            runner.RemoveCallbacks(this);
     }
 
     /// <summary>
@@ -50,13 +59,6 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
     /// <param name="sessionList"></param>
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
     {
-        foreach (SessionInfo session in sessionList)
-        {
-            Debug.Log($"방 이름: {session.Name}");
-            Debug.Log($"인원: {session.PlayerCount}/{session.MaxPlayers}");
-            Debug.Log($"입장 가능: {session.IsOpen}");
-        }
-
         sessions = sessionList;
         OnSessionUpdated?.Invoke();
     }
@@ -66,29 +68,63 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public async void TryAccessSession(string sessionName)
     {
-        //현재 접속 시도하려는 방 이름이 없다면 리턴
-        if (string.IsNullOrWhiteSpace(sessionName))
+        if (joiningSession || runner == null || runner.IsRunning ||
+            string.IsNullOrWhiteSpace(sessionName))
             return;
-            
-        var sceneManager = runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
-
-        var result = await runner.StartGame(new StartGameArgs()
+        if (GameManager.Instance == null ||
+            GameManager.Instance.MyCharacterType == MyEnum.CharacterType.None)
         {
-            GameMode = GameMode.Shared, //포톤 섀어 모드 사용
-            SessionName = sessionName,
-            SceneManager = sceneManager,
-            PlayerCount = 4 //4명으로 방 인원 제한
-        });
-
-        if (result.Ok)
-        {
-            Debug.Log("방 접속 성공");
-
-            networkGM = runner.Spawn(networkGMPrefab, Vector3.zero,Quaternion.identity);
+            Debug.LogWarning("Select a character before entering a session.", this);
+            OnSessionAccessFinished?.Invoke(false);
+            return;
         }
-        else
+        if (networkGMPrefab == null)
         {
-            Debug.LogError($"방 접속 실패: {result.ShutdownReason}");
+            Debug.LogError("NetworkLauncher needs its NetworkGameManager prefab.", this);
+            OnSessionAccessFinished?.Invoke(false);
+            return;
+        }
+
+        joiningSession = true;
+        var sceneManager = runner.GetComponent<NetworkSceneManagerDefault>();
+        if (sceneManager == null)
+            sceneManager = runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
+
+        try
+        {
+            var result = await runner.StartGame(new StartGameArgs
+            {
+                GameMode = GameMode.Shared,
+                SessionName = sessionName,
+                SceneManager = sceneManager,
+                PlayerCount = 4
+            });
+
+            if (result.Ok)
+            {
+                // Other peers receive this object; they must not spawn a second manager.
+                if (runner.IsSharedModeMasterClient)
+                    networkGM = runner.Spawn(networkGMPrefab, Vector3.zero, Quaternion.identity);
+                OnSessionAccessFinished?.Invoke(true);
+            }
+            else
+            {
+                Debug.LogError("Unable to enter the Shared session.", this);
+                OnSessionAccessFinished?.Invoke(false);
+                await runner.Shutdown();
+                Destroy(runner.gameObject);
+                runner = null;
+                JoinLobby();
+            }
+        }
+        catch (Exception exception)
+        {
+            Debug.LogError($"Session setup failed ({exception.GetType().Name}).", this);
+            OnSessionAccessFinished?.Invoke(false);
+        }
+        finally
+        {
+            joiningSession = false;
         }
     }
 
