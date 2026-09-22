@@ -71,9 +71,6 @@ public sealed class PcsSharedSmokeBootstrap : MonoBehaviour
         public List<LifecycleCheck> lifecycleChecks = new List<LifecycleCheck>();
         public List<CarryObservation> carryObservations = new List<CarryObservation>();
         public List<PressureObservation> pressureObservations = new List<PressureObservation>();
-        public List<ChannelObservation> channelObservations = new List<ChannelObservation>();
-        public List<FrogRemoteObservation> frogRemoteObservations = new List<FrogRemoteObservation>();
-        public List<ChannelHackObservation> channelHackObservations = new List<ChannelHackObservation>();
         public List<LayoutObservation> layoutObservations = new List<LayoutObservation>();
         public List<string> fixtures = new List<string>();
     }
@@ -105,51 +102,15 @@ public sealed class PcsSharedSmokeBootstrap : MonoBehaviour
         public Vector2 actualWallTransform, actualWallBody, actualWallColliderCenter;
         public float wallRootError, wallBodyError, wallColliderError;
     }
-    [Serializable] private sealed class ChannelObservation
-    {
-        public string stage, role;
-        public int tick, energy, resetEpoch;
-        public float liftTop, liftPoseError, liftColliderError, localPassengerFootGap;
-        public bool localPassengerOnLift, localBodyFullyInCamera;
-        public Vector3 localBodyViewportMin, localBodyViewportMax, localCameraPosition;
-        public float localCameraOrthographicSize;
-        public Vector2 liftTransform, liftBody, liftReplicatedState;
-        public int[] active, phase, window, buttonActive, platformActive;
-        public string[] targetTick;
-        public float[] remaining;
-        public bool[] platformSolid;
-    }
-    [Serializable] private sealed class FrogRemoteObservation
-    {
-        public string stage, localRole, selectedDevice, aimedPlayerRole, feedback, firstHitName;
-        public int tick, activeSection, channelActive, channelWindow, firstHitLayer;
-        public float elapsed, remainingSeconds, rootDistance, bodyCenterDistance, liftTop, liftBottom, lineFraction;
-        public bool localIsDirectorAuthority, localOwnsFrog, frogCanParticipate, inputPending, targetAvailable, productionLineBlocked;
-        public Vector2 frogTransform, frogBody, frogBodyCenter, intendedAim, ownerInputAim, liftTransform, liftBody, liftReplicatedState;
-    }
-    [Serializable] private sealed class ChannelHackObservation
-    {
-        public string utc, stage, localRole, selectedDevice, feedback;
-        public int tick, wantedCounter, counter, active, activeSection, deviceSection, resetEpoch, mouseEpoch;
-        public int ownerObservedEpoch, selectedDeviceId, connectedRoleMask, leftMask, rabbitMask, productionLeftMask, productionRabbitMask;
-        public float elapsed, timerRemaining, resetTimerRemaining, rootDistance, bodyCenterDistance, interactionRange, liftTop, mouseFootGap;
-        public bool localIsDirectorAuthority, initialized, shaftStarted, requireBoarding, targetAvailable;
-        public bool mousePresent, localOwnsMouse, mouseCanParticipate, inputPending, inputEnabled, canMove, ownerHasEpoch;
-        public Vector2 mouseTransform, mouseBody, mouseBodyCenter, consolePosition, ownerMove;
-        public Vector2[] rolePositions;
-    }
     [Serializable] private sealed class LifecycleMarker
     {
         public string utc, role, stage;
         public int consoleIndex, gateIndex, counter, mouseEpoch, resetEpoch, energy, batteries;
         public Vector2 closed, open, handoffPose;
-        public ChannelObservation channels;
     }
 
     private static readonly FieldInfo CameraTarget = typeof(PcsLocalCameraFollow).GetField("target", BindingFlags.Instance | BindingFlags.NonPublic);
     private Vector2 pressureColliderOffset;
-    private float channelLiftSurfaceOffset;
-    private readonly List<RaycastHit2D> smokeObstructionHits = new List<RaycastHit2D>();
     private readonly List<ContactPoint2D> layoutContacts = new List<ContactPoint2D>(12);
     private Options options;
     private SmokeReport report;
@@ -161,7 +122,8 @@ public sealed class PcsSharedSmokeBootstrap : MonoBehaviour
     private string RunDirectory => Path.GetDirectoryName(outputPath);
     private bool IsLateJoinRole => options.Scenario == "lifecycle" &&
         (options.Role == MyEnum.CharacterType.Bear || options.Role == MyEnum.CharacterType.Frog);
-    private MyEnum.CharacterType ScenarioLeader => options.Scenario == "pressure-two" ? MyEnum.CharacterType.Mouse : MyEnum.CharacterType.Rabbit;
+    private MyEnum.CharacterType ScenarioLeader => options.Scenario == "pressure-two" || options.Scenario == "shaft-two"
+        ? MyEnum.CharacterType.Mouse : MyEnum.CharacterType.Rabbit;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void StartRequestedSmoke()
@@ -257,8 +219,8 @@ public sealed class PcsSharedSmokeBootstrap : MonoBehaviour
                 ? "Normal Shared lobby/spawn plus A: Mouse walks and hacks; B: late-join state and denied reset; C: explicit normal tutorial retry and master departure during door motion. No fixture teleport, four-role completion or stage-two channel/ascent proof."
                 : options.Scenario == "carry-two"
                 ? "Two independent Shared owners after normal lobby/spawn. Explicit runtime-only identical static-floor fixture and one owner-authorized ResetAt relocation per actor. Normal G input proves remote attach, carried motion, passenger drop/remote clear, reboard and carrier release. Not an authored route or four-role completion test."
-                : options.Scenario == "channels-four"
-                ? "Four independent Shared processes use normal lobby, selection and Puzzle spawns. Explicit master-only ActiveSection=2 and one owner ResetAt to authored StageTwo spawn per actor are preparation only. Normal Mouse movement/E3 passes actual boarding, then channel inputs and Frog F hits test two independent timed channels, one charge per window, four-peer state/collider replication, expiry and no stale button restoration on reopening. No full tutorial/stage-one/shaft traversal claim; same-button re-hit after its platform height has passed is not tested."
+                : options.Scenario == "shaft-two"
+                ? "Two normal Shared lobby/spawn owners observe the authored shaft elevator. Only its state authority issues Raise/Hold through the production API; the proxy must be denied. Both peers check replicated command, root/body/collider motion and upper-stop Hold. No hacking, channel, battery, combat, boarding formation or final-exit puzzle remains; this is not passenger or full-route play proof."
                 : options.Scenario == "layout-four"
                 ? "Four normal Shared lobby/selection/spawn owners. Explicit owner-only starting-pose fixtures for authored Mouse consoles, deployed ladder, StageOne plate, Frog hold stance and Bear beside the lower lift; master-only ActiveSection=1 preparation. Actual E pulses, W/S sample, dynamic plate contact, aimed held/released F, normal Bear boarding input and riding are tested. All four peers check final physical device poses. No tutorial whole-route, zigzag traversal, Bear puzzle completion or full-game completion claim."
                 : "Normal two-peer Shared lobby/spawn, Mouse master and remote Bear owner. Explicit master-only ActiveSection=1 setup plus Bear-owner ResetAt on/off the authored plate. Actual dynamic/kinematic contact and production pressure/wall replication; no forced pressure state or authority override. Not tutorial progression, route traversal or four-player completion.";
@@ -348,9 +310,9 @@ public sealed class PcsSharedSmokeBootstrap : MonoBehaviour
             yield return RunPressureTwo();
             yield break;
         }
-        if (options.Scenario == "channels-four")
+        if (options.Scenario == "shaft-two")
         {
-            yield return RunChannelsFour();
+            yield return RunShaftTwo();
             yield break;
         }
         if (options.Scenario == "layout-four")
@@ -407,7 +369,7 @@ public sealed class PcsSharedSmokeBootstrap : MonoBehaviour
         var ownInput = ownActor.GetComponent<PlayerInput>();
         var ownMover = ownActor.GetComponent<Mover>();
         ownInput.InjectDevelopmentInput(Vector2.zero, false);
-        var owners = new HashSet<PlayerRef>(ChannelRoles.Select(role => ActorForRole(role).StateAuthority));
+        var owners = new HashSet<PlayerRef>(TeamRoles.Select(role => ActorForRole(role).StateAuthority));
         LifecycleAssert("L_four_distinct_owners", owners.Count == 4 && ownActor.HasStateAuthority &&
             puzzle.HasStateAuthority == (options.Role == MyEnum.CharacterType.Rabbit),
             "Rabbit owns the real Shared director; Frog, Mouse and Bear are three distinct remote owners.");
@@ -741,7 +703,7 @@ public sealed class PcsSharedSmokeBootstrap : MonoBehaviour
         {
             int mask = 0;
             Bounds region = area.Bounds;
-            foreach (var role in ChannelRoles)
+            foreach (var role in TeamRoles)
             {
                 Vector2 position = ActorForRole(role).transform.position;
                 if (position.x >= region.min.x && position.x <= region.max.x &&
@@ -803,7 +765,7 @@ public sealed class PcsSharedSmokeBootstrap : MonoBehaviour
         var hack = LayoutDevice(3, PcsDeviceKind.HackConsole);
         Vector2 liftOffset = LayoutColliderOffset(lift);
         Vector2 holdPose = options.Role == MyEnum.CharacterType.Frog ? mover.Body.position : new Vector2(-4.5f, 3.1f);
-        MyEnum.CharacterType[] four = ChannelRoles;
+        MyEnum.CharacterType[] four = TeamRoles;
         MyEnum.CharacterType[] three = { MyEnum.CharacterType.Mouse, MyEnum.CharacterType.Bear, MyEnum.CharacterType.Frog };
         MyEnum.CharacterType[] two = { MyEnum.CharacterType.Mouse, MyEnum.CharacterType.Bear };
 
@@ -1069,7 +1031,7 @@ public sealed class PcsSharedSmokeBootstrap : MonoBehaviour
     private IEnumerator LayoutBarrier(string stage)
     {
         WriteMarker(stage);
-        foreach (var role in ChannelRoles) yield return WaitForMarker(stage, role, Deadline(30d));
+        foreach (var role in TeamRoles) yield return WaitForMarker(stage, role, Deadline(30d));
     }
 
     private static Vector2 LayoutColliderOffset(PcsPuzzleDevice device)
@@ -1311,475 +1273,85 @@ public sealed class PcsSharedSmokeBootstrap : MonoBehaviour
         }
     }
 
-    private static readonly MyEnum.CharacterType[] ChannelRoles = { MyEnum.CharacterType.Rabbit, MyEnum.CharacterType.Bear,
+    private static readonly MyEnum.CharacterType[] TeamRoles = { MyEnum.CharacterType.Rabbit, MyEnum.CharacterType.Bear,
         MyEnum.CharacterType.Mouse, MyEnum.CharacterType.Frog };
 
-    private IEnumerator RunChannelsFour()
+    private IEnumerator RunShaftTwo()
     {
-        Phase("channels-waiting-for-normal-four-spawns");
-        yield return WaitForObservation(4, 45d);
+        Phase("shaft-waiting-for-normal-two-spawns");
+        yield return WaitForObservation(2, 45d);
         report.normalFlowReached = true;
-        CaptureGameView();
         var puzzle = PcsPuzzleDirector.Instance;
-        var ownActor = LocalActor();
-        var ownInput = ownActor.GetComponent<PlayerInput>();
-        ownInput.InjectDevelopmentInput(Vector2.zero, false);
-        var owners = new HashSet<PlayerRef>();
-        foreach (var role in ChannelRoles) owners.Add(ActorForRole(role).StateAuthority);
-        LifecycleAssert("CF_four_distinct_owners", owners.Count == 4 && ownActor.HasStateAuthority &&
-            puzzle.HasStateAuthority == (options.Role == MyEnum.CharacterType.Rabbit),
-            "Normal selection/spawning gives four actual owners. Rabbit remains the original master; no ownership changes are requested.");
-        PcsPuzzleDevice start = ChannelDevice("Shaft_StartHack");
-        PcsPuzzleDevice console = ChannelDevice("Shaft_ChannelConsole");
-        PcsPuzzleDevice button0 = ChannelDevice("Shaft_RemoteButton_00");
-        PcsPuzzleDevice button1 = ChannelDevice("Shaft_RemoteButton_01");
-        PcsPuzzleDevice platform0 = ChannelDevice("Shaft_ColorStep_00");
-        PcsPuzzleDevice platform1 = ChannelDevice("Shaft_ColorStep_01");
-        PcsPuzzleDevice lift = ChannelDevice("Elevator_Main_HackToAscend");
-        channelLiftSurfaceOffset = lift.Solid.bounds.max.y - lift.transform.position.y;
-        LifecycleAssert("CF_authored_contract", puzzle.RequireShaftBoarding && start.RequiredInputs == 3 &&
-            button0.Channel == 0 && button1.Channel == 1 && platform0.Solid != null && platform1.Solid != null &&
-            puzzle.ShaftLeftBoardingArea != null && puzzle.ShaftRabbitBoardingArea != null,
-            "Use authored boarding zones, E3 console, moving lift, channel 1/2 buttons and their actual platform colliders.");
-        report.fixtures.Add("Master-only ActiveSection=2 assignment bypasses prior progression. Each real owner performs exactly one ResetAt to its authored StageTwo spawn. No channel/button/energy, boarding flag, collider, movement speed or authority is overwritten.");
-        WriteMarker("channels-prepared");
-        yield return ChannelBarrier("channels-prepared");
-        if (options.Role == MyEnum.CharacterType.Rabbit)
+        PcsPuzzleDevice lift = puzzle.Devices.Single(d => d != null && d.IsShaftElevator);
+        LifecycleAssert("shaft_authored_geometry", lift.Body != null && lift.Solid != null && lift.UpperStop != null && lift.Speed > 0f,
+            "Use the unchanged authored platform, solid, speed and independent upper target.");
+        Vector2 start = puzzle.States[lift.DeviceId].Position;
+        Vector2 colliderOffset = (Vector2)lift.Solid.bounds.center - lift.Body.position;
+        LifecycleAssert("shaft_default_hold", puzzle.States[lift.DeviceId].Phase == 0 && lift.UpperStop.position.y > start.y + .3f,
+            "A new session starts in Hold at its current pose with measurable upward travel available.");
+        yield return Delay(.35d);
+        LifecycleAssert("shaft_default_physical_hold", ShaftPhysicalAt(puzzle, lift, start, colliderOffset),
+            "Both owners observe a stationary replicated root, Rigidbody and solid before a command.");
+        if (!puzzle.HasStateAuthority)
+            LifecycleAssert("shaft_proxy_command_rejected", !puzzle.TrySetShaftLiftCommand(lift, PcsShaftLiftCommand.Raise, out string proxyReason), proxyReason);
+        yield return ShaftBarrier("shaft-ready");
+        if (puzzle.HasStateAuthority)
+            LifecycleAssert("shaft_authority_raise_accepted", puzzle.TrySetShaftLiftCommand(lift, PcsShaftLiftCommand.Raise, out string raiseReason), raiseReason);
+        yield return WaitForCondition(() => puzzle.States[lift.DeviceId].Position.y > start.y + .15f, 8d, "shaft_ascent_not_replicated");
+        LifecycleAssert("shaft_physics_follows_ascent", ShaftPhysicalAt(puzzle, lift, puzzle.States[lift.DeviceId].Position, colliderOffset),
+            "Replicated ascent moves the actual local root/body/solid on authority and proxy.");
+        yield return ShaftBarrier("shaft-ascent-observed");
+        if (puzzle.HasStateAuthority)
+            LifecycleAssert("shaft_authority_hold_accepted", puzzle.TrySetShaftLiftCommand(lift, PcsShaftLiftCommand.Hold, out string holdReason), holdReason);
+        yield return WaitForCondition(() => puzzle.States[lift.DeviceId].Phase == 0, 6d, "shaft_hold_not_replicated");
+        Vector2 held = puzzle.States[lift.DeviceId].Position;
+        yield return Delay(.5d);
+        LifecycleAssert("shaft_current_position_hold", held.y > start.y + .1f && ShaftPhysicalAt(puzzle, lift, held, colliderOffset),
+            "Hold remains at the new intermediate position; no lower-target movement occurs.");
+        if (puzzle.HasStateAuthority)
+            LifecycleAssert("shaft_removed_lower_command_rejected", !puzzle.TrySetShaftLiftCommand(lift, (PcsShaftLiftCommand)2, out string invalidReason), invalidReason);
+        yield return ShaftBarrier("shaft-hold-observed");
+        if (puzzle.HasStateAuthority)
+            LifecycleAssert("shaft_resume_accepted", puzzle.TrySetShaftLiftCommand(lift, PcsShaftLiftCommand.Raise, out string resumeReason), resumeReason);
+        Vector2 upper = lift.UpperStop.position;
+        double deadline = Deadline(Vector2.Distance(held, upper) / lift.Speed + 15d);
+        float previousY = held.y;
+        bool monotonic = true;
+        while (Vector2.Distance(puzzle.States[lift.DeviceId].Position, upper) >= .01f || puzzle.States[lift.DeviceId].Phase != 0)
         {
-            var property = typeof(PcsPuzzleDirector).GetProperty("ActiveSection", BindingFlags.Public | BindingFlags.Instance);
-            if (property == null || property.GetSetMethod(true) == null) throw new SmokeFailure("channels_section_setter_missing");
-            property.SetValue(puzzle, 2);
-        }
-        yield return WaitForCondition(() => puzzle.ActiveSection == 2, 10d, "channels_section_replication_timeout");
-        Vector2 spawn = puzzle.GetRespawnPosition(options.Role);
-        ownActor.GetComponent<Mover>().ResetAt(spawn);
-        ownInput.InjectDevelopmentInput(Vector2.zero, false);
-        report.fixtures.Add("Owner-only initial authored StageTwo pose: " + spawn + ". Subsequent movement/actions use normal injected input.");
-        yield return WaitForCondition(() => ChannelAllBoarded(puzzle), 10d, "channels_initial_boarding_timeout");
-        WriteMarker("channels-boarded");
-        yield return ChannelBarrier("channels-boarded");
-        int epoch = puzzle.ResetEpoch;
-        int initialEnergy = puzzle.Energy;
-        int[] health = ChannelRoles.Select(role => puzzle.GetHealth(role)).ToArray();
-        LifecycleAssert("CF_initial_energy_and_windows", initialEnergy >= 3 * puzzle.ChannelCost &&
-            puzzle.Channels[0].Active == 0 && puzzle.Channels[1].Active == 0 && !puzzle.ShaftStarted,
-            "Baseline has enough actual power for three new windows and no preactivated shaft/channel.");
-
-        Phase("channels-Mouse-normal-E3-start-with-real-boarding");
-        yield return ApproachChannelMouseWithMasterObservation(start, lift, "channels-start-hack-range", 1.3f);
-        if (options.Role == MyEnum.CharacterType.Mouse)
-        {
-            for (int count = 1; count <= start.RequiredInputs; count++)
-            {
-                RecordChannelHack("before-E-" + count, puzzle, start, lift, count);
-                ownInput.InjectDevelopmentInput(Vector2.zero, false, interact: true);
-                RecordChannelHack("injected-E-" + count, puzzle, start, lift, count);
-                int wanted = count;
-                yield return WaitForChannelHack("waiting-E-" + count, puzzle, start, lift, wanted,
-                    () => puzzle.States[start.DeviceId].Counter >= wanted, 6d, "channels_E_hack_input_rejected");
-                yield return Delay(puzzle.HackPulseInterval + 0.08f);
-            }
-        }
-        yield return WaitForChannelHack("waiting-for-E3", puzzle, start, lift, start.RequiredInputs,
-            () => puzzle.ShaftStarted && puzzle.States[start.DeviceId].Counter == start.RequiredInputs,
-            15d, "channels_normal_hack_or_boarding_failed");
-        LifecycleAssert("CF_normal_hack_started", puzzle.ShaftStarted && puzzle.RequireShaftBoarding && puzzle.Energy == initialEnergy,
-            "Only normal E inputs completed the authored three-step hack; production boarding remained enabled and no energy was consumed by hacking.");
-        yield return ApproachChannelMouseWithMasterObservation(console, lift, "channels-channel-console-range", 1.3f, 1.0f);
-        if (options.Role == MyEnum.CharacterType.Mouse) WriteMarker("channels-mouse-at-console");
-        yield return WaitForMarker("channels-mouse-at-console", MyEnum.CharacterType.Mouse, Deadline(12d));
-        WriteMarker("channels-before-first-window");
-        yield return ChannelBarrier("channels-before-first-window");
-        int firstWindow = puzzle.Channels[0].Window + 1;
-        if (options.Role == MyEnum.CharacterType.Mouse) ownInput.InjectDevelopmentInput(Vector2.zero, false, channel: 0);
-        yield return WaitForCondition(() => ChannelOpen(puzzle, 0, firstWindow) && puzzle.Energy == initialEnergy - puzzle.ChannelCost &&
-            ChannelPlatformOff(puzzle, button0, platform0), 8d, "channels_first_window_not_replicated");
-        yield return RecordChannelBarrier("first-window-no-button", lift, button0, button1, platform0, platform1);
-        string firstTarget = puzzle.Channels[0].Timer.TargetTick?.ToString() ?? "";
-        // Repeated same-window input must not charge twice or extend the existing deadline.
-        if (options.Role == MyEnum.CharacterType.Mouse) ownInput.InjectDevelopmentInput(Vector2.zero, false, channel: 0);
-        yield return Delay(0.15d);
-        LifecycleAssert("CF_duplicate_window_no_charge_or_extension", puzzle.Energy == initialEnergy - puzzle.ChannelCost &&
-            puzzle.Channels[0].Window == firstWindow && (puzzle.Channels[0].Timer.TargetTick?.ToString() ?? "") == firstTarget,
-            "A second real Mouse channel-1 press in the active window preserves its deadline and consumes no additional power.");
-        WriteMarker("channels-duplicate-observed");
-        yield return ChannelBarrier("channels-duplicate-observed");
-        if (options.Role == MyEnum.CharacterType.Frog)
-            ownInput.InjectDevelopmentInput(Vector2.zero, false, ability: true, aim: button0.InteractionPoint);
-        yield return WaitForChannelFrogHit("first-F", puzzle, 0, firstWindow, button0, platform0, lift,
-            5d, "channels_Frog_first_F_button_or_platform_failed");
-        yield return RecordChannelBarrier("first-F-button-platform-on", lift, button0, button1, platform0, platform1);
-        yield return WaitForCondition(() => puzzle.Channels[0].Active == 0 && ChannelPlatformOff(puzzle, button0, platform0),
-            puzzle.ChannelDuration + 3d, "channels_first_expiry_failed");
-        LifecycleAssert("CF_first_expiry_energy_unchanged", puzzle.Energy == initialEnergy - puzzle.ChannelCost,
-            "Natural timer expiry disables both button and platform without another charge.");
-        yield return RecordChannelBarrier("first-window-expired", lift, button0, button1, platform0, platform1);
-
-        Phase("channels-reopen-does-not-restore-old-hit");
-        if (options.Role == MyEnum.CharacterType.Mouse) ownInput.InjectDevelopmentInput(Vector2.zero, false, channel: 0);
-        yield return WaitForCondition(() => ChannelOpen(puzzle, 0, firstWindow + 1) && puzzle.Energy == initialEnergy - 2 * puzzle.ChannelCost &&
-            ChannelPlatformOff(puzzle, button0, platform0), 8d, "channels_reopened_window_restored_stale_hit");
-        yield return RecordChannelBarrier("new-window-requires-new-hit", lift, button0, button1, platform0, platform1);
-        yield return Delay(0.15d);
-        LifecycleAssert("CF_no_stale_activation", ChannelOpen(puzzle, 0, firstWindow + 1) && ChannelPlatformOff(puzzle, button0, platform0),
-            "Reopening channel 1 does not reuse the previous hit. Same Button00 re-hit after the moving lift has passed it is deliberately excluded; its isolated contract is covered by the device suite.");
-
-        Phase("channels-next-authored-button-independent-second-channel");
-        int secondWindow = puzzle.Channels[1].Window + 1;
-        string reopenedTarget = puzzle.Channels[0].Timer.TargetTick?.ToString() ?? "";
-        if (options.Role == MyEnum.CharacterType.Mouse) ownInput.InjectDevelopmentInput(Vector2.zero, false, channel: 1);
-        yield return WaitForCondition(() => ChannelOpen(puzzle, 1, secondWindow) &&
-            puzzle.Energy == initialEnergy - 3 * puzzle.ChannelCost && ChannelPlatformOff(puzzle, button1, platform1),
-            8d, "channels_second_independent_window_failed");
-        LifecycleAssert("CF_independent_channel_deadlines", ChannelOpen(puzzle, 0, firstWindow + 1) &&
-            (puzzle.Channels[0].Timer.TargetTick?.ToString() ?? "") == reopenedTarget &&
-            (puzzle.Channels[1].Timer.TargetTick?.ToString() ?? "") != reopenedTarget && ChannelPlatformOff(puzzle, button0, platform0),
-            "Channel 2 receives its own new timer/cost while channel 1's reopened deadline and inactive old button remain unchanged.");
-        yield return RecordChannelBarrier("two-independent-windows", lift, button0, button1, platform0, platform1);
-        if (options.Role == MyEnum.CharacterType.Frog)
-            ownInput.InjectDevelopmentInput(Vector2.zero, false, ability: true, aim: button1.InteractionPoint);
-        yield return WaitForChannelFrogHit("next-F", puzzle, 1, secondWindow, button1, platform1, lift,
-            5d, "channels_Frog_next_F_button_or_platform_failed");
-        LifecycleAssert("CF_second_F_does_not_activate_old_platform", ChannelPlatformOff(puzzle, button0, platform0) &&
-            puzzle.Energy == initialEnergy - 3 * puzzle.ChannelCost,
-            "Real Frog F on the next authored button activates only its linked channel-2 platform and consumes no additional channel charge.");
-        yield return RecordChannelBarrier("next-F-button-platform-on", lift, button0, button1, platform0, platform1);
-        yield return WaitForCondition(() => puzzle.Channels[0].Active == 0 && puzzle.Channels[1].Active == 0 &&
-            ChannelPlatformOff(puzzle, button0, platform0) && ChannelPlatformOff(puzzle, button1, platform1),
-            puzzle.ChannelDuration + 3d, "channels_final_natural_expiry_failed");
-        yield return RecordChannelBarrier("both-windows-expired", lift, button0, button1, platform0, platform1);
-        LifecycleAssert("CF_no_reset_damage_or_power_confound", puzzle.ActiveSection == 2 && puzzle.ResetEpoch == epoch &&
-            puzzle.ShaftStarted && puzzle.Energy == initialEnergy - 3 * puzzle.ChannelCost &&
-            ChannelRoles.Select(role => puzzle.GetHealth(role)).SequenceEqual(health),
-            "All window/collider observations occurred without reset, death, authority override or unintended power changes.");
-        AddObservation(4);
-        WriteMarker("channels-complete");
-        yield return ChannelBarrier("channels-complete");
-        Phase("channels-complete-shutdown-grace");
-        yield return Delay(3d);
-    }
-
-    private IEnumerator WaitForChannelFrogHit(string stage, PcsPuzzleDirector puzzle, int channel, int window,
-        PcsPuzzleDevice button, PcsPuzzleDevice platform, PcsPuzzleDevice lift, double seconds, string failure)
-    {
-        double end = Deadline(seconds);
-        double nextRecord = 0d;
-        Phase("channels-" + stage + "-waiting-for-normal-F-result");
-        while (true)
-        {
-            if (Time.realtimeSinceStartupAsDouble >= nextRecord)
-            {
-                RecordFrogRemote(stage, puzzle, channel, button, lift);
-                nextRecord = Deadline(0.2d);
-            }
-            if (ChannelOpen(puzzle, channel, window) && ChannelPlatformOn(puzzle, button, platform)) yield break;
-            CheckDeadline(end, failure);
+            CheckDeadline(deadline, "shaft_upper_auto_hold_timeout");
+            float y = puzzle.States[lift.DeviceId].Position.y;
+            monotonic &= y >= previousY - .002f && y <= upper.y + .005f;
+            previousY = y;
             yield return null;
         }
-    }
-    private void RecordFrogRemote(string stage, PcsPuzzleDirector puzzle, int channel, PcsPuzzleDevice button, PcsPuzzleDevice lift)
-    {
-        NetworkObject frog = ActorForRole(MyEnum.CharacterType.Frog);
-        var mover = frog.GetComponent<Mover>();
-        var input = frog.GetComponent<PlayerInput>();
-        var ability = frog.GetComponent<PcsPlayerAbilities>();
-        // Mirror production's body-center ray and self/target exclusions; do not invoke an action.
-        Vector2 rayStart = mover.BodyCollider != null ? (Vector2)mover.BodyCollider.bounds.center : (Vector2)frog.transform.position;
-        Vector2 rayDelta = button.InteractionPoint - rayStart;
-        ContactFilter2D rayFilter = new ContactFilter2D();
-        rayFilter.SetLayerMask(puzzle.ObstructionMask);
-        rayFilter.useTriggers = false;
-        smokeObstructionHits.Clear();
-        Physics2D.Raycast(rayStart, rayDelta.normalized, rayFilter, smokeObstructionHits, rayDelta.magnitude);
-        RaycastHit2D hit = default;
-        foreach (var candidate in smokeObstructionHits)
-        {
-            if (candidate.collider == null || candidate.collider.transform.IsChildOf(frog.transform) ||
-                candidate.collider == button.Solid || candidate.collider == button.Trigger) continue;
-            hit = candidate;
-            break;
-        }
-        var value = new FrogRemoteObservation { stage = stage, localRole = options.Role.ToString(), tick = runner.Tick.Raw,
-            elapsed = (float)(Time.realtimeSinceStartupAsDouble - startedAt), activeSection = puzzle.ActiveSection,
-            channelActive = puzzle.Channels[channel].Active, channelWindow = puzzle.Channels[channel].Window,
-            remainingSeconds = puzzle.ChannelRemaining(channel), localIsDirectorAuthority = puzzle.HasStateAuthority,
-            localOwnsFrog = frog.HasStateAuthority, frogCanParticipate = PcsPlayerAbilities.CanParticipate(frog),
-            inputPending = frog.HasStateAuthority && input.AbilityInput, targetAvailable = button.Available,
-            frogTransform = frog.transform.position, frogBody = mover.Body.position, frogBodyCenter = mover.BodyCollider.bounds.center,
-            intendedAim = button.InteractionPoint, ownerInputAim = frog.HasStateAuthority ? input.AimWorld : Vector2.zero,
-            feedback = frog.HasStateAuthority ? ability.Feedback : "(not observed on owner)",
-            rootDistance = Vector2.Distance(frog.transform.position, button.InteractionPoint),
-            bodyCenterDistance = Vector2.Distance(mover.BodyCollider.bounds.center, button.InteractionPoint),
-            liftTransform = lift.transform.position, liftBody = lift.Body != null ? lift.Body.position : (Vector2)lift.transform.position,
-            liftReplicatedState = puzzle.States[lift.DeviceId].Position, liftTop = lift.Solid.bounds.max.y, liftBottom = lift.Solid.bounds.min.y,
-            firstHitName = hit.collider != null ? hit.collider.name : "(none)", firstHitLayer = hit.collider != null ? hit.collider.gameObject.layer : -1,
-            lineFraction = hit.fraction, productionLineBlocked = hit.collider != null && hit.collider != button.Solid && hit.collider != button.Trigger };
-        if (frog.HasStateAuthority)
-        {
-            // Read-only target diagnostics; no RPC, network write or authority bypass is invoked here.
-            var findDevice = typeof(PcsPlayerAbilities).GetMethod("FindDevice", BindingFlags.Instance | BindingFlags.NonPublic);
-            var findPlayer = typeof(PcsPlayerAbilities).GetMethod("FindAimedPlayer", BindingFlags.Instance | BindingFlags.NonPublic);
-            var selected = findDevice != null ? findDevice.Invoke(ability, new object[] { true, null }) as PcsPuzzleDevice : null;
-            var ally = findPlayer != null ? findPlayer.Invoke(ability, null) as PcsPlayerAbilities : null;
-            value.selectedDevice = selected != null ? selected.name : "(none)";
-            value.aimedPlayerRole = ally != null ? ally.CharacterType.ToString() : "(none)";
-        }
-        report.frogRemoteObservations.Add(value);
-        Save();
-    }
-    private IEnumerator WaitForChannelHack(string stage, PcsPuzzleDirector puzzle, PcsPuzzleDevice start,
-        PcsPuzzleDevice lift, int wanted, Func<bool> condition, double seconds, string failure)
-    {
-        double end = Deadline(seconds);
-        double nextRecord = 0d;
-        while (true)
-        {
-            bool passed = condition();
-            if (passed || Time.realtimeSinceStartupAsDouble >= nextRecord || Time.realtimeSinceStartupAsDouble >= end)
-            {
-                RecordChannelHack(stage + (passed ? "-accepted" : ""), puzzle, start, lift, wanted);
-                nextRecord = Deadline(0.25d);
-            }
-            if (passed) yield break;
-            CheckDeadline(end, failure);
-            yield return null;
-        }
-    }
-    private void RecordChannelHack(string stage, PcsPuzzleDirector puzzle, PcsPuzzleDevice start, PcsPuzzleDevice lift, int wanted)
-    {
-        PcsDeviceState state = puzzle.States[start.DeviceId];
-        var value = new ChannelHackObservation { utc = DateTime.UtcNow.ToString("O"), stage = stage,
-            localRole = options.Role.ToString(), tick = runner.Tick.Raw, wantedCounter = wanted, counter = state.Counter,
-            active = state.Active, activeSection = puzzle.ActiveSection, deviceSection = start.Section,
-            resetEpoch = puzzle.ResetEpoch, mouseEpoch = puzzle.GetResetEpoch(MyEnum.CharacterType.Mouse),
-            elapsed = (float)(Time.realtimeSinceStartupAsDouble - startedAt), timerRemaining = state.Timer.RemainingTime(runner) ?? 0f,
-            interactionRange = start.InteractionRange, localIsDirectorAuthority = puzzle.HasStateAuthority,
-            initialized = puzzle.CanSpawnPlayers, shaftStarted = puzzle.ShaftStarted, requireBoarding = puzzle.RequireShaftBoarding,
-            targetAvailable = start.Available, consolePosition = start.InteractionPoint,
-            liftTop = lift.Solid.bounds.max.y, selectedDeviceId = -1, ownerObservedEpoch = -1,
-            selectedDevice = "(not observed on owner)", feedback = "(not observed on owner)", rolePositions = new Vector2[4] };
-        NetworkObject mouse = null;
-        foreach (PlayerRef player in runner.ActivePlayers)
-        {
-            if (!runner.TryGetPlayerObject(player, out var actor) || actor == null || !actor.IsValid) continue;
-            var ability = actor.GetComponent<PcsPlayerAbilities>();
-            if (ability == null) continue;
-            int role = (int)ability.CharacterType;
-            if (role < 1 || role > 4) continue;
-            value.connectedRoleMask |= 1 << role;
-            value.rolePositions[role - 1] = actor.transform.position;
-            Vector2 point = actor.transform.position;
-            Bounds left = puzzle.ShaftLeftBoardingArea.Bounds;
-            Bounds rabbit = puzzle.ShaftRabbitBoardingArea.Bounds;
-            if (PcsPlayerAbilities.CanParticipate(actor))
-            {
-                if (point.x >= left.min.x && point.x <= left.max.x && point.y >= left.min.y && point.y <= left.max.y)
-                    value.leftMask |= 1 << role;
-                if (point.x >= rabbit.min.x && point.x <= rabbit.max.x && point.y >= rabbit.min.y && point.y <= rabbit.max.y)
-                    value.rabbitMask |= 1 << role;
-            }
-            if (ability.CharacterType == MyEnum.CharacterType.Mouse) mouse = actor;
-        }
-        // Read the same cached-player boarding predicate and cooldown used by the authority RPC; no writes.
-        var occupants = typeof(PcsPuzzleDirector).GetMethod("Occupants", BindingFlags.Instance | BindingFlags.NonPublic);
-        value.productionLeftMask = occupants != null ? (int)occupants.Invoke(puzzle, new object[] { puzzle.ShaftLeftBoardingArea }) : -1;
-        value.productionRabbitMask = occupants != null ? (int)occupants.Invoke(puzzle, new object[] { puzzle.ShaftRabbitBoardingArea }) : -1;
-        var resetTimerProperty = typeof(PcsPuzzleDirector).GetProperty("ResetTimer", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (resetTimerProperty != null)
-            value.resetTimerRemaining = ((TickTimer)resetTimerProperty.GetValue(puzzle)).RemainingTime(runner) ?? 0f;
-        if (mouse != null)
-        {
-            var mover = mouse.GetComponent<Mover>();
-            var ability = mouse.GetComponent<PcsPlayerAbilities>();
-            var input = mouse.GetComponent<PlayerInput>();
-            value.mousePresent = true;
-            value.localOwnsMouse = mouse.HasStateAuthority;
-            value.mouseCanParticipate = PcsPlayerAbilities.CanParticipate(mouse);
-            value.mouseTransform = mouse.transform.position;
-            value.mouseBody = mover.Body.position;
-            value.mouseBodyCenter = mover.BodyCollider.bounds.center;
-            value.mouseFootGap = mover.BodyCollider.bounds.min.y - lift.Solid.bounds.max.y;
-            value.rootDistance = Vector2.Distance(value.mouseTransform, start.InteractionPoint);
-            value.bodyCenterDistance = Vector2.Distance(value.mouseBodyCenter, start.InteractionPoint);
-            value.inputEnabled = input.enabled;
-            value.canMove = input.CanMoveInput;
-            if (mouse.HasStateAuthority)
-            {
-                value.inputPending = input.InteractInput;
-                value.ownerMove = input.MoveInput;
-                value.feedback = ability.Feedback;
-                var epoch = typeof(PcsPlayerAbilities).GetField("observedResetEpoch", BindingFlags.Instance | BindingFlags.NonPublic);
-                var hasEpoch = typeof(PcsPlayerAbilities).GetField("hasDirectorEpoch", BindingFlags.Instance | BindingFlags.NonPublic);
-                if (epoch != null) value.ownerObservedEpoch = (int)epoch.GetValue(ability);
-                if (hasEpoch != null) value.ownerHasEpoch = (bool)hasEpoch.GetValue(ability);
-                var findDevice = typeof(PcsPlayerAbilities).GetMethod("FindDevice", BindingFlags.Instance | BindingFlags.NonPublic);
-                var selected = findDevice != null ? findDevice.Invoke(ability, new object[] { false, null }) as PcsPuzzleDevice : null;
-                value.selectedDevice = selected != null ? selected.name : "(none)";
-                value.selectedDeviceId = selected != null ? selected.DeviceId : -1;
-            }
-        }
-        report.channelHackObservations.Add(value);
-        Save();
-    }
-    private bool ChannelLiftPoseAndPassengerReady(PcsPuzzleDevice lift)
-    {
-        var puzzle = PcsPuzzleDirector.Instance;
-        Vector2 target = puzzle.States[lift.DeviceId].Position;
-        if (lift.Body == null || Vector2.Distance(lift.transform.position, target) > 0.05f ||
-            Vector2.Distance(lift.Body.position, target) > 0.05f ||
-            Mathf.Abs(lift.Solid.bounds.max.y - target.y - channelLiftSurfaceOffset) > 0.05f) return false;
-        if (options.Role == MyEnum.CharacterType.Rabbit) return true;
-        var mover = LocalActor().GetComponent<Mover>();
-        Bounds area = lift.Solid.bounds;
-        return mover.Body.position.x >= area.min.x && mover.Body.position.x <= area.max.x &&
-            Mathf.Abs(mover.BodyCollider.bounds.min.y - area.max.y) < 0.15f;
+        yield return Delay(.4d);
+        LifecycleAssert("shaft_upper_auto_hold_physical", monotonic && ShaftPhysicalAt(puzzle, lift, upper, colliderOffset),
+            "Both peers reach the authored upper endpoint, remain in Hold and never reverse downward.");
+        AddObservation(2);
+        yield return ShaftBarrier("shaft-complete");
+        Phase("shaft-complete-shutdown-grace");
+        yield return Delay(2d);
     }
 
-    private PcsPuzzleDevice ChannelDevice(string name)
+    private bool ShaftPhysicalAt(PcsPuzzleDirector puzzle, PcsPuzzleDevice lift, Vector2 target, Vector2 colliderOffset)
     {
-        var device = PcsPuzzleDirector.Instance.Devices.FirstOrDefault(item => item != null && item.name == name);
-        if (device == null) throw new SmokeFailure("channels_missing_authored_device_" + name);
-        return device;
-    }
-    private bool ChannelAllBoarded(PcsPuzzleDirector puzzle)
-    {
-        foreach (var role in ChannelRoles)
-        {
-            var actor = ActorForRole(role);
-            Bounds area = role == MyEnum.CharacterType.Rabbit ? puzzle.ShaftRabbitBoardingArea.Bounds : puzzle.ShaftLeftBoardingArea.Bounds;
-            Vector2 point = actor.transform.position;
-            if (point.x < area.min.x || point.x > area.max.x || point.y < area.min.y || point.y > area.max.y) return false;
-        }
-        return true;
-    }
-    private IEnumerator ApproachChannelMouseWithMasterObservation(PcsPuzzleDevice device, PcsPuzzleDevice lift, string stage, float range, float ownerWalkRange = 1.3f)
-    {
-        if (options.Role == MyEnum.CharacterType.Mouse)
-        {
-            yield return WalkChannelMouseTo(device, ownerWalkRange);
-            WriteMarker(stage + "-owner-arrived");
-        }
-        yield return WaitForMarker(stage + "-owner-arrived", MyEnum.CharacterType.Mouse, Deadline(10d));
-        if (PcsPuzzleDirector.Instance.HasStateAuthority)
-        {
-            yield return WaitForChannelHack(stage + "-master-wait", PcsPuzzleDirector.Instance, device, lift, 0,
-                () => ChannelMouseWithinObservedRange(device, range), 6d, "channels_master_geometry_not_ready_" + device.name);
-            LifecycleAssert("CF_master_observed_range_" + device.name, ChannelMouseWithinObservedRange(device, range),
-                "After normal Mouse walking stops, original master observes root, Rigidbody and body center within the same 1.3-unit approach threshold before input. No pose, interaction range or timer is changed.");
-            WriteMarker(stage + "-master-arrived");
-        }
-        yield return WaitForMarker(stage + "-master-arrived", MyEnum.CharacterType.Rabbit, Deadline(8d));
-    }
-    private bool ChannelMouseWithinObservedRange(PcsPuzzleDevice device, float range)
-    {
-        var actor = ActorForRole(MyEnum.CharacterType.Mouse);
-        var mover = actor.GetComponent<Mover>();
-        return Vector2.Distance(actor.transform.position, device.InteractionPoint) <= range &&
-            Vector2.Distance(mover.Body.position, device.InteractionPoint) <= range &&
-            Vector2.Distance(mover.BodyCollider.bounds.center, device.InteractionPoint) <= range;
-    }
-    private IEnumerator WalkChannelMouseTo(PcsPuzzleDevice device, float range)
-    {
-        var actor = LocalActor();
-        var input = actor.GetComponent<PlayerInput>();
-        var mover = actor.GetComponent<Mover>();
-        double end = Deadline(8d);
-        while (Vector2.Distance(actor.transform.position, device.InteractionPoint) > range ||
-            Vector2.Distance(mover.BodyCollider.bounds.center, device.InteractionPoint) > range)
-        {
-            float dx = device.InteractionPoint.x - actor.transform.position.x;
-            input.InjectDevelopmentInput(Vector2.right * Mathf.Sign(dx), false);
-            CheckDeadline(end, "channels_normal_Mouse_walk_to_console_failed");
-            yield return null;
-        }
-        input.InjectDevelopmentInput(Vector2.zero, false);
-        RecordChannelHack("normal-walk-arrived-" + device.name, PcsPuzzleDirector.Instance, device,
-            ChannelDevice("Elevator_Main_HackToAscend"), device.Kind == PcsDeviceKind.HackConsole ? 1 : 0);
-    }
-    private static bool ChannelOpen(PcsPuzzleDirector puzzle, int index, int window) =>
-        puzzle.Channels[index].Active != 0 && puzzle.Channels[index].Window == window && puzzle.ChannelRemaining(index) > 0f;
-    private static bool ChannelPlatformOff(PcsPuzzleDirector puzzle, PcsPuzzleDevice button, PcsPuzzleDevice platform) =>
-        puzzle.States[button.DeviceId].Active == 0 && puzzle.States[platform.DeviceId].Active == 0 && !platform.Solid.enabled;
-    private static bool ChannelPlatformOn(PcsPuzzleDirector puzzle, PcsPuzzleDevice button, PcsPuzzleDevice platform) =>
-        puzzle.States[button.DeviceId].Active == 1 && puzzle.States[platform.DeviceId].Active == 1 && platform.Solid.enabled;
-    private IEnumerator ChannelBarrier(string stage)
-    {
-        foreach (var role in ChannelRoles) yield return WaitForMarker(stage, role, Deadline(12d));
-    }
-    private IEnumerator RecordChannelBarrier(string stage, PcsPuzzleDevice lift, PcsPuzzleDevice button0, PcsPuzzleDevice button1,
-        PcsPuzzleDevice platform0, PcsPuzzleDevice platform1)
-    {
-        var puzzle = PcsPuzzleDirector.Instance;
-        yield return WaitForCondition(() => ChannelLiftPoseAndPassengerReady(lift), 3d,
-            "channels_actual_lift_pose_or_owner_passenger_failed_" + stage);
-        var localMover = LocalActor().GetComponent<Mover>();
-        Vector2 liftState = puzzle.States[lift.DeviceId].Position;
-        var value = new ChannelObservation { stage = stage, role = options.Role.ToString(), tick = runner.Tick.Raw,
-            energy = puzzle.Energy, resetEpoch = puzzle.ResetEpoch, liftTop = lift.Solid.bounds.max.y,
-            liftTransform = lift.transform.position, liftBody = lift.Body.position, liftReplicatedState = liftState,
-            liftPoseError = Mathf.Max(Vector2.Distance(lift.transform.position, liftState), Vector2.Distance(lift.Body.position, liftState)),
-            liftColliderError = Mathf.Abs(lift.Solid.bounds.max.y - liftState.y - channelLiftSurfaceOffset),
-            localPassengerFootGap = localMover.BodyCollider.bounds.min.y - lift.Solid.bounds.max.y,
-            localPassengerOnLift = options.Role != MyEnum.CharacterType.Rabbit && ChannelLiftPoseAndPassengerReady(lift),
-            active = new int[4], phase = new int[4], window = new int[4], targetTick = new string[4], remaining = new float[4],
-            buttonActive = new[] { puzzle.States[button0.DeviceId].Active, puzzle.States[button1.DeviceId].Active },
-            platformActive = new[] { puzzle.States[platform0.DeviceId].Active, puzzle.States[platform1.DeviceId].Active },
-            platformSolid = new[] { platform0.Solid.enabled, platform1.Solid.enabled } };
-        for (int index = 0; index < 4; index++)
-        {
-            var state = puzzle.Channels[index];
-            value.active[index] = state.Active; value.phase[index] = state.Phase; value.window[index] = state.Window;
-            value.targetTick[index] = state.Timer.TargetTick?.ToString() ?? "";
-            value.remaining[index] = puzzle.ChannelRemaining(index);
-            LifecycleAssert("CF_" + stage + "_remaining_" + index,
-                value.remaining[index] >= -0.001f && value.remaining[index] <= puzzle.ChannelDuration + runner.DeltaTime * 2f,
-                "Local remaining seconds stay within the configured duration; observed network tick and shared target tick are recorded separately.");
-        }
-        LifecycleAssert("CF_" + stage + "_actual_lift_and_local_passenger", value.liftPoseError <= 0.05f &&
-            value.liftColliderError <= 0.05f && (options.Role == MyEnum.CharacterType.Rabbit || value.localPassengerOnLift),
-            "Actual Transform, Rigidbody and collider match replicated lift pose. Each non-Rabbit process also sees its own dynamic passenger's feet within 0.15U of the moving lift, not merely replicated device state.");
-        RecordLocalBodyViewport(value, localMover);
-        report.channelObservations.Add(value);
-        LifecycleAssert("CF_" + stage + "_local_body_fully_inside_camera", value.localBodyFullyInCamera,
-            "All eight corners of this owner player's actual BodyCollider bounds project inside Camera.main viewport x/y [0,1] and z>0. This is numerical framing validation, not a human visual review.");
-        WriteMarker(stage, new LifecycleMarker { channels = value });
-        Save();
-        yield return ChannelBarrier(stage);
-        bool consistent = true;
-        foreach (var role in ChannelRoles)
-        {
-            var peer = ReadMarker(stage, role).channels;
-            consistent &= peer != null && peer.energy == value.energy && peer.resetEpoch == value.resetEpoch &&
-                peer.active.SequenceEqual(value.active) && peer.phase.SequenceEqual(value.phase) && peer.window.SequenceEqual(value.window) &&
-                peer.targetTick.SequenceEqual(value.targetTick) && peer.buttonActive.SequenceEqual(value.buttonActive) &&
-                peer.platformActive.SequenceEqual(value.platformActive) && peer.platformSolid.SequenceEqual(value.platformSolid);
-        }
-        LifecycleAssert("CF_" + stage + "_four_peer_consistency", consistent,
-            "All four independently sampled peers agree on window IDs, absolute timer target ticks, energy, button/platform state and actual collider enabled flags. Remaining seconds may differ because sample ticks differ.");
-        AddObservation(4);
+        Vector2 replicated = puzzle.States[lift.DeviceId].Position;
+        float tolerance = Mathf.Max(.03f, lift.Speed * runner.DeltaTime * 3f);
+        bool valid = Vector2.Distance(replicated, target) < .01f &&
+            Vector2.Distance(lift.transform.position, target) < tolerance &&
+            Vector2.Distance(lift.Body.position, target) < tolerance &&
+            Vector2.Distance((Vector2)lift.Solid.bounds.center, target + colliderOffset) < tolerance;
+        report.events.Add("Shaft pose: role=" + options.Role + "; tick=" + runner.Tick.Raw + "; phase=" + puzzle.States[lift.DeviceId].Phase +
+            "; state=" + replicated + "; body=" + lift.Body.position + "; collider=" + lift.Solid.bounds.center + "; target=" + target);
+        return valid;
     }
 
-    private void RecordLocalBodyViewport(ChannelObservation value, Mover localMover)
+    private IEnumerator ShaftBarrier(string stage)
     {
-        Camera camera = Camera.main;
-        if (camera == null || !camera.isActiveAndEnabled || localMover == null || localMover.BodyCollider == null ||
-            !localMover.BodyCollider.enabled || !LocalActor().HasStateAuthority) return;
-        Bounds bounds = localMover.BodyCollider.bounds;
-        value.localCameraPosition = camera.transform.position;
-        value.localCameraOrthographicSize = camera.orthographicSize;
-        value.localBodyViewportMin = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
-        value.localBodyViewportMax = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
-        value.localBodyFullyInCamera = true;
-        for (int corner = 0; corner < 8; corner++)
-        {
-            Vector3 world = new Vector3((corner & 1) == 0 ? bounds.min.x : bounds.max.x,
-                (corner & 2) == 0 ? bounds.min.y : bounds.max.y, (corner & 4) == 0 ? bounds.min.z : bounds.max.z);
-            Vector3 viewport = camera.WorldToViewportPoint(world);
-            value.localBodyViewportMin = Vector3.Min(value.localBodyViewportMin, viewport);
-            value.localBodyViewportMax = Vector3.Max(value.localBodyViewportMax, viewport);
-            value.localBodyFullyInCamera &= viewport.x >= 0f && viewport.x <= 1f &&
-                viewport.y >= 0f && viewport.y <= 1f && viewport.z > 0f;
-        }
+        WriteMarker(stage);
+        yield return WaitForMarker(stage, MyEnum.CharacterType.Mouse, Deadline(15d));
+        yield return WaitForMarker(stage, MyEnum.CharacterType.Bear, Deadline(15d));
     }
 
     private IEnumerator RunPressureTwo()
@@ -2343,8 +1915,8 @@ public sealed class PcsSharedSmokeBootstrap : MonoBehaviour
         if (values.TryGetValue("--pcs-smoke-run", out var run)) result.Run = run;
         if (!Regex.IsMatch(result.Run, "^[A-Za-z0-9-]{1,48}$")) throw new SmokeFailure("run_name_must_be_1_to_48_ascii_letters_digits_or_hyphens");
         if (values.TryGetValue("--pcs-smoke-scenario", out var scenario)) result.Scenario = scenario;
-        if (result.Scenario != "initial" && result.Scenario != "lifecycle" && result.Scenario != "carry-two" && result.Scenario != "pressure-two" && result.Scenario != "channels-four" && result.Scenario != "layout-four")
-            throw new SmokeFailure("scenario_must_be_initial_lifecycle_carry-two_pressure-two_channels-four_or_layout-four");
+        if (result.Scenario != "initial" && result.Scenario != "lifecycle" && result.Scenario != "carry-two" && result.Scenario != "pressure-two" && result.Scenario != "shaft-two" && result.Scenario != "layout-four")
+            throw new SmokeFailure("scenario_must_be_initial_lifecycle_carry-two_pressure-two_shaft-two_or_layout-four");
         if (result.Scenario == "lifecycle" && (result.Players != 4 || result.Run == "default"))
             throw new SmokeFailure("lifecycle_requires_count_4_and_a_fresh_explicit_run_name");
         if (result.Scenario == "carry-two" && (result.Players != 2 || result.Run == "default" ||
@@ -2353,8 +1925,8 @@ public sealed class PcsSharedSmokeBootstrap : MonoBehaviour
         if (result.Scenario == "pressure-two" && (result.Players != 2 || result.Run == "default" ||
             (result.Role != MyEnum.CharacterType.Mouse && result.Role != MyEnum.CharacterType.Bear)))
             throw new SmokeFailure("pressure-two_requires_Mouse_Bear_count_2_and_a_fresh_explicit_run_name");
-        if (result.Scenario == "channels-four" && (result.Players != 4 || result.Run == "default"))
-            throw new SmokeFailure("channels-four_requires_count_4_and_a_fresh_explicit_run_name");
+        if (result.Scenario == "shaft-two" && (result.Players != 2 || result.Run == "default" || (result.Role != MyEnum.CharacterType.Mouse && result.Role != MyEnum.CharacterType.Bear)))
+            throw new SmokeFailure("shaft-two_requires_Mouse_Bear_count_2_and_a_fresh_explicit_run_name");
         if (result.Scenario == "layout-four" && (result.Players != 4 || result.Run == "default"))
             throw new SmokeFailure("layout-four_requires_count_4_and_a_fresh_explicit_run_name");
         return result;

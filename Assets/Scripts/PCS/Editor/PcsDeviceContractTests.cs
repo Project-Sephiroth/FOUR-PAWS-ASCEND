@@ -14,6 +14,7 @@ public static partial class PcsSecondPassTools
 {
     private const string DeviceTestFlag = "PCS.SecondPass.DeviceTests";
     private const string DeviceModeFlag = "PCS.SecondPass.DeviceMode";
+    private const string DeviceSuiteFlag = "PCS.SecondPass.DeviceSuite";
     private const string DeviceTestScene = "Assets/Scenes/Puzzle.unity";
 
     [Serializable]
@@ -34,7 +35,7 @@ public static partial class PcsSecondPassTools
         public string phase;
         public string unityVersion;
         public string mode;
-        public string boundary = "Actual registered Puzzle director and Runner.Spawn player prefabs; requests traverse RequestAction and the authority RPC. Play-only fixtures select a section, position actors near devices, freeze actors except measured pressure/lift passengers, suppress enemies except the measured live chase or stationary damage target, waive four-role formation only after checking rejection, seed power/batteries, drop existing dummies above pressure supports, and temporarily shorten final travel. Actual ticks, physics contacts, throws and damage run after setup. This tests device contracts, not route traversal, multiplayer synchronization, lobby admission, or four-player completion. No Scene is saved.";
+        public string boundary = "Actual registered Puzzle director and Runner.Spawn player prefabs. Play-only fixtures select sections, position/freeze actors near devices, suppress active non-shaft enemies and drop tutorial dummies above supports. Shaft tests use the production authority Raise/Hold API, real ticks and physics, with unchanged authored speed and endpoints. Retired shaft requests must have no effect. This is device-contract coverage, not passenger traversal, multiplayer synchronization, lobby admission or four-player completion. No Scene is saved.";
         public List<DeviceCheck> checks = new List<DeviceCheck>();
         public List<string> errors = new List<string>();
         public List<string> diagnostics = new List<string>();
@@ -61,12 +62,38 @@ public static partial class PcsSecondPassTools
 
     public static void BeginDeviceContractTests()
     {
+        SessionState.SetString(DeviceSuiteFlag, "all");
         SessionState.SetString(DeviceModeFlag, "Single");
         BeginDeviceContractsCore();
     }
 
     public static void BeginSharedDeviceContractTests()
     {
+        SessionState.SetString(DeviceSuiteFlag, "all");
+        SessionState.SetString(DeviceModeFlag, "Shared");
+        BeginDeviceContractsCore();
+    }
+
+    private sealed class PassiveVisualSnapshot
+    {
+        private readonly SpriteRenderer renderer;
+        private readonly Color color;
+        private readonly bool enabled, active;
+        private readonly Vector3 position, scale;
+        private readonly Quaternion rotation;
+        public PassiveVisualSnapshot(SpriteRenderer value)
+        {
+            renderer = value; color = value.color; enabled = value.enabled; active = value.gameObject.activeSelf;
+            position = value.transform.localPosition; scale = value.transform.localScale; rotation = value.transform.localRotation;
+        }
+        public bool Matches() => renderer != null && renderer.color == color && renderer.enabled == enabled &&
+            renderer.gameObject.activeSelf == active && renderer.transform.localPosition == position &&
+            renderer.transform.localScale == scale && renderer.transform.localRotation == rotation;
+    }
+
+    public static void BeginShaftLiftContractTests()
+    {
+        SessionState.SetString(DeviceSuiteFlag, "shaft");
         SessionState.SetString(DeviceModeFlag, "Shared");
         BeginDeviceContractsCore();
     }
@@ -225,7 +252,7 @@ public static partial class PcsSecondPassTools
     {
         foreach (PcsPuzzleDevice device in testDirector.Devices)
         {
-            if (device == null || device.Kind != PcsDeviceKind.Enemy) continue;
+            if (device == null || device.IsPassiveShaftObject || device.Kind != PcsDeviceKind.Enemy) continue;
             PcsDeviceState state = testDirector.States[device.DeviceId];
             state.Phase = 4;
             state.Active = 0;
@@ -286,6 +313,11 @@ public static partial class PcsSecondPassTools
         NetworkObject frog = DeviceActor(MyEnum.CharacterType.Frog);
         NetworkObject bear = DeviceActor(MyEnum.CharacterType.Bear);
         yield return DeviceWait(0.25f);
+        if (SessionState.GetString(DeviceSuiteFlag, "all") == "shaft")
+        {
+            yield return RunShaftLiftContracts(mouse, frog, bear);
+            yield break;
+        }
         DeviceFixture("ActiveSection", 1);
         int setupEpoch = testDirector.ResetEpoch;
         CaptureDeviceActorDiagnostic(mouse, "InitialReset", null);
@@ -337,130 +369,9 @@ public static partial class PcsSecondPassTools
         DeviceAssert("stage-one-reset", testDirector.ResetEpoch == epoch + 1 && !testDirector.StageOneHacked && !testDirector.LeverLower &&
             Vector2.Distance(testDirector.States[firstLift.DeviceId].Position, firstLift.UpperStop.position) < 0.03f, "Actual reset RPC advances epoch and restores pre-hack upper stop.");
 
-        DeviceFixture("ActiveSection", 2);
-        testDirector.RequestAction(mouse, PcsPuzzleAction.Reset, -1, Vector2.zero);
-        yield return DeviceWait(testDirector.ResetDelay + 0.1f);
-        SuppressDeviceEnemies();
-        PcsPuzzleDevice shaft = DeviceFind(PcsDeviceKind.Elevator, 2);
-        PcsPuzzleDevice start = DeviceFind(PcsDeviceKind.HackConsole, 2);
-        PcsPuzzleDevice console = DeviceFind(PcsDeviceKind.ChannelConsole, 2);
-        PcsPuzzleDevice orange = DeviceFind(PcsDeviceKind.RemoteButton, 2, 0);
-        PcsPuzzleDevice green = DeviceFind(PcsDeviceKind.RemoteButton, 2, 1);
-        PcsPuzzleDevice orangePlatform = orange.Links[0];
-        Vector3 orangeRootScale = orangePlatform.transform.localScale;
-        BoxCollider2D orangeShape = orangePlatform.Solid as BoxCollider2D;
-        Vector2 orangeColliderSize = orangeShape != null ? orangeShape.size : Vector2.zero;
-        Vector2 orangeColliderOffset = orangeShape != null ? orangeShape.offset : Vector2.zero;
-        foreach (PcsPuzzleDevice barrier in testDirector.Devices)
-        {
-            if (barrier == null || !barrier.BlocksShaft) continue;
-            PcsDeviceState state = testDirector.States[barrier.DeviceId];
-            state.Active = 1;
-            testDirector.States.Set(barrier.DeviceId, state);
-        }
-        deviceReport.phase = "1-2 start hack, D22 independent channels, energy, refill, endpoint, and reset";
-        SaveDeviceReport();
-        yield return DevicePulseHack(mouse, console);
-        DeviceAssert("channel-console-cannot-start-shaft", !testDirector.ShaftStarted, "E pulses on ChannelConsole cannot bypass the separate start hack.");
-        yield return DevicePulseHack(mouse, start);
-        DeviceAssert("shaft-rejects-incomplete-formation", !testDirector.ShaftStarted, "The actual final hack pulse rejects a team without all three left roles and Rabbit on the right.");
-        testDirector.RequireShaftBoarding = false;
-        CapsuleCollider2D bearCapsule = bear.GetComponent<CapsuleCollider2D>();
-        float bearFoot = (bearCapsule.offset.y - bearCapsule.size.y * 0.5f) * bear.transform.lossyScale.y;
-        PlaceDeviceActor(bear, new Vector2(shaft.Solid.bounds.center.x - 1.5f, shaft.Solid.bounds.max.y - bearFoot + 0.03f));
-        bear.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
-        yield return DeviceWait(0.3f);
-        float riderBefore = bear.GetComponent<Rigidbody2D>().position.y;
-        float platformBefore = testDirector.States[shaft.DeviceId].Position.y;
-        yield return DevicePulseHack(mouse, start);
-        DeviceAssert("shaft-start-hack", testDirector.ShaftStarted, "Only the actual start HackConsole starts continuous ascent.");
-        yield return DeviceWait(0.5f);
-        float riderRise = bear.GetComponent<Rigidbody2D>().position.y - riderBefore;
-        float platformRise = testDirector.States[shaft.DeviceId].Position.y - platformBefore;
-        DeviceAssert("moving-lift-carries-normal-player", platformRise > 0.2f && Mathf.Abs(riderRise - platformRise) < 0.16f,
-            "During measurement only actual Director/PcsElevator and normal Mover run; platform rise=" + platformRise.ToString("F3") + ", passenger rise=" + riderRise.ToString("F3") + ". Setup pose was placed on the lift; no test transform writes occur during measurement.");
-        PlaceDeviceActor(bear, new Vector2(-90f, 0f));
-        int initialPower = testDirector.Energy;
-        DeviceRequest(frog, PcsPuzzleAction.Remote, orange);
-        yield return DeviceWait(0.12f);
-        DeviceAssert("channel-rejects-input-before-window", testDirector.States[orange.DeviceId].Active == 0, "Frog button input before activation does not persist into the next window.");
-        DeviceRequest(mouse, PcsPuzzleAction.ActivateChannel, console, 0);
-        yield return DeviceWait(0.12f);
-        int window = testDirector.Channels[0].Window;
-        DeviceAssert("channel-opens-without-prelatched-platform", testDirector.Channels[0].Active == 1 && testDirector.Energy == initialPower - testDirector.ChannelCost &&
-            testDirector.States[orange.Links[0].DeviceId].Active == 0, "Opening a window costs energy once; a new physical ability input is still required.");
-        DeviceRequest(frog, PcsPuzzleAction.Remote, orange);
-        yield return DeviceWait(0.12f);
-        DeviceAssert("channel-valid-input-enables-platform", testDirector.States[orange.DeviceId].Active == 1 && testDirector.States[orange.Links[0].DeviceId].Active == 1,
-            "Actual Frog remote RPC enables the button's linked platform in this window.");
-        SpriteRenderer orangeVisual = orangePlatform.Visuals.Length > 0 ? orangePlatform.Visuals[0] : null;
-        bool childVisual = orangeVisual != null && orangeVisual.transform != orangePlatform.transform &&
-            orangeVisual.transform.parent == orangePlatform.transform;
-        DeviceAssert("D22-active-unfolds-child-and-enables-root-collider", childVisual &&
-            Mathf.Abs(orangeVisual.transform.localScale.x - 1f) < 0.001f && orangeShape != null && orangeShape.enabled &&
-            orangeShape.transform == orangePlatform.transform && orangePlatform.transform.localScale == orangeRootScale &&
-            orangeShape.size == orangeColliderSize && orangeShape.offset == orangeColliderOffset,
-            "Actual channel plus Frog input unfolds only the authored sprite child to x=1 and enables the existing root collider without changing its scale, size or offset.");
-        int usedPower = testDirector.Energy;
-        DeviceRequest(mouse, PcsPuzzleAction.ActivateChannel, console, 0);
-        yield return DeviceWait(0.1f);
-        DeviceAssert("channel-rearm-rejected-while-active", testDirector.Channels[0].Window == window && testDirector.Energy == usedPower, "Duplicate active-channel request neither spends energy nor extends the window.");
-        yield return DeviceWait(0.6f);
-        DeviceRequest(mouse, PcsPuzzleAction.ActivateChannel, console, 1);
-        yield return DeviceWait(0.1f);
-        DeviceRequest(frog, PcsPuzzleAction.Remote, green);
-        yield return DeviceWait(0.1f);
-        DeviceAssert("channels-have-independent-deadlines", testDirector.ChannelRemaining(1) > testDirector.ChannelRemaining(0) + 0.4f &&
-            testDirector.States[green.Links[0].DeviceId].Active == 1, "Later green activation has its own deadline and linked platform.");
-        float deadline = Time.time + testDirector.ChannelDuration + 0.5f;
-        while (testDirector.Channels[0].Active != 0 && Time.time < deadline) yield return null;
-        DeviceAssert("one-channel-expires-independently", testDirector.States[orange.Links[0].DeviceId].Active == 0 && testDirector.Channels[1].Active == 1 &&
-            testDirector.States[green.Links[0].DeviceId].Active == 1, "Orange expiry folds only orange while green remains live.");
-        DeviceAssert("D22-expiry-folds-only-child-and-disables-root-collider", childVisual &&
-            Mathf.Abs(orangeVisual.transform.localScale.x - 0.12f) < 0.001f && orangeShape != null && !orangeShape.enabled &&
-            orangeShape.transform == orangePlatform.transform && orangePlatform.transform.localScale == orangeRootScale &&
-            orangeShape.size == orangeColliderSize && orangeShape.offset == orangeColliderOffset && green.Links[0].Solid.enabled,
-            "Natural Orange expiry folds its sprite child to x=0.12 and disables collision while preserving the root transform/collider geometry; the later Green collider remains enabled.");
-        DeviceRequest(mouse, PcsPuzzleAction.ActivateChannel, console, 0);
-        yield return DeviceWait(0.12f);
-        DeviceAssert("new-window-requires-new-input", testDirector.Channels[0].Window == window + 1 && testDirector.States[orange.Links[0].DeviceId].Active == 0,
-            "Reactivation increments Window and does not reuse the previous button hit.");
-        DeviceRequest(frog, PcsPuzzleAction.Remote, orange);
-        yield return DeviceWait(0.12f);
-        DeviceAssert("new-input-accepted-in-new-window", testDirector.States[orange.Links[0].DeviceId].Active == 1, "A new Frog request activates the new window.");
-        DeviceFixture("Energy", 0);
-        Vector2 liftBefore = testDirector.States[shaft.DeviceId].Position;
-        epoch = testDirector.ResetEpoch;
-        DeviceRequest(mouse, PcsPuzzleAction.ActivateChannel, console, 2);
-        yield return DeviceWait(0.6f);
-        DeviceAssert("zero-power-blocks-only-new-channel", testDirector.Energy == 0 && testDirector.Channels[2].Active == 0 && testDirector.ShaftStarted &&
-            testDirector.ResetEpoch == epoch && testDirector.States[shaft.DeviceId].Position.y > liftBefore.y + 0.1f, "With a zero-energy fixture, new purple activation is rejected while the actual lift continues rising.");
-        DeviceFixture("Batteries", 2);
-        DeviceRequest(mouse, PcsPuzzleAction.Refill, console);
-        yield return DeviceWait(0.12f);
-        DeviceAssert("battery-refill", testDirector.Batteries == 1 && testDirector.Energy == console.BatteryValue, "R consumes one carried battery charge and restores the configured power amount.");
-        usedPower = testDirector.Energy;
-        DeviceRequest(mouse, PcsPuzzleAction.Refill, console);
-        yield return DeviceWait(0.12f);
-        DeviceAssert("refill-cooldown", testDirector.Batteries == 1 && testDirector.Energy == usedPower, "A repeated immediate R request is rejected by the shared cooldown.");
-        Vector3 realEnd = shaft.UpperStop.position;
-        shaft.UpperStop.position = (Vector3)testDirector.States[shaft.DeviceId].Position + Vector3.up * 0.25f;
-        yield return DeviceWait(0.7f);
-        Vector2 arrived = testDirector.States[shaft.DeviceId].Position;
-        yield return DeviceWait(0.25f);
-        DeviceAssert("shaft-stops-only-at-end", testDirector.ShaftArrived && Vector2.Distance(arrived, testDirector.States[shaft.DeviceId].Position) < 0.01f,
-            "A temporarily shortened endpoint fixture reaches ShaftArrived and stops; this does not prove full-route traversal.");
-        shaft.UpperStop.position = realEnd;
-        epoch = testDirector.ResetEpoch;
-        testDirector.RequestAction(mouse, PcsPuzzleAction.Reset, -1, Vector2.zero);
-        yield return DeviceWait(testDirector.ResetDelay + 0.1f);
-        bool channelsClear = true;
-        for (int i = 0; i < 4; i++) channelsClear &= testDirector.Channels[i].Active == 0;
-        DeviceAssert("shaft-reset-coherent", testDirector.ResetEpoch == epoch + 1 && !testDirector.ShaftStarted && !testDirector.ShaftArrived &&
-            testDirector.Energy == testDirector.InitialEnergy && testDirector.Batteries == 0 && channelsClear &&
-            Vector2.Distance(testDirector.States[shaft.DeviceId].Position, shaft.LowerStop.position) < 0.03f, "Reset restores lift, energy, batteries, all channel windows, and the new actor reset epoch together.");
-        yield return RunEnemyBodyContracts(mouse, bear, frog);
-        yield return RunEnemyContracts(bear, frog);
+        if (deviceRunner.GameMode == GameMode.Shared) yield return RunShaftLiftContracts(mouse, frog, bear);
+        else deviceReport.checks.Add(new DeviceCheck { id = "shaft-requires-shared", status = "NOT_RUN",
+            detail = "The production shaft command requires Shared; run BeginShaftLiftContractTests or the Shared suite." });
         DeviceFixture("ActiveSection", 0);
         int mouseEpoch = testDirector.GetResetEpoch(MyEnum.CharacterType.Mouse);
         int frogEpoch = testDirector.GetResetEpoch(MyEnum.CharacterType.Frog);
@@ -472,6 +383,125 @@ public static partial class PcsSecondPassTools
         yield return RunTutorialCarryCompletion(frog);
         foreach (NetworkObject actor in deviceActors)
                 if (actor != null && actor.IsValid) actor.GetComponent<PlayerInput>().ClearDevelopmentInput();
+    }
+
+    private static IEnumerator RunShaftLiftContracts(NetworkObject mouse, NetworkObject frog, NetworkObject bear)
+    {
+        deviceReport.phase = "Shaft Raise/Hold, passive objects and rejected retired actions";
+        SaveDeviceReport();
+        DeviceFixture("ActiveSection", 2);
+        PcsPuzzleDevice lift = DeviceFind(PcsDeviceKind.Elevator, 2);
+        if (!lift.IsShaftElevator || lift.UpperStop == null || lift.Body == null || lift.Solid == null || lift.Speed <= 0f)
+            throw new InvalidOperationException("The authored main elevator requires its upper stop, body, solid and positive speed.");
+        Vector2 initial = testDirector.States[lift.DeviceId].Position;
+        Vector2 colliderOffset = (Vector2)lift.Solid.bounds.center - lift.Body.position;
+        yield return DeviceWait(0.3f);
+        DeviceAssert("shaft-default-holds-current-pose", testDirector.States[lift.DeviceId].Phase == (int)PcsShaftLiftCommand.Hold &&
+            Vector2.Distance(initial, testDirector.States[lift.DeviceId].Position) < .005f,
+            "No hack, boarding, reset or automatic descent is needed; normal ticks retain the initial current pose.");
+        DeviceAssert("shaft-invalid-command-rejected", !testDirector.TrySetShaftLiftCommand(lift, (PcsShaftLiftCommand)2, out string invalidReason), invalidReason);
+        DeviceAssert("shaft-null-target-rejected", !testDirector.TrySetShaftLiftCommand(null, PcsShaftLiftCommand.Raise, out string nullReason), nullReason);
+        PcsPuzzleDevice firstLift = DeviceFind(PcsDeviceKind.Elevator, 1);
+        PcsDeviceState firstLiftBefore = testDirector.States[firstLift.DeviceId];
+        DeviceAssert("shaft-stage-one-target-rejected", !testDirector.TrySetShaftLiftCommand(firstLift, PcsShaftLiftCommand.Raise, out string wrongReason) &&
+            firstLiftBefore.Equals(testDirector.States[firstLift.DeviceId]), wrongReason);
+
+        int epoch = testDirector.ResetEpoch;
+        bool hacked = testDirector.StageOneHacked;
+        bool lever = testDirector.LeverLower;
+        int energy = testDirector.Energy, batteries = testDirector.Batteries;
+        int[] health = { testDirector.GetHealth(MyEnum.CharacterType.Mouse), testDirector.GetHealth(MyEnum.CharacterType.Frog), testDirector.GetHealth(MyEnum.CharacterType.Bear) };
+        var passiveStates = new Dictionary<PcsPuzzleDevice, PcsDeviceState>();
+        var passivePositions = new Dictionary<PcsPuzzleDevice, Vector3>();
+        var passiveScales = new Dictionary<PcsPuzzleDevice, Vector3>();
+        var passiveRotations = new Dictionary<PcsPuzzleDevice, Quaternion>();
+        var passiveVisuals = new List<PassiveVisualSnapshot>();
+        foreach (PcsPuzzleDevice device in testDirector.Devices)
+        {
+            if (device == null || !device.IsPassiveShaftObject) continue;
+            passiveStates.Add(device, testDirector.States[device.DeviceId]);
+            passivePositions.Add(device, device.transform.localPosition);
+            passiveScales.Add(device, device.transform.localScale);
+            passiveRotations.Add(device, device.transform.localRotation);
+            foreach (SpriteRenderer visual in device.GetComponentsInChildren<SpriteRenderer>(true))
+                passiveVisuals.Add(new PassiveVisualSnapshot(visual));
+            bool colliderPolicy = device.Kind == PcsDeviceKind.TimedPlatform
+                ? device.Solid != null && !device.Solid.isTrigger && device.Solid.enabled
+                : device.Solid == null || !device.Solid.enabled;
+            DeviceAssert("shaft-passive-collider-policy-" + device.DeviceId, colliderPolicy && (device.Trigger == null || !device.Trigger.enabled),
+                "Former timed platforms keep a non-trigger walking surface; all other retired Solid/Trigger interactions are disabled.");
+            NetworkObject actor = device.RequiredRole == MyEnum.CharacterType.Frog ? frog :
+                device.RequiredRole == MyEnum.CharacterType.Bear ? bear : mouse;
+            PlaceDeviceActor(actor, device.InteractionPoint);
+            foreach (PcsPuzzleAction action in new[] { PcsPuzzleAction.Interact, PcsPuzzleAction.HackStep,
+                PcsPuzzleAction.ActivateChannel, PcsPuzzleAction.Refill, PcsPuzzleAction.Remote, PcsPuzzleAction.Carry })
+                testDirector.RequestAction(actor, action, device.DeviceId, device.InteractionPoint);
+            yield return DeviceWait(.04f);
+            device.Present(false, true);
+            device.Present(true, true);
+            device.ApplyPose(device.InitialPosition + new Vector2(11f, 7f));
+            DeviceAssert("shaft-passive-unavailable-" + device.DeviceId, !device.Available && !device.IsRemoteTarget,
+                "Retired shaft objects remain in the scene but expose no puzzle interaction.");
+        }
+        if (passiveStates.Count == 0) throw new InvalidOperationException("No passive shaft objects found; absence is not rejection coverage.");
+        testDirector.RequestAction(mouse, PcsPuzzleAction.Reset, -1, Vector2.zero);
+        yield return DeviceWait(testDirector.ResetDelay + .2f);
+        foreach (var pair in passiveStates)
+        {
+            DeviceAssert("shaft-passive-state-unchanged-" + pair.Key.DeviceId, pair.Value.Equals(testDirector.States[pair.Key.DeviceId]),
+                "Requests and normal section-two ticks cannot animate, unlock, consume, damage or advance this retired puzzle object.");
+            PcsPuzzleDevice device = pair.Key;
+            DeviceAssert("shaft-passive-layout-preserved-" + device.DeviceId,
+                device.transform.localPosition == passivePositions[device] && device.transform.localScale == passiveScales[device] &&
+                device.transform.localRotation == passiveRotations[device],
+                "Normal ticks and stale Present/ApplyPose calls preserve local placement, rotation and scale.");
+        }
+        DeviceAssert("shaft-passive-visuals-preserved", passiveVisuals.TrueForAll(snapshot => snapshot.Matches()),
+            "Stale hide/activate/move calls leave sprite color, visibility, active state and local transforms unchanged.");
+        DeviceAssert("shaft-retired-progress-and-reset-inert", testDirector.ActiveSection == 2 && testDirector.ResetEpoch == epoch &&
+            testDirector.StageOneHacked == hacked && testDirector.LeverLower == lever && testDirector.Energy == energy && testDirector.Batteries == batteries &&
+            testDirector.GetHealth(MyEnum.CharacterType.Mouse) == health[0] && testDirector.GetHealth(MyEnum.CharacterType.Frog) == health[1] &&
+            testDirector.GetHealth(MyEnum.CharacterType.Bear) == health[2],
+            "Retired arrival/exit/enemy/channel/battery/reset paths preserve progress, health and compatibility fields.");
+
+        Vector2 upper = lift.UpperStop.position;
+        if (upper.y - initial.y < .3f) throw new InvalidOperationException("The initial pose must leave upward travel to observe Raise/Hold.");
+        bool accepted = testDirector.TrySetShaftLiftCommand(lift, PcsShaftLiftCommand.Raise, out string reason);
+        DeviceAssert("shaft-raise-accepted", accepted, reason);
+        if (!accepted) throw new InvalidOperationException(reason);
+        yield return DeviceWait(Mathf.Min(.25f / lift.Speed, 1f));
+        Vector2 rising = testDirector.States[lift.DeviceId].Position;
+        DeviceAssert("shaft-production-ascent", rising.y > initial.y + .03f && rising.y <= upper.y + .005f,
+            "Production network ticks move the actual platform upward without actor formation or hacking.");
+        Vector2 bodyBeforeHold = lift.Body.position;
+        accepted = testDirector.TrySetShaftLiftCommand(lift, PcsShaftLiftCommand.Hold, out reason);
+        DeviceAssert("shaft-hold-accepted", accepted, reason);
+        Vector2 held = testDirector.States[lift.DeviceId].Position;
+        DeviceAssert("shaft-hold-captures-actual-body", Vector2.Distance(held, bodyBeforeHold) < .0001f,
+            "Hold captures the authority Rigidbody position rather than the next scheduled network movement pose.");
+        yield return DeviceWait(.4f);
+        DeviceAssert("shaft-holds-midair-with-physical-collider", testDirector.States[lift.DeviceId].Phase == 0 &&
+            Vector2.Distance(held, testDirector.States[lift.DeviceId].Position) < .005f && Vector2.Distance(held, lift.Body.position) < .02f &&
+            Vector2.Distance((Vector2)lift.Solid.bounds.center, held + colliderOffset) < .025f,
+            "Hold retains the actual current position, including Rigidbody and solid; it does not return to LowerStop.");
+        accepted = testDirector.TrySetShaftLiftCommand(lift, PcsShaftLiftCommand.Raise, out reason);
+        DeviceAssert("shaft-resume-accepted", accepted, reason);
+        float timeout = Vector2.Distance(held, upper) / lift.Speed + 5f;
+        float deadline = Time.time + timeout;
+        bool monotonic = true;
+        float previousY = held.y;
+        while (Time.time < deadline)
+        {
+            Vector2 position = testDirector.States[lift.DeviceId].Position;
+            monotonic &= position.y >= previousY - .002f && position.y <= upper.y + .005f;
+            previousY = position.y;
+            if (Vector2.Distance(position, upper) < .01f && testDirector.States[lift.DeviceId].Phase == 0) break;
+            yield return null;
+        }
+        yield return DeviceWait(.3f);
+        DeviceAssert("shaft-upper-stop-auto-hold", monotonic && testDirector.States[lift.DeviceId].Phase == 0 &&
+            Vector2.Distance(testDirector.States[lift.DeviceId].Position, upper) < .01f && Vector2.Distance(lift.Body.position, upper) < .02f,
+            "At the unchanged authored endpoint the command changes to Hold; motion never descends or overshoots.");
     }
 
     private static void DropActorOnSupport(NetworkObject actor, Collider2D support, float xOffset = 0f)
@@ -536,179 +566,6 @@ public static partial class PcsSecondPassTools
         PlaceDeviceActor(mouse, new Vector2(-85f, 0f));
         PlaceDeviceActor(secondBear, new Vector2(-95f, 0f));
         deviceRunner.SetPlayerObject(deviceRunner.LocalPlayer, bear);
-    }
-
-    private static IEnumerator RunEnemyContracts(NetworkObject bear, NetworkObject frog)
-    {
-        deviceReport.phase = "Actual Bear projectiles, enemy health, and battery drop";
-        SaveDeviceReport();
-        SuppressDeviceEnemies();
-        PcsPuzzleDevice enemy = DeviceFind(PcsDeviceKind.Enemy, 2);
-        PcsPuzzleDevice battery = enemy.Links[0];
-        float speed = enemy.Speed;
-        enemy.Speed = 0f;
-        PcsDeviceState enemyState = testDirector.States[enemy.DeviceId];
-        enemyState.Phase = 0;
-        enemyState.Active = 1;
-        enemyState.Counter = enemy.Health;
-        enemyState.Position = enemy.InitialPosition;
-        testDirector.States.Set(enemy.DeviceId, enemyState);
-        PlaceDeviceActor(bear, enemy.InitialPosition + new Vector2(-3f, -0.5f));
-        yield return DeviceWait(0.15f);
-        testDirector.RequestAction(bear, PcsPuzzleAction.Throw, -1, enemy.InitialPosition);
-        float deadline = Time.time + 2f;
-        while (testDirector.States[enemy.DeviceId].Counter == enemy.Health && Time.time < deadline) yield return null;
-        DeviceAssert("enemy-first-projectile-damages", testDirector.States[enemy.DeviceId].Counter == enemy.Health - 1 && testDirector.States[enemy.DeviceId].Phase != 4 &&
-            testDirector.States[battery.DeviceId].Active == 0, "A real ballistic stone hits the stationary fixture enemy once; battery remains absent before death.");
-        yield return DeviceWait(testDirector.ThrowCooldown + 0.1f);
-        testDirector.RequestAction(bear, PcsPuzzleAction.Throw, -1, enemy.InitialPosition);
-        deadline = Time.time + 2f;
-        while (testDirector.States[enemy.DeviceId].Phase != 4 && Time.time < deadline) yield return null;
-        DeviceAssert("enemy-second-projectile-spawns-battery", testDirector.States[enemy.DeviceId].Phase == 4 && testDirector.States[battery.DeviceId].Active == 1 &&
-            testDirector.States[battery.DeviceId].Phase != 4, "Second normal Bear throw defeats the configured two-hit enemy and activates its actual linked battery.");
-        int charges = testDirector.Batteries;
-        DeviceRequest(frog, PcsPuzzleAction.Carry, battery);
-        yield return DeviceWait(0.15f);
-        DeviceAssert("spawned-battery-collects-once", testDirector.States[battery.DeviceId].Phase == 4 && testDirector.Batteries == charges + battery.BatteryValue,
-            "A valid G request collects the newly dropped battery through normal authority logic.");
-        testDirector.RequestAction(frog, PcsPuzzleAction.Carry, battery.DeviceId, battery.InteractionPoint);
-        yield return DeviceWait(0.1f);
-        DeviceAssert("consumed-battery-cannot-duplicate", testDirector.Batteries == charges + battery.BatteryValue, "Repeating collection cannot duplicate the consumed battery.");
-        enemy.Speed = speed;
-        PlaceDeviceActor(bear, new Vector2(-90f, 0f));
-        PlaceDeviceActor(frog, new Vector2(-95f, 0f));
-    }
-
-    private static IEnumerator RunEnemyBodyContracts(NetworkObject mouse, NetworkObject bear, NetworkObject frog)
-    {
-        deviceReport.phase = "Authored shaft enemy body collision, ground chase, two stones, and Frog F battery retrieval";
-        SaveDeviceReport();
-        SuppressDeviceEnemies();
-        PcsPuzzleDevice enemy = DeviceFind(PcsDeviceKind.Enemy, 2);
-        PcsPuzzleDevice battery = enemy.Links[0];
-        PcsDeviceState enemyState = testDirector.States[enemy.DeviceId];
-        enemyState.Position = enemy.InitialPosition;
-        enemyState.Velocity = Vector2.zero;
-        enemyState.Phase = 0;
-        enemyState.Active = 1;
-        enemyState.Counter = enemy.Health;
-        enemyState.Timer = default;
-        testDirector.States.Set(enemy.DeviceId, enemyState);
-        enemy.ApplyPose(enemyState.Position);
-        PcsDeviceState batteryState = testDirector.States[battery.DeviceId];
-        batteryState.Active = 0;
-        batteryState.Phase = 0;
-        batteryState.Actor = default;
-        batteryState.Velocity = Vector2.zero;
-        testDirector.States.Set(battery.DeviceId, batteryState);
-        PlaceDeviceActor(bear, new Vector2(-90f, 0f));
-        PlaceDeviceActor(frog, new Vector2(-95f, 0f));
-        PlaceDeviceActor(mouse, enemy.InitialPosition + new Vector2(1f, -2f));
-        deviceRunner.SetPlayerObject(deviceRunner.LocalPlayer, mouse);
-        float enabledDeadline = Time.time + 0.5f;
-        while (!enemy.Solid.enabled && Time.time < enabledDeadline) yield return null;
-        Physics2D.SyncTransforms();
-        float maximumPenetration = 0f;
-        string deepestGround = "none";
-        int sampleCount = 0;
-        int startTick = deviceRunner.Tick.Raw;
-        float chaseEnd = Time.time + 0.5f;
-        while (Time.time < chaseEnd)
-        {
-            Physics2D.SyncTransforms();
-            float penetration = DeviceGroundPenetration(enemy, out string ground);
-            if (penetration > maximumPenetration) { maximumPenetration = penetration; deepestGround = ground; }
-            sampleCount++;
-            yield return null;
-        }
-        Physics2D.SyncTransforms();
-        float finalPenetration = DeviceGroundPenetration(enemy, out string finalGround);
-        if (finalPenetration > maximumPenetration) { maximumPenetration = finalPenetration; deepestGround = finalGround; }
-        Vector2 afterChase = testDirector.States[enemy.DeviceId].Position;
-        bool simulated = deviceRunner.Tick.Raw > startTick && sampleCount > 1;
-        DeviceAssert("enemy-authored-ledge-body-does-not-penetrate", simulated && maximumPenetration <= 0.003f,
-            "Actual authored enemy, ledge and full collider chase a registered Mouse 1U to the side and 2U below for 0.5s. " +
-            "Enemy speed and ground are unchanged. Maximum penetration=" + maximumPenetration.ToString("F4") +
-            "U, obstacle=" + deepestGround + ", position=" + afterChase + ", samples=" + sampleCount + ".");
-        DeviceAssert("enemy-floor-contact-preserves-horizontal-chase", simulated && afterChase.x > enemy.InitialPosition.x + 0.05f,
-            "The body cannot sink into the ledge, but still advances horizontally toward the lower/side Mouse. Delta=" + (afterChase - enemy.InitialPosition) + ".");
-        deviceReport.diagnostics.Add("Enemy body chase: initial=" + enemy.InitialPosition + ", target=" + mouse.transform.position +
-            ", after=" + afterChase + ", colliderSize=" + enemy.BodySize + ", speed=" + enemy.Speed + ", maxGroundPenetration=" + maximumPenetration.ToString("F4"));
-        SaveDeviceReport();
-        float originalSpeed = enemy.Speed;
-        enemy.Speed = 0f;
-        PlaceDeviceActor(mouse, new Vector2(-85f, 0f));
-        PlaceDeviceActor(bear, afterChase + new Vector2(-3f, -0.5f));
-        deviceRunner.SetPlayerObject(deviceRunner.LocalPlayer, bear);
-        yield return DeviceWait(testDirector.ThrowCooldown + 0.1f);
-        bear.GetComponent<PlayerInput>().InjectDevelopmentInput(Vector2.zero, false, ability: true, aim: afterChase);
-        float deadline = Time.time + 2f;
-        while (testDirector.States[enemy.DeviceId].Counter == enemy.Health && Time.time < deadline) yield return null;
-        bool firstDamage = testDirector.States[enemy.DeviceId].Counter == enemy.Health - 1 && testDirector.States[enemy.DeviceId].Phase != 4;
-        DeviceAssert("enemy-after-body-chase-first-F-stone", firstDamage && testDirector.States[battery.DeviceId].Active == 0,
-            "Actual Bear F damages the enemy at its resulting chase pose; only speed is frozen for the damage phase, not enemy position or the ledge.");
-        yield return DeviceWait(testDirector.ThrowCooldown + 0.1f);
-        bear.GetComponent<PlayerInput>().InjectDevelopmentInput(Vector2.zero, false, ability: true, aim: afterChase);
-        deadline = Time.time + 2f;
-        while (testDirector.States[enemy.DeviceId].Phase != 4 && Time.time < deadline) yield return null;
-        bool dropped = firstDamage && testDirector.States[enemy.DeviceId].Phase == 4 && testDirector.States[battery.DeviceId].Active == 1;
-        DeviceAssert("enemy-after-body-chase-second-F-stone-drops-battery", dropped,
-            "Second actual Bear F defeats the same body-corrected enemy and activates its linked battery at the death pose.");
-        PlaceDeviceActor(bear, new Vector2(-90f, 0f));
-        yield return DeviceWait(0.15f);
-        Vector2 cellPosition = testDirector.States[battery.DeviceId].Position;
-        PlaceDeviceActor(frog, cellPosition + new Vector2(2f, 0.1f));
-        deviceRunner.SetPlayerObject(deviceRunner.LocalPlayer, frog);
-        int charges = testDirector.Batteries;
-        bool sawRemotePull = false;
-        frog.GetComponent<PlayerInput>().InjectDevelopmentInput(Vector2.zero, false, ability: true, aim: cellPosition);
-        deadline = Time.time + 1.5f;
-        while (Time.time < deadline && testDirector.States[battery.DeviceId].Phase != 4)
-        {
-            sawRemotePull |= testDirector.States[battery.DeviceId].Phase == 2;
-            yield return null;
-        }
-        DeviceAssert("spawned-battery-F-starts-remote-pull", dropped && sawRemotePull,
-            "Actual Frog F selection and authority RPC put the real dropped battery into pull phase; no Carry/G request is substituted.");
-        DeviceAssert("spawned-battery-F-collects-once", dropped && sawRemotePull && testDirector.States[battery.DeviceId].Phase == 4 &&
-            testDirector.Batteries == charges + battery.BatteryValue,
-            "The same battery travels through normal TickBattery body movement and is collected once. Start=" + cellPosition +
-            ", final=" + testDirector.States[battery.DeviceId].Position + ", Frog=" + frog.transform.position + ", feedback=" + frog.GetComponent<PcsPlayerAbilities>().Feedback + ".");
-        yield return DeviceWait(0.7f);
-        frog.GetComponent<PlayerInput>().InjectDevelopmentInput(Vector2.zero, false, ability: true, aim: cellPosition);
-        yield return DeviceWait(0.2f);
-        DeviceAssert("spawned-battery-F-cannot-duplicate", dropped && sawRemotePull && testDirector.States[battery.DeviceId].Phase == 4 &&
-            testDirector.Batteries == charges + battery.BatteryValue, "A repeated actual F cannot collect the retired battery twice.");
-        enemy.Speed = originalSpeed;
-        PlaceDeviceActor(frog, new Vector2(-95f, 0f));
-        SuppressDeviceEnemies();
-    }
-
-    private static float DeviceGroundPenetration(PcsPuzzleDevice device, out string groundName)
-    {
-        groundName = "none";
-        if (device.Solid == null || !device.Solid.enabled) return float.PositiveInfinity;
-        Bounds bounds = device.Solid.bounds;
-        Collider2D[] overlaps = Physics2D.OverlapBoxAll(bounds.center, bounds.size, 0f, testDirector.ObstructionMask);
-        float deepest = 0f;
-        foreach (Collider2D ground in overlaps)
-        {
-            if (ground == null || ground == device.Solid || ground.isTrigger || !ground.enabled) continue;
-            ColliderDistance2D separation = device.Solid.Distance(ground);
-            if (!separation.isValid || !separation.isOverlapped || separation.distance >= -deepest) continue;
-            deepest = -separation.distance;
-            Vector2 networkPosition = testDirector.States[device.DeviceId].Position;
-            RaycastHit2D cast = Physics2D.BoxCast(networkPosition + Vector2.up * 0.1f, device.BodySize, 0f,
-                Vector2.down, 0.3f, testDirector.ObstructionMask);
-            groundName = ground.name + "; state=" + networkPosition.ToString("F6") +
-                "; body=" + (device.Body != null ? device.Body.position.ToString("F6") : "none") +
-                "; transform=" + device.transform.position.ToString("F6") + "; bodyBottom=" + bounds.min.y.ToString("F6") +
-                "; groundTop=" + ground.bounds.max.y.ToString("F6") + "; separation=" + separation.distance.ToString("F6") +
-                "; pointA=" + separation.pointA.ToString("F6") +
-                "; pointB=" + separation.pointB.ToString("F6") + "; castCollider=" + (cast.collider != null ? cast.collider.name : "none") +
-                "; castCentroid=" + cast.centroid.ToString("F6") + "; castNormal=" + cast.normal.ToString("F6");
-        }
-        return deepest;
     }
 
     private static void PlaceDummyFixture(PcsPuzzleDevice dummy, Vector2 position)

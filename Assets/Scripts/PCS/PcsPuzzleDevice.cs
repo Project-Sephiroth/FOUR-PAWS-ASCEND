@@ -59,11 +59,13 @@ public class PcsPuzzleDevice : MonoBehaviour
     public bool RetractWithinFrame;
     [TextArea] public string Instruction;
 
+    public bool IsShaftElevator => Section == 2 && Kind == PcsDeviceKind.Elevator && LiftPolicy == PcsLiftPolicy.MainContinuous;
+    public bool IsPassiveShaftObject => Section == 2 && !IsShaftElevator;
     public Vector2 InteractionPoint => InteractionTransform != null ? (Vector2)InteractionTransform.position : (Vector2)transform.position;
-    public bool IsRemoteTarget => Kind == PcsDeviceKind.RemoteButton || Kind == PcsDeviceKind.Lever ||
-        Kind == PcsDeviceKind.Dummy || Kind == PcsDeviceKind.Battery || Kind == PcsDeviceKind.Enemy || Kind == PcsDeviceKind.Anchor;
+    public bool IsRemoteTarget => !IsPassiveShaftObject && (Kind == PcsDeviceKind.RemoteButton || Kind == PcsDeviceKind.Lever ||
+        Kind == PcsDeviceKind.Dummy || Kind == PcsDeviceKind.Battery || Kind == PcsDeviceKind.Enemy || Kind == PcsDeviceKind.Anchor);
     public bool IsLadder => Kind == PcsDeviceKind.Ladder;
-    public bool CanClimb => IsLadder && isActiveAndEnabled && Available && Trigger != null && Trigger.enabled &&
+    public bool CanClimb => !IsPassiveShaftObject && IsLadder && isActiveAndEnabled && Available && Trigger != null && Trigger.enabled &&
         (!DeployableLadder || (Active && LowerStop != null &&
          Vector2.Distance(transform.position, LowerStop.position) <= 0.025f));
     public Vector2 InitialPosition { get; private set; }
@@ -76,6 +78,7 @@ public class PcsPuzzleDevice : MonoBehaviour
     private Vector3[] originalScales;
     private Vector3 originalRootScale;
     private bool retractFrameValid;
+    private Collider2D[] passiveColliders;
 
     private void Awake()
     {
@@ -90,6 +93,15 @@ public class PcsPuzzleDevice : MonoBehaviour
         if (Elevator != null) Elevator.UseExternalDrive();
         if (SlidingWall != null) SlidingWall.UseExternalDrive();
         if (PressureButton != null) PressureButton.UseExternalDrive();
+        if (IsPassiveShaftObject)
+        {
+            passiveColliders = GetComponents<Collider2D>();
+            PresentPassiveShaftObject();
+            if (Elevator != null) Elevator.enabled = false;
+            if (SlidingWall != null) SlidingWall.enabled = false;
+            if (PressureButton != null) PressureButton.enabled = false;
+            return;
+        }
         if (IsLadder && DeployableLadder && Trigger != null) Trigger.enabled = false;
         if (RetractWithinFrame)
         {
@@ -115,6 +127,7 @@ public class PcsPuzzleDevice : MonoBehaviour
 
     public void ApplyPose(Vector2 position)
     {
+        if (IsPassiveShaftObject) return;
         if (Elevator != null) Elevator.ApplyNetworkPose(position);
         else if (SlidingWall != null) SlidingWall.ApplyNetworkPose(position);
         else if (Body != null) Body.position = position;
@@ -123,6 +136,7 @@ public class PcsPuzzleDevice : MonoBehaviour
 
     public Vector2 MoveAuthority(Vector2 from, Vector2 target, float deltaTime)
     {
+        if (IsPassiveShaftObject) return transform.position;
         if (Elevator != null) return Elevator.MoveAuthority(from, target, Speed, deltaTime);
         if (SlidingWall != null) return SlidingWall.MoveAuthority(from, target, Speed, deltaTime);
         Vector2 next = Vector2.MoveTowards(from, target, Speed * deltaTime);
@@ -133,6 +147,11 @@ public class PcsPuzzleDevice : MonoBehaviour
 
     public void Present(bool active, bool hidden = false)
     {
+        if (IsPassiveShaftObject)
+        {
+            PresentPassiveShaftObject();
+            return;
+        }
         if (IsLadder && DeployableLadder && !active) hidden = true;
         Active = active;
         Available = !hidden;
@@ -175,6 +194,26 @@ public class PcsPuzzleDevice : MonoBehaviour
                 Kind == PcsDeviceKind.Lever || Kind == PcsDeviceKind.BarrierControl || Kind == PcsDeviceKind.Arrival)
                 tint = active ? Color.Lerp(tint, Color.green, 0.65f) : originalColors[i];
             Visuals[i].color = tint;
+        }
+    }
+
+    private void PresentPassiveShaftObject()
+    {
+        Active = false;
+        Available = false;
+        bool keepSurface = Kind == PcsDeviceKind.TimedPlatform && Solid != null && !Solid.isTrigger;
+        if (Trigger != null && (!keepSurface || Trigger != Solid)) Trigger.enabled = false;
+        if (Solid != null) Solid.enabled = keepSurface;
+        // Only this device's colliders are retired; child environment geometry remains intact.
+        if (passiveColliders != null)
+            foreach (Collider2D collider in passiveColliders)
+                if (collider != null) collider.enabled = keepSurface && collider == Solid;
+        if (Body != null)
+        {
+            if (Body.bodyType != RigidbodyType2D.Kinematic) Body.bodyType = RigidbodyType2D.Kinematic;
+            Body.gravityScale = 0f;
+            Body.linearVelocity = Vector2.zero;
+            Body.angularVelocity = 0f;
         }
     }
 }

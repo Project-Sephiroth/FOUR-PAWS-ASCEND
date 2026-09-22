@@ -62,10 +62,9 @@ public static partial class PcsSecondPassTools
                 case "manual-direct-play": InvokeStep("RunManualDirectPlay"); break;
                 case "manual-observe": ObserveManualDeviceSession(command.id); break;
                 case "refresh": AssetDatabase.Refresh(); break;
-                case "build": InvokeStep("BuildPuzzle"); WriteStatus(command.id); break;
+                case "build":
                 case "resume-owned-build":
-                    SessionState.SetBool("PCS.BuilderInProgress", true);
-                    InvokeStep("BuildPuzzle"); WriteStatus(command.id); break;
+                    throw new InvalidOperationException("전체 씬 재생성은 폐기되었습니다. 저장된 Scene·Prefab·배치를 유지하세요.");
                 case "validate": InvokeStep("ValidatePuzzle"); WriteStatus(command.id); break;
                 case "configure-camera": InvokeStep("ConfigureCameraRegions"); WriteStatus(command.id); break;
                 case "validate-camera": InvokeStep("ValidateCameraRegions"); break;

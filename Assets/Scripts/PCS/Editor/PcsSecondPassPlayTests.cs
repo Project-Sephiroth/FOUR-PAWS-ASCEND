@@ -474,7 +474,7 @@ public static partial class PcsSecondPassTools
         while (geometry.MoveNext()) yield return null;
         IEnumerator carryRoutes = RunActualCarryRoutes();
         while (carryRoutes.MoveNext()) yield return null;
-        IEnumerator followup = RunFrogAndShaftFollowupTests();
+        IEnumerator followup = RunFrogFollowupTests();
         while (followup.MoveNext()) yield return null;
     }
 
@@ -864,7 +864,7 @@ public static partial class PcsSecondPassTools
         property.SetValue(director, section);
     }
 
-    private static IEnumerator RunFrogAndShaftFollowupTests()
+    private static IEnumerator RunFrogFollowupTests()
     {
         playReport.phase = "Frog normal input: pull eligible player";
         SetMovementFixtureSection(0);
@@ -955,138 +955,9 @@ public static partial class PcsSecondPassTools
         frogInput.ClearDevelopmentInput();
         playRunner.Despawn(frog);
 
-        playReport.phase = "Actual 1-2 Rabbit 2.2U zigzag reachability";
-        SetMovementFixtureSection(2);
-        PcsPuzzleDevice color0 = GameObject.Find("Shaft_ColorStep_00").GetComponent<PcsPuzzleDevice>();
-        PcsPuzzleDevice color1 = GameObject.Find("Shaft_ColorStep_01").GetComponent<PcsPuzzleDevice>();
-        // Geometry fixture only: channel duration/button activation is covered by the separate device suite.
-        color0.Present(true);
-        color1.Present(true);
-        Physics2D.SyncTransforms();
-        Collider2D rest0 = RequireGeometrySurface("Shaft_RabbitRest_00");
-        NetworkObject rabbit = SpawnTestPlayer(MyEnum.CharacterType.Rabbit, color0.Solid.bounds.max.x - 0.2f, color0.Solid.bounds.max.y);
-        Mover rabbitMover = rabbit.GetComponent<Mover>();
-        PlayerInput rabbitInput = rabbit.GetComponent<PlayerInput>();
-        rabbitInput.InjectDevelopmentInput(Vector2.zero, false);
-        IEnumerator outward = RunShaftRabbitHop(rabbitMover, rabbitInput, color0.Solid, rest0, "scene-rabbit-shaft-color-to-rest");
-        while (outward.MoveNext()) yield return null;
-        IEnumerator inward = RunShaftRabbitHop(rabbitMover, rabbitInput, rest0, color1.Solid, "scene-rabbit-shaft-rest-to-next-color");
-        while (inward.MoveNext()) yield return null;
-        rabbitInput.ClearDevelopmentInput();
-        playRunner.Despawn(rabbit);
-        color0.Present(false);
-        color1.Present(false);
         SetMovementFixtureSection(0);
         IEnumerator returnRoute = RunTutorialReturnDescent();
         while (returnRoute.MoveNext()) yield return null;
-    }
-
-    private static IEnumerator RunShaftRabbitHop(Mover mover, PlayerInput input, Collider2D source, Collider2D destination, string resultId)
-    {
-        playReport.phase = "Actual shaft double-jump route: " + resultId;
-        float direction = destination.bounds.center.x > source.bounds.center.x ? 1f : -1f;
-        float takeoffX = direction > 0f ? source.bounds.max.x - 0.45f : source.bounds.min.x + 0.45f;
-        float wait = Time.time + 2f;
-        float settledSince = -1f;
-        while (Time.time < wait)
-        {
-            float offset = takeoffX - mover.Body.position.x;
-            bool inPlace = Mathf.Abs(offset) <= 0.04f;
-            // Small analog commands can stall against ground friction before the exact fixture point.
-            float approachControl = Mathf.Sign(offset) * Mathf.Clamp(Mathf.Abs(offset) / (mover.MoveSpeed * 0.12f), 0.35f, 1f);
-            input.InjectDevelopmentInput(inPlace ? Vector2.zero : Vector2.right * approachControl, false);
-            bool settled = inPlace && StandingOnGeometry(mover, source) && Mathf.Abs(mover.Body.linearVelocity.y) < 0.1f;
-            if (!settled) settledSince = -1f;
-            else if (settledSince < 0f) settledSince = Time.time;
-            else if (Time.time - settledSince >= 0.15f) break;
-            yield return null;
-        }
-        bool sourceGrounded = StandingOnGeometry(mover, source);
-        float takeoffError = Mathf.Abs(mover.Body.position.x - takeoffX);
-        float sourceStableSeconds = settledSince >= 0f ? Time.time - settledSince : 0f;
-        bool startedOnSource = sourceGrounded && takeoffError <= 0.04f && sourceStableSeconds >= 0.15f;
-        float initialFeet = mover.BodyCollider.bounds.min.y;
-        float peakFeet = initialFeet;
-        float collisionHalfWidth = mover.BodyCollider.bounds.extents.x;
-        Collider2D[] actualColliders = mover.GetComponentsInChildren<Collider2D>();
-        foreach (Collider2D collider in actualColliders)
-            if (collider.enabled && !collider.isTrigger && collider.attachedRigidbody == mover.Body)
-                collisionHalfWidth = Mathf.Max(collisionHalfWidth, Mathf.Abs(collider.bounds.min.x - mover.Body.position.x),
-                    Mathf.Abs(collider.bounds.max.x - mover.Body.position.x));
-        // Keep enough clearance for a frame of normal movement before crossing the vertical edge.
-        float approachMargin = 0.12f + mover.MoveSpeed * Time.fixedDeltaTime;
-        float approachX = direction > 0f ? destination.bounds.min.x - collisionHalfWidth - approachMargin
-            : destination.bounds.max.x + collisionHalfWidth + approachMargin;
-        float landingX = direction > 0f ? destination.bounds.min.x + 0.55f : destination.bounds.max.x - 0.55f;
-        bool second = false;
-        bool firstLaunchObserved = false;
-        bool secondLaunchObserved = false;
-        bool aboveDestination = false;
-        float destinationStableSince = -1f;
-        bool landedAndSettled = false;
-        float firstApexFeet = initialFeet;
-        float began = Time.time;
-        int observedTick = -1;
-        int samples = 0;
-        var trace = new System.Text.StringBuilder();
-        input.InjectDevelopmentInput(Vector2.right * direction, true);
-        while (Time.time - began < 3f)
-        {
-            float feet = mover.BodyCollider.bounds.min.y;
-            peakFeet = Mathf.Max(peakFeet, feet);
-            if (!second && mover.Body.linearVelocity.y > mover.JumpSpeed * 0.5f) firstLaunchObserved = true;
-            if (second && mover.Body.linearVelocity.y > mover.JumpSpeed * 0.5f) secondLaunchObserved = true;
-            if (!second && Time.time - began > 0.15f && mover.Body.linearVelocity.y <= 0f)
-            {
-                firstApexFeet = feet;
-                input.InjectDevelopmentInput(Vector2.zero, true);
-                second = true;
-            }
-            if (second && feet > destination.bounds.max.y + 0.06f) aboveDestination = true;
-            float targetX = aboveDestination ? landingX : approachX;
-            float offsetX = targetX - mover.Body.position.x;
-            bool moving = direction > 0f ? offsetX > 0f : offsetX < 0f;
-            // Analog normal input brakes before a side impact; it never moves Transform/Rigidbody directly.
-            float control = aboveDestination ? direction : Mathf.Clamp(offsetX / (mover.MoveSpeed * 0.08f), -1f, 1f);
-            input.InjectDevelopmentInput(moving ? Vector2.right * control : Vector2.zero, false);
-            int tick = playRunner.Tick.Raw;
-            if (tick != observedTick && samples++ < 110)
-            {
-                observedTick = tick;
-                trace.Append("t=").Append((Time.time - began).ToString("F3")).Append(",x=").Append(mover.Body.position.x.ToString("F3"))
-                    .Append(",foot=").Append(feet.ToString("F3")).Append(",vy=").Append(mover.Body.linearVelocity.y.ToString("F3"))
-                    .Append(",g=").Append(mover.Grounded ? 1 : 0).Append(",second=").Append(second ? 1 : 0).Append(';');
-            }
-            Bounds bodyBounds = mover.BodyCollider.bounds;
-            Bounds destinationBounds = destination.bounds;
-            bool fullySupported = bodyBounds.min.x >= destinationBounds.min.x + 0.02f &&
-                bodyBounds.max.x <= destinationBounds.max.x - 0.02f;
-            bool landingStable = aboveDestination && StandingOnGeometry(mover, destination) && fullySupported &&
-                Mathf.Abs(feet - destinationBounds.max.y) <= 0.05f && Mathf.Abs(mover.Body.linearVelocity.y) < 0.1f &&
-                Mathf.Abs(mover.Body.linearVelocity.x) < 0.1f;
-            if (!landingStable) destinationStableSince = -1f;
-            else if (destinationStableSince < 0f) destinationStableSince = Time.time;
-            else if (Time.time - destinationStableSince >= 0.15f)
-            {
-                landedAndSettled = true;
-                break;
-            }
-            yield return null;
-        }
-        playReport.diagnostics.Add(resultId + " observed-tick-trace: " + trace);
-        RecordPlay(resultId, "Rabbit", startedOnSource && firstLaunchObserved && secondLaunchObserved && second &&
-            aboveDestination && landedAndSettled && StandingOnGeometry(mover, destination), mover.BodyCollider.bounds.min.y, destination.bounds.max.y,
-            "Actual shaft solids; colored steps are held active only as a geometry fixture. First hop spawns once; second continues with normal walking and jumping. " +
-            "Takeoff requires 0.15s settled inside the source; landing requires the whole body width above the destination, <=0.05U foot/top error and 0.15s zero-velocity settling. " +
-            "No teleport between hops. Required rise=" +
-            (destination.bounds.max.y - source.bounds.max.y).ToString("F3") + ", firstApexRise=" + (firstApexFeet - initialFeet).ToString("F3") +
-            ", peakRise=" + (peakFeet - initialFeet).ToString("F3") + ", firstLaunch=" + firstLaunchObserved +
-            ", secondLaunch=" + secondLaunchObserved + ", halfWidth=" + collisionHalfWidth.ToString("F3") +
-            ", approachX=" + approachX.ToString("F3") + ", initialFeet=" + initialFeet.ToString("F3") +
-            ", sourceGrounded=" + sourceGrounded + ", takeoffError=" + takeoffError.ToString("F4") +
-            ", sourceStableSeconds=" + sourceStableSeconds.ToString("F3") + ", startedOnSource=" + startedOnSource +
-            ", landedAndSettled=" + landedAndSettled + ", final=" + mover.Body.position +
-            ". Channel/button timing and simultaneous team ascent are not asserted by this geometry check.");
     }
 
     private static IEnumerator RunTutorialReturnDescent()

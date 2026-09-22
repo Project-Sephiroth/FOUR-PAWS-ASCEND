@@ -76,8 +76,12 @@ public static partial class PcsSecondPassTools
                 if (device == null) continue;
                 check(device.DeviceId == index, "Device ID matches network-array index: " + device.name);
                 check(device.Section >= -1 && device.Section <= 2, "Device section range: " + device.name);
+                if (device.IsPassiveShaftObject)
+                {
+                    check(Finite(device.transform.position), "Preserved passive shaft object: " + device.name);
+                    continue;
+                }
                 check(device.Links != null && device.Links.All(d => d != null && registry.Contains(d)), "Device links stay in registry: " + device.name);
-                check(device.Channel >= 0 && device.Channel < 4, "Channel index range: " + device.name);
                 check(Finite(device.Bounds.center) && Finite(device.Bounds.size), "Finite device bounds: " + device.name);
                 if (device.Trigger != null)
                     check(device.Trigger.isTrigger && device.Trigger.enabled && device.Trigger.bounds.size.sqrMagnitude > 0f, "Live trigger volume: " + device.name);
@@ -90,8 +94,18 @@ public static partial class PcsSecondPassTools
                         "Driven kinematic Rigidbody2D: " + device.name);
                     check(device.Body != null && (device.Body.constraints & RigidbodyConstraints2D.FreezePositionY) == 0,
                         "Motion body has no Y-position constraint: " + device.name);
-                    check(device.LowerStop != null && device.UpperStop != null && device.Speed > 0f, "Configured motion stops/speed: " + device.name);
-                    if (device.LowerStop != null && device.UpperStop != null)
+                    check(device.UpperStop != null && (device.IsShaftElevator || device.LowerStop != null) &&
+                          float.IsFinite(device.Speed) && device.Speed > 0f, "Configured motion stops/speed: " + device.name);
+                    if (device.IsShaftElevator && device.UpperStop != null)
+                    {
+                        check(!device.UpperStop.IsChildOf(device.transform) && Finite(device.UpperStop.position),
+                            "Independent finite shaft upper target: " + device.name);
+                        check(Mathf.Abs(device.UpperStop.position.x - device.transform.position.x) < 0.001f &&
+                              Mathf.Abs(device.UpperStop.position.z - device.transform.position.z) < 0.001f &&
+                              device.UpperStop.position.y >= device.transform.position.y - 0.001f,
+                            "Shaft raise target stays above the saved pose on the same X/Z: " + device.name);
+                    }
+                    else if (device.LowerStop != null && device.UpperStop != null)
                     {
                         check(!device.UpperStop.IsChildOf(device.transform) && !device.LowerStop.IsChildOf(device.transform), "Independent motion targets: " + device.name);
                         check(Mathf.Abs(device.LowerStop.position.x - device.UpperStop.position.x) < 0.01f &&
@@ -143,35 +157,13 @@ public static partial class PcsSecondPassTools
             check(puzzle.LateJoinWaiting != null && puzzle.LateJoinWaiting.gameObject.scene == scene, "Late-join safe waiting marker");
             check(active.All(t => t.GetComponent<PlayerInput>() == null), "No active authored test player duplicates the network-spawned player");
 
-            var mainLifts = registry.Where(d => d != null && d.Kind == PcsDeviceKind.Elevator && d.LiftPolicy == PcsLiftPolicy.MainContinuous).ToArray();
-            check(mainLifts.Length == 1, "Exactly one continuous main elevator");
-            if (mainLifts.Length == 1 && mainLifts[0].Solid != null && mainLifts[0].UpperStop != null)
-            {
-                var lift = mainLifts[0];
-                float upperDeckY = lift.Solid.bounds.max.y + lift.UpperStop.position.y - lift.transform.position.y;
-                check(Mathf.Abs(upperDeckY - 60f) < 0.03f, "Main elevator final collision surface is Y=60");
-                foreach (string floorName in new[] { "Arrival_1_2_Left", "Arrival_1_2_Right" })
-                {
-                    var floor = active.FirstOrDefault(t => t.name == floorName)?.GetComponent<Collider2D>();
-                    check(floor != null && Mathf.Abs(floor.bounds.max.y - upperDeckY) < 0.03f, "End floor aligns with final elevator: " + floorName);
-                }
-            }
+            var mainLifts = registry.Where(d => d != null && d.IsShaftElevator).ToArray();
+            check(mainLifts.Length == 1, "Exactly one shaft elevator with raise/hold commands");
 
             for (int role = 1; role <= 4; role++)
                 check(registry.Any(d => d != null && d.Kind == PcsDeviceKind.TutorialExit && (int)d.RequiredRole == role), "Tutorial exit exists for role " + role);
             check(registry.Any(d => d != null && d.Kind == PcsDeviceKind.Exit && d.Section == 1 && d.RequireAllRoles), "Stage-one team exit");
             check(registry.Any(d => d != null && d.Kind == PcsDeviceKind.Checkpoint && d.RequireAllRoles), "Separate team checkpoint");
-            check(registry.Any(d => d != null && d.Kind == PcsDeviceKind.Exit && d.Section == 2 && d.RequireAllRoles), "Four-player final exit");
-            check(registry.Any(d => d != null && d.Kind == PcsDeviceKind.Arrival && d.RequiredRolesMask == 28) &&
-                  registry.Any(d => d != null && d.Kind == PcsDeviceKind.Arrival && d.RequiredRolesMask == 2), "Separate left-three and Rabbit arrival conditions");
-
-            var timedPlatforms = registry.Where(d => d != null && d.Kind == PcsDeviceKind.TimedPlatform && d.Section == 2).ToArray();
-            for (int channel = 0; channel < 4; channel++)
-                check(timedPlatforms.Any(d => d.Channel == channel), "A shaft platform exists on channel " + channel);
-            foreach (var platform in timedPlatforms)
-                check(registry.Any(d => d != null && d.Kind == PcsDeviceKind.RemoteButton && d.Channel == platform.Channel && d.Links != null && d.Links.Contains(platform)),
-                    "D22 same-channel remote button reaches platform: " + platform.name);
-            check(registry.Any(d => d != null && d.Kind == PcsDeviceKind.ChannelConsole && d.RequiredRole == MyEnum.CharacterType.Mouse), "Mouse channel console exists");
 
             ValidatePlayerAndRunnerAssets(check);
             foreach (string path in new[] { "Assets/Scenes/LobbyScene.unity", "Assets/Scenes/GameScene.unity", "Assets/Scenes/Puzzle.unity" })

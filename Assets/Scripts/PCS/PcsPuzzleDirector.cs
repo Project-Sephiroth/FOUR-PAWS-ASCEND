@@ -15,6 +15,8 @@ public struct PcsDeviceState : INetworkStruct
     public PlayerRef HoldOwner;
 }
 
+public enum PcsShaftLiftCommand { Hold = 0, Raise = 1 }
+
 /// <summary>One Shared state authority owns all puzzle decisions and device poses.</summary>
 public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChanged
 {
@@ -24,15 +26,16 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
     public Transform[] StageOneSpawns = new Transform[6];
     public Transform[] StageTwoSpawns = new Transform[6];
     public Transform LateJoinWaiting;
-    public PcsPuzzleDevice ShaftLeftBoardingArea;
-    public PcsPuzzleDevice ShaftRabbitBoardingArea;
-    public bool RequireShaftBoarding = true;
+    // Retired shaft settings retain serialized names so existing scenes need no rewrite.
+    [HideInInspector] public PcsPuzzleDevice ShaftLeftBoardingArea;
+    [HideInInspector] public PcsPuzzleDevice ShaftRabbitBoardingArea;
+    [HideInInspector] public bool RequireShaftBoarding = true;
     public Sprite ProjectileSprite;
-    [Min(1)] public int InitialEnergy = 5;
-    [Min(1)] public int MaximumEnergy = 8;
-    [Min(1)] public int ChannelCost = 1;
-    [Min(0.1f)] public float ChannelDuration = 3f;
-    [Min(0.1f)] public float RefillCooldown = 3f;
+    [HideInInspector, Min(1)] public int InitialEnergy = 5;
+    [HideInInspector, Min(1)] public int MaximumEnergy = 8;
+    [HideInInspector, Min(1)] public int ChannelCost = 1;
+    [HideInInspector, Min(0.1f)] public float ChannelDuration = 3f;
+    [HideInInspector, Min(0.1f)] public float RefillCooldown = 3f;
     [Min(1)] public int PlayerHealth = 3;
     [Min(0.1f)] public float RemoteRange = 5f;
     [Min(0.1f)] public float ProjectileSpeed = 14f;
@@ -52,11 +55,13 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
     [Networked] public NetworkBool StageOneHacked { get; private set; }
     [Networked] public NetworkBool StageOneComplete { get; private set; }
     [Networked] public NetworkBool LeverLower { get; private set; }
+    // Reserved legacy storage: keep Fusion property layout; no shaft puzzle logic reads/writes these.
     [Networked] public NetworkBool ShaftStarted { get; private set; }
     [Networked] public NetworkBool ShaftArrived { get; private set; }
     [Networked] public int Energy { get; private set; }
     [Networked] public int Batteries { get; private set; }
     [Networked] private NetworkBool Initialized { get; set; }
+    // Reserved legacy refill timer and channel array also keep their original layout.
     [Networked] private TickTimer RefillTimer { get; set; }
     [Networked] private TickTimer ResetTimer { get; set; }
     [Networked, Capacity(128)] public NetworkArray<PcsDeviceState> States => default;
@@ -76,7 +81,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
     private int resetSerial;
     private const int AllRoles = 30;
     private const float RemoteHoldLease = 0.65f;
-    private static readonly string[] ChannelNames = { "주황", "초록", "보라", "하늘" };
     private GUIStyle hudLabel;
     private GUIStyle hudBox;
 
@@ -101,7 +105,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         if (HasStateAuthority && !Initialized)
         {
             ActiveSection = 0;
-            Energy = InitialEnergy;
             for (int i = 1; i <= 4; i++) Health.Set(i, PlayerHealth);
             for (int i = 0; i < Devices.Length; i++) ResetDevice(i);
             Initialized = true;
@@ -118,7 +121,7 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         // A transferred director never inherits an unconfirmed owner's hold.
         // A still-held key can establish a fresh, validated lease on its next renewal.
         for (int i = 0; i < Devices.Length; i++)
-            if (Devices[i] != null && Devices[i].RequiresRemoteHold) ClearRemoteHold(Devices[i]);
+            if (Devices[i] != null && !Devices[i].IsPassiveShaftObject && Devices[i].RequiresRemoteHold) ClearRemoteHold(Devices[i]);
     }
 
     public override void Despawned(NetworkRunner runner, bool hasState)
@@ -154,9 +157,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
     }
 
     public int GetHealth(MyEnum.CharacterType role) => CanSpawnPlayers ? Health[(int)role] : PlayerHealth;
-    public float ChannelRemaining(int channel) => CanSpawnPlayers && channel >= 0 && channel < 4 ?
-        Channels[channel].Timer.RemainingTime(Runner) ?? 0f : 0f;
-
     private static Transform GetSpawn(Transform[] set, MyEnum.CharacterType role)
     {
         int index = (int)role;
@@ -164,6 +164,74 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
     }
 
     public PcsPuzzleDevice GetDevice(int id) => id >= 0 && id < Devices.Length ? Devices[id] : null;
+
+    /// <summary>Call on the director's Shared state authority when an external condition changes.</summary>
+    public bool TrySetShaftLiftCommand(PcsPuzzleDevice lift, PcsShaftLiftCommand command, out string reason)
+    {
+        if (!CanSpawnPlayers || !HasStateAuthority || Runner == null || !Runner.IsRunning || Runner.GameMode != GameMode.Shared)
+        { reason = "실행 중인 Shared 세션의 장치 StateAuthority에서만 명령할 수 있습니다."; return false; }
+        if (command != PcsShaftLiftCommand.Hold && command != PcsShaftLiftCommand.Raise)
+        { reason = "1-2 엘리베이터는 상승·현재 위치 정지만 지원합니다."; return false; }
+        if (lift == null || !lift.isActiveAndEnabled || !lift.IsShaftElevator ||
+            lift.DeviceId < 0 || lift.DeviceId >= Devices.Length || Devices[lift.DeviceId] != lift)
+        { reason = "등록된 1-2 메인 엘리베이터를 지정하세요."; return false; }
+        if (lift.Body == null || lift.Body.bodyType != RigidbodyType2D.Kinematic || !lift.Body.simulated)
+        { reason = "발판의 simulated Kinematic Rigidbody2D가 필요합니다."; return false; }
+        PcsDeviceState state = States[lift.DeviceId];
+        if (command == PcsShaftLiftCommand.Hold) state.Position = lift.Body.position;
+        if (!float.IsFinite(state.Position.x) || !float.IsFinite(state.Position.y))
+        { reason = "엘리베이터의 현재 권한 좌표가 올바르지 않습니다."; return false; }
+        if (command == PcsShaftLiftCommand.Raise && !TryGetShaftUpperTarget(lift, state.Position, out _, out reason)) return false;
+        // Phase belongs to the replicated device state, so late join and authority transfer
+        // retain the command and stop position without a local-only override.
+        state.Phase = (int)command;
+        state.Velocity = Vector2.zero;
+        States.Set(lift.DeviceId, state);
+        if (command == PcsShaftLiftCommand.Hold)
+        {
+            // Cancel any queued MovePosition and publish the authority's physical pose.
+            lift.Body.MovePosition(state.Position);
+            lift.ApplyPose(state.Position);
+        }
+        reason = command == PcsShaftLiftCommand.Raise ? "상단 목표까지 상승합니다." : "현재 위치에 정지합니다.";
+        return true;
+    }
+
+    private static bool TryGetShaftUpperTarget(PcsPuzzleDevice lift, Vector2 position, out Vector2 target, out string reason)
+    {
+        target = position;
+        if (lift.Body == null || lift.Body.bodyType != RigidbodyType2D.Kinematic || !lift.Body.simulated ||
+            (lift.Body.constraints & RigidbodyConstraints2D.FreezePositionY) != 0)
+        { reason = "발판의 Rigidbody2D는 Y 이동이 가능한 simulated Kinematic이어야 합니다."; return false; }
+        if (lift.UpperStop == null || lift.UpperStop.IsChildOf(lift.transform) ||
+            !float.IsFinite(lift.Speed) || lift.Speed <= 0f)
+        { reason = "독립된 상단 목표와 유한한 양수 속도를 연결하세요."; return false; }
+        Vector3 upper = lift.UpperStop.position;
+        if (!float.IsFinite(upper.x) || !float.IsFinite(upper.y) || !float.IsFinite(upper.z) ||
+            !float.IsFinite(position.x) || !float.IsFinite(position.y) ||
+            Mathf.Abs(upper.x - position.x) > 0.001f || Mathf.Abs(upper.z - lift.transform.position.z) > 0.001f ||
+            upper.y < position.y)
+        { reason = "상단 목표는 현재 위치 이상 높이이며 같은 월드 X/Z여야 합니다. 하강 명령은 없습니다."; return false; }
+        target = new Vector2(position.x, upper.y);
+        reason = "상승 경로 확인됨";
+        return true;
+    }
+
+    private void TickShaftLift(PcsPuzzleDevice lift, ref PcsDeviceState state)
+    {
+        Vector2 target = state.Position;
+        if (state.Phase == (int)PcsShaftLiftCommand.Raise &&
+            !TryGetShaftUpperTarget(lift, state.Position, out target, out _))
+            state.Phase = (int)PcsShaftLiftCommand.Hold;
+        if (state.Phase != (int)PcsShaftLiftCommand.Raise)
+        {
+            state.Phase = (int)PcsShaftLiftCommand.Hold;
+            lift.ApplyPose(state.Position);
+            return;
+        }
+        state.Position = lift.MoveAuthority(state.Position, target, Runner.DeltaTime);
+        if (state.Position == target) state.Phase = (int)PcsShaftLiftCommand.Hold;
+    }
 
     public void RequestAction(NetworkObject actor, PcsPuzzleAction action, int targetId, Vector2 aim, int channel = 0)
     {
@@ -184,7 +252,7 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
     {
         if (!HasStateAuthority || !Initialized) return;
         PcsPuzzleDevice device = GetDevice(targetId);
-        if (device == null || device.DeviceId != targetId || !device.RequiresRemoteHold || device.Kind != PcsDeviceKind.Lever) return;
+        if (device == null || device.IsPassiveShaftObject || device.DeviceId != targetId || !device.RequiresRemoteHold || device.Kind != PcsDeviceKind.Lever) return;
 #if UNITY_EDITOR
         if (EditorOverridesRemoteHold(device)) return;
 #endif
@@ -256,7 +324,7 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         for (int i = 0; i < Devices.Length; i++)
         {
             PcsPuzzleDevice device = Devices[i];
-            if (device == null || !device.RequiresRemoteHold) continue;
+            if (device == null || device.IsPassiveShaftObject || !device.RequiresRemoteHold) continue;
 #if UNITY_EDITOR
             if (EditorApplyRemoteHoldInput(device)) continue;
 #endif
@@ -286,7 +354,7 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
             return;
         }
         PcsPuzzleDevice device = GetDevice(targetId);
-        if (device == null || (device.Section >= 0 && device.Section != ActiveSection)) return;
+        if (device == null || device.Section == 2 || (device.Section >= 0 && device.Section != ActiveSection)) return;
         if (device.RequiredRole != MyEnum.CharacterType.None && device.RequiredRole != role) return;
         bool remote = action == PcsPuzzleAction.Remote;
         float range = remote ? RemoteRange : device.InteractionRange;
@@ -299,29 +367,9 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         {
             case PcsPuzzleAction.Carry:
                 if (device.Kind == PcsDeviceKind.Dummy) CarryDummy(actor, device, state, false);
-                else if (device.Kind == PcsDeviceKind.Battery) CollectBattery(device);
-                break;
-            case PcsPuzzleAction.ActivateChannel:
-                if (role == MyEnum.CharacterType.Mouse && device.Kind == PcsDeviceKind.ChannelConsole && ShaftStarted) ActivateChannel(channel);
-                break;
-            case PcsPuzzleAction.Refill:
-                if (role == MyEnum.CharacterType.Mouse && device.Kind == PcsDeviceKind.ChannelConsole &&
-                    Batteries > 0 && Energy < MaximumEnergy && RefillTimer.ExpiredOrNotRunning(Runner))
-                {
-                    Batteries--;
-                    Energy = Mathf.Min(MaximumEnergy, Energy + device.BatteryValue);
-                    RefillTimer = TickTimer.CreateFromSeconds(Runner, RefillCooldown);
-                }
                 break;
             case PcsPuzzleAction.Remote:
                 if (device.Kind == PcsDeviceKind.Dummy) CarryDummy(actor, device, state, true);
-                else if (device.Kind == PcsDeviceKind.Battery)
-                {
-                    if (state.Active == 0 || state.Phase == 4) return;
-                    state.Actor = actor.Id;
-                    state.Phase = 2;
-                    States.Set(device.DeviceId, state);
-                }
                 else if (device.Kind == PcsDeviceKind.Enemy) StunEnemy(device);
                 else if (device.Kind == PcsDeviceKind.Anchor) SetActive(device, true);
                 else OperateDevice(actor, device, state, role, true);
@@ -344,9 +392,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         if (device.Kind == PcsDeviceKind.HackConsole)
         {
             if (role != MyEnum.CharacterType.Mouse || state.Active != 0 || !state.Timer.ExpiredOrNotRunning(Runner)) return;
-            if (device.Section == 2 && state.Counter + 1 >= device.RequiredInputs && RequireShaftBoarding &&
-                (ShaftLeftBoardingArea == null || ShaftRabbitBoardingArea == null ||
-                 (Occupants(ShaftLeftBoardingArea) & 28) != 28 || (Occupants(ShaftRabbitBoardingArea) & 2) != 2)) return;
             state.Counter++;
             state.Actor = actor.Id;
             state.Timer = TickTimer.CreateFromSeconds(Runner, HackPulseInterval);
@@ -371,31 +416,11 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         {
                 if (!device.AcceptDummyOnly && remote) HitButton(device, -1);
         }
-        else if (device.Kind == PcsDeviceKind.BarrierControl)
-        {
-            if (role != MyEnum.CharacterType.Rabbit) return;
-            SetActive(device, true);
-            SetLinks(device, true);
-        }
-        else if (device.Kind == PcsDeviceKind.Battery) CollectBattery(device);
-    }
-
-    private void ActivateChannel(int index)
-    {
-        if (index < 0 || index >= 4 || Energy < ChannelCost) return;
-        PcsDeviceState channel = Channels[index];
-        if (!channel.Timer.ExpiredOrNotRunning(Runner)) return;
-        channel.Window++;
-        channel.Active = 1;
-        channel.Phase = 0;
-        channel.Timer = TickTimer.CreateFromSeconds(Runner, ChannelDuration);
-        Channels.Set(index, channel);
-        Energy -= ChannelCost;
-        ClearChannel(index);
     }
 
     private void HitButton(PcsPuzzleDevice device, int dummyId)
     {
+        if (device == null || device.Section == 2) return;
         PcsDeviceState state = States[device.DeviceId];
         if (device.AcceptDummyOnly)
         {
@@ -403,15 +428,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
             for (int i = 0; i < Devices.Length; i++)
                 if (Devices[i] != null && Devices[i].AcceptDummyOnly && States[i].Counter == dummyId + 1) return;
             state.Counter = dummyId + 1;
-        }
-        if (device.Section == 2)
-        {
-            PcsDeviceState channel = Channels[device.Channel];
-            if (channel.Active == 0 || channel.Timer.ExpiredOrNotRunning(Runner)) return;
-            if (state.Active != 0 && state.Window == channel.Window) return;
-            state.Window = channel.Window;
-            channel.Phase = 1;
-            Channels.Set(device.Channel, channel);
         }
         state.Active = 1;
         States.Set(device.DeviceId, state);
@@ -425,17 +441,9 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         }
     }
 
-    private void ClearChannel(int channel)
-    {
-        for (int i = 0; i < Devices.Length; i++)
-            if (Devices[i] != null && Devices[i].Section == 2 && Devices[i].Channel == channel &&
-                (Devices[i].Kind == PcsDeviceKind.RemoteButton || Devices[i].Kind == PcsDeviceKind.TimedPlatform))
-                SetActive(Devices[i], false);
-    }
-
     private void SetActive(PcsPuzzleDevice device, bool active)
     {
-        if (device == null || device.DeviceId < 0 || device.DeviceId >= Devices.Length || Devices[device.DeviceId] != device) return;
+        if (device == null || device.Section == 2 || device.DeviceId < 0 || device.DeviceId >= Devices.Length || Devices[device.DeviceId] != device) return;
         PcsDeviceState state = States[device.DeviceId];
         state.Active = active ? 1 : 0;
         States.Set(device.DeviceId, state);
@@ -445,7 +453,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
     {
         state.Active = 1;
         if (device.Section == 1) StageOneHacked = true;
-        if (device.Section == 2) ShaftStarted = true;
         SetLinks(device, true);
     }
 
@@ -482,17 +489,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
             RefreshPlayers();
             TickRemoteHolds();
             TickPressurePlates();
-            for (int i = 0; i < 4; i++)
-            {
-                PcsDeviceState channel = Channels[i];
-                if (channel.Active != 0 && channel.Timer.Expired(Runner))
-                {
-                    channel.Active = 0;
-                    channel.Phase = 0;
-                    Channels.Set(i, channel);
-                    ClearChannel(i);
-                }
-            }
             int serial = resetSerial;
             for (int i = 0; i < Devices.Length; i++)
             {
@@ -523,7 +519,7 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         for (int i = 0; i < Devices.Length; i++)
         {
             PcsPuzzleDevice plate = Devices[i];
-            if (plate == null || plate.Kind != PcsDeviceKind.PressurePlate) continue;
+            if (plate == null || plate.IsPassiveShaftObject || plate.Kind != PcsDeviceKind.PressurePlate) continue;
             bool pressed = plate.isActiveAndEnabled && (plate.Section < 0 || plate.Section == ActiveSection) && plate.PressureButton != null &&
                 plate.PressureButton.EvaluatePressure(plate.AcceptDummyOnly, plate.RequiredRole);
 #if UNITY_EDITOR
@@ -535,7 +531,7 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         for (int i = 0; i < Devices.Length; i++)
         {
             PcsPuzzleDevice plate = Devices[i];
-            if (plate == null || plate.Kind != PcsDeviceKind.PressurePlate) continue;
+            if (plate == null || plate.IsPassiveShaftObject || plate.Kind != PcsDeviceKind.PressurePlate) continue;
             foreach (PcsPuzzleDevice target in plate.Links)
             {
                 if (target == null) continue;
@@ -543,7 +539,7 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
                 for (int j = 0; j < Devices.Length && !anyPressed; j++)
                 {
                     PcsPuzzleDevice other = Devices[j];
-                    if (other == null || other.Kind != PcsDeviceKind.PressurePlate || States[j].Active == 0) continue;
+                    if (other == null || other.IsPassiveShaftObject || other.Kind != PcsDeviceKind.PressurePlate || States[j].Active == 0) continue;
                     for (int k = 0; k < other.Links.Length; k++)
                         if (other.Links[k] == target) { anyPressed = true; break; }
                 }
@@ -570,15 +566,14 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
     private void TickDevice(int id)
     {
         PcsPuzzleDevice device = Devices[id];
-        if (device == null || !device.isActiveAndEnabled) return;
+        if (device == null || !device.isActiveAndEnabled || device.IsPassiveShaftObject) return;
         PcsDeviceState state = States[id];
         int serial = resetSerial;
-        if (device.RequireAllLinks) state.Active = AllLinksActive(device) ? 1 : 0;
+        if (!device.IsShaftElevator && device.RequireAllLinks) state.Active = AllLinksActive(device) ? 1 : 0;
         bool currentSection = device.Section < 0 || device.Section == ActiveSection;
         switch (device.Kind)
         {
             case PcsDeviceKind.HackConsole:
-            case PcsDeviceKind.ChannelConsole:
                 if (state.Active == 0 && state.Counter > 0 &&
                     (!Runner.TryFindObject(state.Actor, out NetworkObject hacker) ||
                     Vector2.Distance(hacker.transform.position, device.InteractionPoint) > device.InteractionRange))
@@ -603,28 +598,13 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
                 Vector2 target = device.InitialPosition;
                 if (device.LiftPolicy == PcsLiftPolicy.StageOneThreeStop)
                     target = StopPosition(!StageOneHacked ? device.UpperStop : LeverLower ? device.LowerStop : device.MiddleStop, target);
-                else if (device.LiftPolicy == PcsLiftPolicy.MainContinuous)
-                    target = ShaftStarted ? StopPosition(device.UpperStop, target) : StopPosition(device.LowerStop, target);
-                else if (state.Active != 0) target = StopPosition(device.UpperStop, target);
-#if UNITY_EDITOR
-                bool shaftMovementTest = EditorTryShaftLiftTarget(device, out Vector2 testTarget);
-                if (shaftMovementTest) target = testTarget;
-#else
-                const bool shaftMovementTest = false;
-#endif
-                // An isolated Editor movement trial must not reset the section or complete its puzzle.
-                if (!shaftMovementTest && device.LiftPolicy == PcsLiftPolicy.MainContinuous && ShaftStarted && IsShaftBlocked(device, state.Position))
+                else if (device.IsShaftElevator)
                 {
-                    ResetSection(MyEnum.CharacterType.Bear);
-                    return;
+                    TickShaftLift(device, ref state);
+                    break;
                 }
+                else if (state.Active != 0) target = StopPosition(device.UpperStop, target);
                 state.Position = device.MoveAuthority(state.Position, target, Runner.DeltaTime);
-                if (!shaftMovementTest && device.LiftPolicy == PcsLiftPolicy.MainContinuous && ShaftStarted && Vector2.Distance(state.Position, target) < 0.002f)
-                    ShaftArrived = true;
-                break;
-            case PcsDeviceKind.Arrival:
-                int arrivalMask = device.RequiredRolesMask != 0 ? device.RequiredRolesMask : 1 << (int)device.RequiredRole;
-                if (currentSection && ShaftArrived && (Occupants(device) & arrivalMask) == arrivalMask) state.Active = 1;
                 break;
             case PcsDeviceKind.TutorialExit:
                 if (currentSection && state.Active == 0 && AllLinksActive(device) &&
@@ -655,7 +635,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
                     if (device.Section == 0 && CompletedTutorialMask == AllRoles) { ActiveSection = 1; state.Active = 1; }
                     else if (device.Section == 1 && device.Kind == PcsDeviceKind.Exit && StageOneHacked) { StageOneComplete = true; state.Active = 1; }
                     else if (device.Section == 1 && device.Kind == PcsDeviceKind.Checkpoint && StageOneComplete) { ActiveSection = 2; state.Active = 1; }
-                    else if (device.Section == 2 && ShaftArrived) { ActiveSection = 3; state.Active = 1; }
                 }
                 break;
             case PcsDeviceKind.KillZone:
@@ -671,9 +650,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
                 break;
             case PcsDeviceKind.Enemy:
                 if (currentSection) TickEnemy(device, ref state);
-                break;
-            case PcsDeviceKind.Battery:
-                if (currentSection) TickBattery(device, ref state);
                 break;
         }
         if (serial == resetSerial) States.Set(id, state);
@@ -745,7 +721,7 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
                 for (int i = 0; i < Devices.Length; i++)
                 {
                     PcsPuzzleDevice receiver = Devices[i];
-                    if (receiver != null && receiver.AcceptDummyOnly && Contains2D(Expanded(receiver.Bounds, 0.25f), next))
+                    if (receiver != null && !receiver.IsPassiveShaftObject && receiver.AcceptDummyOnly && Contains2D(Expanded(receiver.Bounds, 0.25f), next))
                     {
                         HitButton(receiver, device.DeviceId);
                         state = States[device.DeviceId];
@@ -842,7 +818,7 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
             for (int j = 0; j < Devices.Length; j++)
             {
                 PcsPuzzleDevice device = Devices[j];
-                if (device == null || device.Section != ActiveSection ||
+                if (device == null || device.IsPassiveShaftObject || device.Section != ActiveSection ||
                     (device.Kind != PcsDeviceKind.RemoteButton && device.Kind != PcsDeviceKind.Enemy)) continue;
                 if (!SegmentIntersects(device.Bounds, shot.Position, testEnd, 0.2f)) continue;
                 if (device.Kind == PcsDeviceKind.RemoteButton && !device.AcceptDummyOnly) HitButton(device, -1);
@@ -881,16 +857,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         {
             state.Phase = 4;
             state.Active = 0;
-            for (int i = 0; i < device.Links.Length; i++)
-            {
-                PcsPuzzleDevice drop = device.Links[i];
-                if (drop == null || drop.Kind != PcsDeviceKind.Battery) continue;
-                PcsDeviceState battery = States[drop.DeviceId];
-                battery.Position = state.Position;
-                battery.Active = 1;
-                battery.Phase = 0;
-                States.Set(drop.DeviceId, battery);
-            }
         }
         States.Set(device.DeviceId, state);
     }
@@ -930,59 +896,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         }
     }
 
-    private void CollectBattery(PcsPuzzleDevice device)
-    {
-        PcsDeviceState state = States[device.DeviceId];
-        if (state.Active == 0 || state.Phase == 4) return;
-        state.Active = 0;
-        state.Phase = 4;
-        States.Set(device.DeviceId, state);
-        Batteries += device.BatteryValue;
-    }
-
-    private void TickBattery(PcsPuzzleDevice device, ref PcsDeviceState state)
-    {
-        if (state.Active == 0 || state.Phase == 4) return;
-        if (state.Phase == 2)
-        {
-            if (!Runner.TryFindObject(state.Actor, out NetworkObject actor)) { state.Phase = 0; state.Actor = default; return; }
-            Vector2 next = Vector2.MoveTowards(state.Position, actor.transform.position, PullSpeed * Runner.DeltaTime);
-            if (MoveItem(device, ref state, next)) { state.Phase = 0; state.Actor = default; }
-            if (Vector2.Distance(state.Position, actor.transform.position) < 0.4f)
-            {
-                state.Active = 0;
-                state.Phase = 4;
-                Batteries += device.BatteryValue;
-            }
-        }
-        else
-        {
-            state.Velocity += Physics2D.gravity * Runner.DeltaTime;
-            Vector2 next = state.Position + state.Velocity * Runner.DeltaTime;
-            if (MoveItem(device, ref state, next))
-            {
-                state.Velocity = Vector2.zero;
-            }
-        }
-        device.ApplyPose(state.Position);
-    }
-
-    private bool IsShaftBlocked(PcsPuzzleDevice platform, Vector2 position)
-    {
-        if (platform.Solid == null) return false;
-        Bounds surface = platform.Solid.bounds;
-        for (int i = 0; i < Devices.Length; i++)
-        {
-            PcsPuzzleDevice obstacle = Devices[i];
-            if (obstacle == null || !obstacle.BlocksShaft || obstacle.Solid == null || !obstacle.Solid.enabled) continue;
-            Bounds barrier = obstacle.Solid.bounds;
-            if (surface.max.x <= barrier.min.x || surface.min.x >= barrier.max.x) continue;
-            // Fail before a closed barrier crushes riders; normal travel never pauses here.
-            if (surface.max.y + 1.7f >= barrier.min.y && surface.min.y < barrier.max.y) return true;
-        }
-        return false;
-    }
-
     private bool IsBlocked(NetworkObject actor, Vector2 end, PcsPuzzleDevice target)
     {
         Collider2D body = actor.GetComponent<Collider2D>();
@@ -1017,7 +930,8 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
 
     private void ResetSection(MyEnum.CharacterType role)
     {
-        if (!HasStateAuthority || !ResetTimer.ExpiredOrNotRunning(Runner) || lastResetFrame == Runner.Tick.Raw) return;
+        // Section 2 has no puzzle reset: a reset must never return its lift to the bottom.
+        if (ActiveSection >= 2 || !HasStateAuthority || !ResetTimer.ExpiredOrNotRunning(Runner) || lastResetFrame == Runner.Tick.Raw) return;
 #if UNITY_EDITOR
         EditorReleaseForcedInputs();
 #endif
@@ -1036,9 +950,7 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         else
         {
             ResetEpoch++;
-            if (ActiveSection == 1) { StageOneHacked = false; StageOneComplete = false; LeverLower = false; }
-            else { ActiveSection = 2; ShaftStarted = false; ShaftArrived = false; Energy = InitialEnergy; Batteries = 0; RefillTimer = default; }
-            for (int i = 0; i < 4; i++) Channels.Set(i, default);
+            StageOneHacked = false; StageOneComplete = false; LeverLower = false;
             for (int i = 1; i <= 4; i++) { Health.Set(i, PlayerHealth); DamageTimers.Set(i, default); ThrowTimers.Set(i, default); }
             for (int i = 0; i < Devices.Length; i++)
                 if (Devices[i] != null && Devices[i].Section == ActiveSection) ResetDevice(i);
@@ -1053,14 +965,16 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         {
             PcsPuzzleDevice device = Devices[i];
             if (device == null || !device.isActiveAndEnabled) continue;
+            if (device.IsPassiveShaftObject)
+            {
+                device.Present(false);
+                continue;
+            }
             PcsDeviceState state = States[i];
             if (Moves(device) && (!HasStateAuthority || reset)) device.ApplyPose(state.Position);
             bool hidden = (device.Kind == PcsDeviceKind.Enemy || device.Kind == PcsDeviceKind.Dummy) && state.Phase == 4 ||
                 device.Kind == PcsDeviceKind.Battery && (state.Phase == 4 || state.Active == 0);
             device.Present(state.Active != 0, hidden);
-            if (device.EntryOpenBeforeShaftStart && device.Solid != null)
-                device.Solid.enabled = ShaftStarted && (!device.DisableColliderWhenOpen || state.Active == 0 ||
-                    device.UpperStop == null || Vector2.Distance(device.transform.position, device.UpperStop.position) > 0.04f);
             if (device.Kind == PcsDeviceKind.Dummy && device.Solid != null && (state.Phase == 1 || state.Phase == 2)) device.Solid.enabled = false;
         }
         lastPresentedEpoch = ResetEpoch;
@@ -1077,9 +991,9 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         }
     }
 
-    private static bool Moves(PcsPuzzleDevice device) => device.Kind == PcsDeviceKind.Elevator || device.Kind == PcsDeviceKind.SlidingWall ||
+    private static bool Moves(PcsPuzzleDevice device) => !device.IsPassiveShaftObject && (device.Kind == PcsDeviceKind.Elevator || device.Kind == PcsDeviceKind.SlidingWall ||
         device.Kind == PcsDeviceKind.Dummy || device.Kind == PcsDeviceKind.Enemy || device.Kind == PcsDeviceKind.Battery ||
-        (device.Kind == PcsDeviceKind.Ladder && device.DeployableLadder);
+        (device.Kind == PcsDeviceKind.Ladder && device.DeployableLadder));
 
     public static string RoleDisplayName(MyEnum.CharacterType role)
     {
@@ -1109,25 +1023,20 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         float width = Mathf.Max(120f, Mathf.Min(Screen.width - 24f, 780f));
         float contentWidth = width - 24f;
         bool waitingForNewTeam = !PcsPlayerAbilities.CanParticipate(local);
-        bool showChannels = !waitingForNewTeam && ActiveSection == 2 && ability.CharacterType == MyEnum.CharacterType.Mouse;
         string heading = (ActiveSection == 0 ? "튜토리얼" : ActiveSection == 1 ? "1-1 협동 퍼즐" :
             ActiveSection == 2 ? "1-2 상승 통로" : "완료") + "  |  " + RoleDisplayName(ability.CharacterType) +
             "  |  체력 " + GetHealth(ability.CharacterType);
         string controls = waitingForNewTeam ? "대기 중: 이 팀은 이미 출발했습니다." :
-            ActiveSection == 3 ? "네 명 모두 출구에 도착했습니다." :
+            ActiveSection >= 2 ? "A/D: 이동  Space: 점프  F: 능력  G: 운반" :
             "E: 조작·해킹  F: 능력  G: 운반  Backspace: 재시작";
         string progress = waitingForNewTeam ? "플레이하려면 새 방에서 네 역할이 함께 시작하세요." :
-            ActiveSection == 3 ? "Backspace: 1-2 재시작 · 새 방: 튜토리얼부터 시작" :
-            ActiveSection == 2 ? "전력 " + Energy + "/" + MaximumEnergy + "  배터리 " + Batteries +
-                "  |  1~4: 색 채널  R: 충전" :
+            ActiveSection >= 2 ? "1-2: 엘리베이터 상승·현재 위치 정지 명령만 사용합니다." :
             ActiveSection == 0 && (CompletedTutorialMask & (1 << (int)ability.CharacterType)) != 0 ?
                 "개인 연습 완료 · 모임 장소에서 동료를 기다려 주세요." : "다음 모임 장소에 동료들과 함께 모여 주세요.";
         float headingHeight = hudLabel.CalcHeight(new GUIContent(heading), contentWidth);
         float controlHeight = hudLabel.CalcHeight(new GUIContent(controls), contentWidth);
         float progressHeight = hudLabel.CalcHeight(new GUIContent(progress), contentWidth);
-        int channelColumns = width < 580f ? 2 : 4;
-        float channelHeight = showChannels ? (4 / channelColumns) * 25f : 0f;
-        float panelHeight = headingHeight + controlHeight + progressHeight + channelHeight + 20f;
+        float panelHeight = headingHeight + controlHeight + progressHeight + 20f;
         GUI.Box(new Rect(12f, 12f, width, panelHeight), GUIContent.none, hudBox);
         float y = 20f;
         GUI.Label(new Rect(24f, y, contentWidth, headingHeight), heading, hudLabel);
@@ -1136,13 +1045,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         y += controlHeight;
         GUI.Label(new Rect(24f, y, contentWidth, progressHeight), progress, hudLabel);
         y += progressHeight;
-        if (showChannels)
-        {
-            float cellWidth = contentWidth / channelColumns;
-            for (int i = 0; i < 4; i++)
-                GUI.Label(new Rect(24f + i % channelColumns * cellWidth, y + i / channelColumns * 25f, cellWidth, 25f),
-                    (i + 1) + " " + ChannelNames[i] + " " + ChannelRemaining(i).ToString("0.0") + "초", hudLabel);
-        }
         if (!string.IsNullOrEmpty(ability.Feedback))
         {
             string feedback = "안내: " + ability.Feedback;
@@ -1155,7 +1057,7 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
         for (int i = 0; i < Devices.Length; i++)
         {
             PcsPuzzleDevice device = Devices[i];
-            if (device == null || !device.isActiveAndEnabled || !device.Available ||
+            if (device == null || device.Section == 2 || !device.isActiveAndEnabled || !device.Available ||
                 (device.Section >= 0 && device.Section != ActiveSection) ||
                 (device.RequiredRole != MyEnum.CharacterType.None && device.RequiredRole != ability.CharacterType) ||
                 string.IsNullOrEmpty(device.Instruction)) continue;
@@ -1169,8 +1071,6 @@ public partial class PcsPuzzleDirector : NetworkBehaviour, IStateAuthorityChange
             PcsDeviceState console = States[nearest.DeviceId];
             instruction += "\n" + (console.Active != 0 ? "해킹 완료" :
                 "E 해킹 " + console.Counter + "/" + nearest.RequiredInputs + " · 멀어지면 진행이 초기화됩니다.");
-            if (nearest.Section == 2 && !ShaftStarted)
-                instruction += "\n마지막 E 입력 전: 토끼는 우측, 곰·쥐·개구리는 좌측 승강기에 탑승하세요.";
         }
         if (nearest.IsLadder && nearest.DeployableLadder)
             instruction = !nearest.Active ? "두 번째 콘솔을 해킹하면 사다리가 내려옵니다." :

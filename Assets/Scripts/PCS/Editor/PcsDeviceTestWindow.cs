@@ -191,14 +191,14 @@ public sealed class PcsDeviceTestWindow : EditorWindow
             if (GUILayout.Button("모든 강제 입력 해제 · 정상 판정으로 복귀"))
             {
                 director.EditorReleaseForcedInputs();
-                SetResult(true, "강제 압력판·레버·1-2 엘리베이터 입력과 대기 명령을 해제했습니다. 해킹 완료 등 진행 상태는 유지합니다.");
+                SetResult(true, "강제 압력판·레버 입력과 대기 명령을 해제하고 시험하던 1-2 엘리베이터를 현재 위치에 정지했습니다. 1-1 해킹 완료 등 진행 상태는 유지합니다.");
             }
         }
         EditorGUILayout.LabelField("강제 입력 해제는 해킹 완료 상태를 유지합니다.", EditorStyles.wordWrappedMiniLabel);
         using (new EditorGUI.DisabledScope(!canControl || pending))
             if (GUILayout.Button("1-1 구간 초기화 (테스트 초기화)"))
                 Queue(PcsPuzzleDirector.EditorStageOneCommand.ResetSection);
-        EditorGUILayout.LabelField("구간 초기화는 진행·장치 위치·체력·채널까지 초기화합니다.", EditorStyles.wordWrappedMiniLabel);
+        EditorGUILayout.LabelField("구간 초기화는 1-1 진행·장치 위치·체력을 초기화합니다.", EditorStyles.wordWrappedMiniLabel);
         if (!string.IsNullOrEmpty(lastResult))
             EditorGUILayout.HelpBox(lastResult, lastResultFailed ? MessageType.Warning : MessageType.Info);
         if (director != null && !string.IsNullOrEmpty(director.EditorTestLastMessage))
@@ -222,7 +222,7 @@ public sealed class PcsDeviceTestWindow : EditorWindow
                 "강제 입력을 모두 해제해도 곰이 실제로 밟고 있으면 압력판은 계속 눌릴 수 있습니다.\n\n" +
                 "해킹 완료 후 압력판을 놓아도 해킹 상태는 유지됩니다. 이동 중에도 해킹·레버 조건을 바꿀 수 있습니다.\n\n" +
                 "구간 초기화는 실제 게임의 리셋을 사용하므로 장치가 초기 위치로 즉시 돌아옵니다. " +
-                "창 닫기·코드 리로드·Play 종료 시 강제 입력을 해제하고 테스트를 끕니다.\n\n" +
+                "창 닫기·코드 리로드·Play 종료 시 강제 입력을 해제하고 테스트를 끕니다. 시험하던 1-2 엘리베이터에는 현재 위치 정지를 요청합니다.\n\n" +
                 "강제 입력 해제·창 닫기는 현재 시험 구간과 해킹 완료를 유지합니다. 저장된 씬의 시작 상태로 돌아가려면 Play를 종료하세요.\n\n" +
                 "실제 곰 접촉·쥐 E 해킹·개구리 조준/F 홀드 성공은 별도로 검증해야 합니다.", MessageType.Info);
         }
@@ -241,8 +241,8 @@ public sealed class PcsDeviceTestWindow : EditorWindow
         PcsPuzzleDevice lift = FindShaftLift();
         if (lift != null) DrawReference("시험할 엘리베이터", lift);
         else EditorGUILayout.HelpBox("1-2 메인 엘리베이터가 하나로 확인되지 않습니다. 정상 Shared 세션에서 등록 상태를 확인하세요.", MessageType.Info);
-        EditorGUILayout.HelpBox("1-2 구간 전환 없이 이 엘리베이터만 움직입니다. 해킹·탑승 조건과 장벽 실패 판정은 시험하지 않습니다.\n" +
-            "장벽을 통과할 수 있는 단독 이동 시험입니다. 탑승 안전·퍼즐 성공 검증이 아니며, 다른 장치와 진행 상태는 변경하지 않습니다.", MessageType.Info);
+        EditorGUILayout.HelpBox("1-2 구간 전환 없이 기존 엘리베이터의 상승·현재 위치 정지만 제어합니다.\n" +
+            "이동 명령은 네트워크 상태에 반영됩니다. 탑승 안전이나 통로 통과 여부는 별도로 확인하세요.", MessageType.Info);
         bool valid = false;
         string reason = "";
         if (canControl) valid = director.EditorTryGetShaftLiftStatus(lift, out reason);
@@ -251,15 +251,15 @@ public sealed class PcsDeviceTestWindow : EditorWindow
         {
             using (new EditorGUI.DisabledScope(true))
             {
-                EditorGUILayout.ObjectField("하단 목표", lift.LowerStop, typeof(Transform), true);
                 EditorGUILayout.ObjectField("상단 목표", lift.UpperStop, typeof(Transform), true);
             }
-            EditorGUILayout.LabelField("현재 Y / 하단 / 상단", $"{director.States[lift.DeviceId].Position.y:F3} / {lift.LowerStop.position.y:F3} / {lift.UpperStop.position.y:F3}");
+            EditorGUILayout.LabelField("현재 Y / 상단", director.States[lift.DeviceId].Position.y.ToString("F3") + " / " +
+                (lift.UpperStop != null ? lift.UpperStop.position.y.ToString("F3") : "목표 없음"));
             EditorGUILayout.LabelField("이동 속도 (Device.Speed)", lift.Speed.ToString("F2") + " 유닛/초");
             PcsPuzzleDirector.EditorShaftLiftInput mode = director.EditorGetShaftLiftInput(lift);
-            EditorGUILayout.LabelField("시험 입력", mode == PcsPuzzleDirector.EditorShaftLiftInput.Raise ? "상승" :
-                mode == PcsPuzzleDirector.EditorShaftLiftInput.Hold ? "현재 위치 정지" :
-                mode == PcsPuzzleDirector.EditorShaftLiftInput.Lower ? "하단 복귀" : "정상 제어");
+            EditorGUILayout.LabelField("네트워크 이동 명령", director.States[lift.DeviceId].Phase == (int)PcsShaftLiftCommand.Raise ? "상승" : "현재 위치 정지");
+            EditorGUILayout.LabelField("이 창의 시험 입력", mode == PcsPuzzleDirector.EditorShaftLiftInput.Normal ? "해제됨" :
+                mode == PcsPuzzleDirector.EditorShaftLiftInput.Raise ? "상승" : "현재 위치 정지");
         }
         using (new EditorGUI.DisabledScope(!valid))
         {
@@ -267,12 +267,8 @@ public sealed class PcsDeviceTestWindow : EditorWindow
             if (GUILayout.Button("1-2 상승 시작")) SetShaftLiftInput(lift, PcsPuzzleDirector.EditorShaftLiftInput.Raise);
             if (GUILayout.Button("현재 위치 정지")) SetShaftLiftInput(lift, PcsPuzzleDirector.EditorShaftLiftInput.Hold);
             EditorGUILayout.EndHorizontal();
-            EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("하단으로 이동")) SetShaftLiftInput(lift, PcsPuzzleDirector.EditorShaftLiftInput.Lower);
-            if (GUILayout.Button("1-2 정상 제어 복귀")) SetShaftLiftInput(lift, PcsPuzzleDirector.EditorShaftLiftInput.Normal);
-            EditorGUILayout.EndHorizontal();
         }
-        EditorGUILayout.LabelField("정상 제어 복귀·테스트 끄기·창 닫기: 기존 해킹 상태의 목표로 이동합니다. 즉시 정지는 '현재 위치 정지'를 사용하세요.", EditorStyles.wordWrappedMiniLabel);
+        EditorGUILayout.LabelField("테스트 끄기·강제 입력 해제·창 닫기: 이 창에서 시험하던 엘리베이터를 현재 위치에 정지합니다.", EditorStyles.wordWrappedMiniLabel);
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("1-1 장치 시험", EditorStyles.boldLabel);
     }
@@ -288,8 +284,7 @@ public sealed class PcsDeviceTestWindow : EditorWindow
         PcsPuzzleDevice found = null;
         foreach (PcsPuzzleDevice device in director.Devices)
         {
-            if (device == null || !device.isActiveAndEnabled || device.Section != 2 ||
-                device.Kind != PcsDeviceKind.Elevator || device.LiftPolicy != PcsLiftPolicy.MainContinuous) continue;
+            if (device == null || !device.isActiveAndEnabled || !device.IsShaftElevator) continue;
             if (found != null) return null;
             found = device;
         }
@@ -336,6 +331,8 @@ public sealed class PcsDeviceTestWindow : EditorWindow
         EditorGUILayout.LabelField("장치 번호 / 종류", device.DeviceId + " / " + KindLabel(device.Kind));
         EditorGUILayout.LabelField("소속 구간", SectionLabel(device.Section));
         EditorGUILayout.LabelField("오브젝트 활성", device.isActiveAndEnabled ? "활성" : "비활성");
+        if (device.IsPassiveShaftObject)
+            EditorGUILayout.LabelField("1-2 퍼즐 기능 제거 · 저장된 배치만 유지", EditorStyles.wordWrappedMiniLabel);
         DrawReference("현재 장치", device);
         DrawLinks(device);
     }

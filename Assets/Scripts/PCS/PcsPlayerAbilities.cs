@@ -130,18 +130,6 @@ public class PcsPlayerAbilities : NetworkBehaviour, IStateAuthorityChanged
             PcsPuzzleDevice nearby = FindDevice(false);
             if (input.InteractInput && nearby != null)
                 director.RequestAction(Object, PcsPuzzleAction.Interact, nearby.DeviceId, input.AimWorld);
-            if (input.ChannelInput >= 0)
-            {
-                PcsPuzzleDevice console = FindDevice(false, PcsDeviceKind.ChannelConsole);
-                if (console != null)
-                    director.RequestAction(Object, PcsPuzzleAction.ActivateChannel, console.DeviceId, input.AimWorld, input.ChannelInput);
-            }
-            if (input.RefillInput)
-            {
-                PcsPuzzleDevice console = FindDevice(false, PcsDeviceKind.ChannelConsole);
-                if (console != null)
-                    director.RequestAction(Object, PcsPuzzleAction.Refill, console.DeviceId, input.AimWorld);
-            }
             if (input.ResetInput)
                 director.RequestAction(Object, PcsPuzzleAction.Reset, -1, input.AimWorld);
         }
@@ -206,11 +194,9 @@ public class PcsPlayerAbilities : NetworkBehaviour, IStateAuthorityChanged
             return;
         }
         PcsPuzzleDevice dummy = FindDevice(false, PcsDeviceKind.Dummy);
-        PcsPuzzleDevice battery = FindDevice(false, PcsDeviceKind.Battery);
-        PcsPuzzleDevice item = dummy != null ? dummy : battery;
-        if (director != null && item != null)
+        if (director != null && dummy != null)
         {
-            director.RequestAction(Object, PcsPuzzleAction.Carry, item.DeviceId, input.AimWorld);
+            director.RequestAction(Object, PcsPuzzleAction.Carry, dummy.DeviceId, input.AimWorld);
             return;
         }
         if (lifter == null)
@@ -439,7 +425,7 @@ public class PcsPlayerAbilities : NetworkBehaviour, IStateAuthorityChanged
         float score = float.PositiveInfinity;
         foreach (PcsPuzzleDevice device in devices)
         {
-            if (device == null || !device.isActiveAndEnabled || !device.Available ||
+            if (device == null || device.IsPassiveShaftObject || !device.isActiveAndEnabled || !device.Available ||
                 (PcsPuzzleDirector.Instance != null && device.Section >= 0 && device.Section != PcsPuzzleDirector.Instance.ActiveSection) ||
                 (required.HasValue && device.Kind != required.Value) ||
                 (remote && !device.IsRemoteTarget) || (!remote && !required.HasValue && !IsInteractive(device.Kind)))
@@ -461,8 +447,7 @@ public class PcsPlayerAbilities : NetworkBehaviour, IStateAuthorityChanged
 
     private static bool IsInteractive(PcsDeviceKind kind)
     {
-        return kind == PcsDeviceKind.HackConsole || kind == PcsDeviceKind.ChannelConsole || kind == PcsDeviceKind.Lever ||
-            kind == PcsDeviceKind.BarrierControl || kind == PcsDeviceKind.Battery || kind == PcsDeviceKind.RemoteButton;
+        return kind == PcsDeviceKind.HackConsole || kind == PcsDeviceKind.Lever || kind == PcsDeviceKind.RemoteButton;
     }
 
     private PcsPuzzleDevice FindLadder()
@@ -470,7 +455,7 @@ public class PcsPlayerAbilities : NetworkBehaviour, IStateAuthorityChanged
         if (devices == null || BodyCollider == null)
             return null;
         foreach (PcsPuzzleDevice device in devices)
-            if (device != null && device.CanClimb && device.gameObject.activeInHierarchy &&
+            if (device != null && !device.IsPassiveShaftObject && device.CanClimb && device.gameObject.activeInHierarchy &&
                 (PcsPuzzleDirector.Instance == null || device.Section < 0 || device.Section == PcsPuzzleDirector.Instance.ActiveSection) &&
                 device.Trigger.enabled && device.Trigger.bounds.Intersects(BodyCollider.bounds) &&
                 (device.RequiredRole == MyEnum.CharacterType.None || device.RequiredRole == characterType))

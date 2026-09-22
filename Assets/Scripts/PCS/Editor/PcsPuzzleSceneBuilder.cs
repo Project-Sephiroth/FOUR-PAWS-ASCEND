@@ -262,50 +262,9 @@ public static partial class PcsSecondPassTools
         go.SetActive(false);
     }
 
-    // Legacy whole-scene reconstruction; its layout and lesson conditions are obsolete.
-    // Layout refinement never invokes it; translated strings do not migrate its old puzzle rules.
+    // The authored layout and passive shaft objects must remain unchanged.
     private static void BuildPuzzle()
     {
-        var scene = SceneManager.GetActiveScene();
-        if (scene.path != "Assets/Scenes/Puzzle.unity")
-        {
-            if (scene.isDirty) throw new InvalidOperationException("Unsaved active scene; build refused.");
-            scene = EditorSceneManager.OpenScene("Assets/Scenes/Puzzle.unity");
-        }
-        if (scene.isDirty && !SessionState.GetBool("PCS.BuilderInProgress", false))
-            throw new InvalidOperationException("Unsaved Puzzle edits; build refused.");
-        SessionState.SetBool("PCS.BuilderInProgress", true);
-        devices.Clear();
-        puzzleRoot = Find("Puzzle_Prototype").transform;
-        spriteMaterial = Find("Floor_Start_Left").GetComponent<SpriteRenderer>().sharedMaterial;
-        deckSprite = SpriteAt("ground-long"); shortSprite = SpriteAt("Short");
-        wallSprite = SpriteAt("Wall"); buttonSprite = SpriteAt("Button"); leverSprite = SpriteAt("Lever");
-        var archive = Node("99_Preserved_Prototype_Objects", puzzleRoot, Vector3.zero).transform;
-        foreach (string name in new[] { "TEST PLAN", "I HAVE A FUCKING PLAN", "Connection_Ramp_ToDock", "Connection_Landing_Right", "Landing_Right_Exit", "Connection_Ramp_FromTutorial", "TargetMarker" })
-            Archive(name, archive);
-        var directorGo = Node("Puzzle_SharedState", puzzleRoot, Vector3.zero);
-        director = Component<PcsPuzzleDirector>(directorGo);
-        director.ObstructionMask = LayerMask.GetMask("Ground");
-        director.RemoteRange = 7f;
-        director.ProjectileSpeed = 14f;
-        director.ProjectileSprite = buttonSprite;
-        var networkObject = Component<NetworkObject>(directorGo);
-        networkObject.Flags = (networkObject.Flags | NetworkObjectFlags.MasterClientObject) & ~NetworkObjectFlags.DestroyWhenStateAuthorityLeaves;
-        BuildStageOne();
-        BuildCorridor();
-        BuildShaft();
-        BuildTutorials();
-        director.Devices = devices.ToArray();
-        ConnectPlayerPrefabs();
-        ConnectNetworkPrefabs();
-        new NetworkObjectBakerEditTime().Bake(puzzleRoot.gameObject);
-        EditorSceneManager.MarkSceneDirty(scene);
-        EditorSceneManager.SaveScene(scene);
-        SessionState.SetBool("PCS.BuilderInProgress", false);
-        var scenes = EditorBuildSettings.scenes.ToList();
-        if (!scenes.Any(s => s.path == scene.path)) scenes.Add(new EditorBuildSettingsScene(scene.path, true));
-        EditorBuildSettings.scenes = scenes.ToArray();
-        AssetDatabase.SaveAssets();
-        ValidatePuzzle();
+        throw new InvalidOperationException("전체 씬 재생성은 폐기되었습니다. 저장된 배치를 유지하고 기존 장치 수동 테스트에서 1-2 상승·정지만 사용하세요.");
     }
 }

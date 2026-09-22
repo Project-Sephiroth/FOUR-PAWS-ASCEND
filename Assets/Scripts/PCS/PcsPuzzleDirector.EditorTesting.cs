@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 
-// No fields or methods in this file exist in a player build. Requests are local,
-// non-serialized inputs; only the existing state authority consumes them in its tick.
+// No fields or methods in this file exist in a player build. Pressure/lever fixtures
+// are local; shaft movement uses the same replicated command as runtime callers.
 public partial class PcsPuzzleDirector
 {
     public enum EditorPressureInput { Normal, Pressed, Released }
     public enum EditorStageOneCommand { PrepareSection, HackIncomplete, HackComplete, HoldLever, ReleaseLever, ResetSection }
-    public enum EditorShaftLiftInput { Normal, Raise, Hold, Lower }
+    public enum EditorShaftLiftInput { Normal, Raise, Hold }
 
     private bool editorTestsEnabled;
     private readonly Dictionary<PcsPuzzleDevice, EditorPressureInput> editorPressureInputs = new Dictionary<PcsPuzzleDevice, EditorPressureInput>();
@@ -17,8 +17,6 @@ public partial class PcsPuzzleDirector
     private PcsPuzzleDevice editorHoldDevice;
     private bool editorHoldPressed;
     private PcsPuzzleDevice editorShaftLift;
-    private EditorShaftLiftInput editorShaftLiftInput;
-    private Vector2 editorShaftHoldPosition;
     private int editorTestSection = -1;
     private string editorTestLastMessage = "수동 테스트가 꺼져 있습니다.";
 
@@ -47,8 +45,9 @@ public partial class PcsPuzzleDirector
     {
         if (!enabled)
         {
+            EditorReleaseForcedInputs();
             EditorForgetDeviceTests();
-            reason = editorTestLastMessage = "테스트 꺼짐: 다음 물리 틱부터 정상 입력을 사용합니다. 해킹 진행은 유지됩니다.";
+            reason = editorTestLastMessage = "테스트 꺼짐: 1-2 엘리베이터는 현재 위치에 정지하고 압력판·레버는 정상 입력을 사용합니다. 1-1 해킹 진행은 유지됩니다.";
             return true;
         }
         if (!EditorTryGetTestStatus(out reason)) return false;
@@ -95,32 +94,24 @@ public partial class PcsPuzzleDirector
     }
 
     public EditorShaftLiftInput EditorGetShaftLiftInput(PcsPuzzleDevice lift) =>
-        lift != null && editorShaftLift == lift ? editorShaftLiftInput : EditorShaftLiftInput.Normal;
+        EditorRegistered(lift) && editorShaftLift == lift
+            ? States[lift.DeviceId].Phase == (int)PcsShaftLiftCommand.Raise ? EditorShaftLiftInput.Raise : EditorShaftLiftInput.Hold
+            : EditorShaftLiftInput.Normal;
 
     public bool EditorTryGetShaftLiftStatus(PcsPuzzleDevice lift, out string reason)
     {
         if (!EditorTryGetTestStatus(out reason)) return false;
-        if (!EditorRegistered(lift) || lift.Section != 2 || lift.Kind != PcsDeviceKind.Elevator ||
-            lift.LiftPolicy != PcsLiftPolicy.MainContinuous)
+        if (!EditorRegistered(lift) || !lift.IsShaftElevator)
         { reason = "등록된 1-2 메인 엘리베이터가 필요합니다."; return false; }
         if (lift.Elevator == null || !lift.Elevator.isActiveAndEnabled || lift.Body == null ||
             !lift.Body.simulated || lift.Body.bodyType != RigidbodyType2D.Kinematic ||
             (lift.Body.constraints & RigidbodyConstraints2D.FreezePositionY) != 0)
         { reason = "활성 PcsElevator와 Y 이동이 가능한 Kinematic Rigidbody2D가 필요합니다."; return false; }
-        if (!float.IsFinite(lift.Speed) || lift.Speed <= 0f)
-        { reason = "PcsPuzzleDevice.Speed는 유한한 양수여야 합니다."; return false; }
-        if (lift.LowerStop == null || lift.UpperStop == null || lift.LowerStop.IsChildOf(lift.transform) || lift.UpperStop.IsChildOf(lift.transform))
-        { reason = "움직이는 발판 밖에 독립된 하단·상단 목표를 연결하세요."; return false; }
-        Vector3 lower = lift.LowerStop.position;
-        Vector3 upper = lift.UpperStop.position;
         Vector2 position = States[lift.DeviceId].Position;
-        if (!float.IsFinite(lower.x) || !float.IsFinite(lower.y) || !float.IsFinite(lower.z) ||
-            !float.IsFinite(upper.x) || !float.IsFinite(upper.y) || !float.IsFinite(upper.z) ||
-            !float.IsFinite(position.x) || !float.IsFinite(position.y) ||
-            Mathf.Abs(lower.x - upper.x) > 0.001f || Mathf.Abs(position.x - lower.x) > 0.001f ||
-            Mathf.Abs(lower.z - upper.z) > 0.001f || Mathf.Abs(lower.z - lift.transform.position.z) > 0.001f ||
-            !float.IsFinite(upper.y - lower.y) || upper.y <= lower.y + 0.001f)
-        { reason = "목표 좌표를 확인하세요. 동일한 월드 X/Z이며 상단 Y가 하단보다 높아야 합니다."; return false; }
+        if (!float.IsFinite(position.x) || !float.IsFinite(position.y))
+        { reason = "엘리베이터의 현재 네트워크 위치가 유한하지 않습니다."; return false; }
+        // Raise validates speed and the upper stop in the runtime API. Hold must
+        // remain available even when that target is missing or misconfigured.
         reason = "1-2 메인 엘리베이터 이동 연결 확인됨";
         return true;
     }
@@ -128,61 +119,37 @@ public partial class PcsPuzzleDirector
     public bool EditorSetShaftLiftInput(PcsPuzzleDevice lift, EditorShaftLiftInput mode, out string reason)
     {
         if (!EditorCanRequest(out reason)) return false;
-        if (mode < EditorShaftLiftInput.Normal || mode > EditorShaftLiftInput.Lower)
+        if (mode < EditorShaftLiftInput.Normal || mode > EditorShaftLiftInput.Hold)
         { reason = "알 수 없는 엘리베이터 시험 입력입니다."; return false; }
-        if (mode == EditorShaftLiftInput.Normal)
-        {
-            if (editorShaftLift == lift)
-            {
-                editorShaftLift = null;
-                editorShaftLiftInput = EditorShaftLiftInput.Normal;
-                editorShaftHoldPosition = default;
-            }
-            reason = editorTestLastMessage = "1-2 엘리베이터 강제 입력 해제: 기존 해킹 상태에 따른 목표로 현재 위치에서 이동합니다.";
-            return true;
-        }
         if (!EditorTryGetShaftLiftStatus(lift, out reason)) return false;
-        editorShaftLift = lift;
-        editorShaftLiftInput = mode;
-        editorShaftHoldPosition = States[lift.DeviceId].Position;
-        reason = editorTestLastMessage = mode == EditorShaftLiftInput.Raise ? "1-2 상승 요청: 기존 속도로 상단 목표까지 이동합니다." :
-            mode == EditorShaftLiftInput.Lower ? "1-2 하단 복귀 요청: 순간이동 없이 기존 속도로 내려갑니다." : "1-2 엘리베이터를 현재 위치에 유지합니다.";
-        return true;
-    }
-
-    private bool EditorTryShaftLiftTarget(PcsPuzzleDevice lift, out Vector2 target)
-    {
-        target = default;
-        if (!editorTestsEnabled || editorShaftLift != lift) return false;
-        if (!EditorTryGetShaftLiftStatus(lift, out string reason))
-        {
-            editorShaftLift = null;
-            editorShaftLiftInput = EditorShaftLiftInput.Normal;
-            editorShaftHoldPosition = default;
-            editorTestLastMessage = "엘리베이터 시험 해제: " + reason;
-            return false;
-        }
-        target = editorShaftLiftInput == EditorShaftLiftInput.Raise ? (Vector2)lift.UpperStop.position :
-            editorShaftLiftInput == EditorShaftLiftInput.Lower ? (Vector2)lift.LowerStop.position : editorShaftHoldPosition;
+        PcsShaftLiftCommand command = mode == EditorShaftLiftInput.Raise ? PcsShaftLiftCommand.Raise : PcsShaftLiftCommand.Hold;
+        if (!TrySetShaftLiftCommand(lift, command, out reason)) return false;
+        editorShaftLift = mode == EditorShaftLiftInput.Normal ? null : lift;
+        editorTestLastMessage = reason;
         return true;
     }
 
     public void EditorReleaseForcedInputs()
     {
+        if (editorShaftLift != null)
+            TrySetShaftLiftCommand(editorShaftLift, PcsShaftLiftCommand.Hold, out _);
         editorPressureInputs.Clear();
         editorHoldDevice = null;
         editorShaftLift = null;
-        editorShaftLiftInput = EditorShaftLiftInput.Normal;
-        editorShaftHoldPosition = default;
         editorCommands.Clear();
         // A forced hold has no actor/lease. The normal TickRemoteHolds clears it,
         // or a fresh legitimate owner request replaces it, on the next tick.
-        editorTestLastMessage = "강제 입력 해제: 실제 판정으로 복귀합니다. 해킹 완료 상태는 유지됩니다.";
+        editorTestLastMessage = "강제 입력 해제: 1-2 엘리베이터는 현재 위치에 정지하고 압력판·레버는 실제 판정으로 복귀합니다. 1-1 해킹 완료 상태는 유지됩니다.";
     }
 
     private void EditorForgetDeviceTests()
     {
-        EditorReleaseForcedInputs();
+        // Authority handoff forgets local ownership without replacing the
+        // replicated motion command inherited by the new authority.
+        editorPressureInputs.Clear();
+        editorHoldDevice = null;
+        editorShaftLift = null;
+        editorCommands.Clear();
         editorTestsEnabled = false;
         editorTestSection = -1;
     }
@@ -232,11 +199,9 @@ public partial class PcsPuzzleDirector
             editorTestSection = ActiveSection;
             editorTestLastMessage = "진행 구간이 바뀌어 이전 구간의 강제 입력을 해제했습니다.";
         }
-        if (editorShaftLiftInput != EditorShaftLiftInput.Normal && !EditorRegistered(editorShaftLift))
+        if (editorShaftLift != null && !EditorRegistered(editorShaftLift))
         {
             editorShaftLift = null;
-            editorShaftLiftInput = EditorShaftLiftInput.Normal;
-            editorShaftHoldPosition = default;
             editorTestLastMessage = "엘리베이터가 비활성화·파괴되거나 등록이 바뀌어 해당 시험 입력을 해제했습니다.";
         }
         if (editorCommands.Count == 0 || !ResetTimer.ExpiredOrNotRunning(Runner)) return;
