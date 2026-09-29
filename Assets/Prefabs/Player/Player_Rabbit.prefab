@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: -8583611898088411976}
   - component: {fileID: 8210023519212137742}
   - component: {fileID: -1734148059368601399}
+  - component: {fileID: 1772852031411262978}
   m_Layer: 3
   m_Name: Player_Rabbit
   m_TagString: Untagged
@@ -198,8 +199,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.38}
-  m_Size: {x: 0.7, y: 0.85}
+  m_Offset: {x: 0, y: 0.65}
+  m_Size: {x: 0.5, y: 1.3}
   m_Direction: 0
 --- !u!114 &638091196604807358
 MonoBehaviour:
@@ -263,6 +264,28 @@ MonoBehaviour:
   JumpInput: 0
   CanMoveInput: 1
   CanJumpInput: 1
+--- !u!95 &1772852031411262978
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2817390880039839120}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1fed8979d7a3bbf47ac9688b8c09cf2b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &7128324174896953473
 GameObject:
   m_ObjectHideFlags: 0
@@ -290,7 +313,7 @@ Transform:
   m_GameObject: {fileID: 7128324174896953473}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.2, z: 0}
+  m_LocalPosition: {x: 0, y: 1.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -380,7 +403,7 @@ Transform:
   m_GameObject: {fileID: 8804722460379092911}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.57, z: 0}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -435,7 +458,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3168107854797151879, guid: 184daa7e9935e13488ccd0aec60fa2fe, type: 3}
+  m_Sprite: {fileID: 3841274328588209720, guid: d9b85641116f25842b2ddd273c0af988, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

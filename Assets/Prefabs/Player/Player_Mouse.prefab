@@ -58,7 +58,7 @@ Transform:
   m_GameObject: {fileID: 3858531580762105824}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 1636461825933733836}
   - component: {fileID: -7504433427466975150}
   - component: {fileID: -5486389460404889778}
+  - component: {fileID: 3091498247633694084}
   m_Layer: 3
   m_Name: Player_Mouse
   m_TagString: Untagged
@@ -287,8 +288,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.22}
-  m_Size: {x: 0.5, y: 0.5}
+  m_Offset: {x: 0, y: 0.5}
+  m_Size: {x: 0.6, y: 1.1}
   m_Direction: 0
 --- !u!114 &1636461825933733836
 MonoBehaviour:
@@ -339,6 +340,28 @@ MonoBehaviour:
   JumpInput: 0
   CanMoveInput: 1
   CanJumpInput: 1
+--- !u!95 &3091498247633694084
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4353250075812841545}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: b68cda069752f5f4b930c0f2df048a8d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8275741618073531482
 GameObject:
   m_ObjectHideFlags: 0
@@ -365,7 +388,7 @@ Transform:
   m_GameObject: {fileID: 8275741618073531482}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.35, z: 0}
+  m_LocalPosition: {x: 0, y: 0.75, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -420,7 +443,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -6358962704755387619, guid: 184daa7e9935e13488ccd0aec60fa2fe, type: 3}
+  m_Sprite: {fileID: -7629070562746636510, guid: b3e2768748c92aa41b75c1e161916f3f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
