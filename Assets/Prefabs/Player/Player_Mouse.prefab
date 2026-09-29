@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 1990220528342613739}
   - component: {fileID: 8594781823028345128}
   - component: {fileID: 368976050365780461}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: head
   m_TagString: Untagged
   m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
@@ -71,7 +71,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3858531580762105824}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
@@ -139,9 +139,10 @@ GameObject:
   - component: {fileID: -7504433427466975150}
   - component: {fileID: -5486389460404889778}
   - component: {fileID: 3091498247633694084}
+  - component: {fileID: -8556835490579192334}
   m_Layer: 3
   m_Name: Player_Mouse
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -186,6 +187,7 @@ MonoBehaviour:
   - {fileID: 1636461825933733836}
   - {fileID: -7504433427466975150}
   - {fileID: -5486389460404889778}
+  - {fileID: -8556835490579192334}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &9211547091637837329
 MonoBehaviour:
@@ -288,7 +290,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.5}
+  m_Offset: {x: 0, y: 0.55}
   m_Size: {x: 0.6, y: 1.1}
   m_Direction: 0
 --- !u!114 &1636461825933733836
@@ -304,7 +306,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   speed: 2
-  jumpForce: 5
+  jumpForce: 15
   CanJump: 1
   canDoubleJump: 0
   groundCheck: {fileID: 6350647796864866439}
@@ -312,6 +314,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  model: {fileID: 6730078654515193778}
 --- !u!114 &-7504433427466975150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -362,6 +365,24 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-8556835490579192334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4353250075812841545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 506319458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkMecanimAnimator
+  Animator: {fileID: 3091498247633694084}
+  ApplyTiming: 2
+  SyncSettings: 79
+  StateHashes: 0000000095fc0c8da64f29ba
+  TriggerHashes: 00000000
+  TotalWords: 1
 --- !u!1 &8275741618073531482
 GameObject:
   m_ObjectHideFlags: 0

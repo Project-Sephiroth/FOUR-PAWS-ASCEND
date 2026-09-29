@@ -49,9 +49,10 @@ GameObject:
   - component: {fileID: 8210023519212137742}
   - component: {fileID: -1734148059368601399}
   - component: {fileID: 1772852031411262978}
+  - component: {fileID: -46958172760977952}
   m_Layer: 3
   m_Name: Player_Rabbit
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 2488908585195742037, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -97,6 +98,7 @@ MonoBehaviour:
   - {fileID: -8583611898088411976}
   - {fileID: 8210023519212137742}
   - {fileID: -1734148059368601399}
+  - {fileID: -46958172760977952}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &9100768190659140526
 MonoBehaviour:
@@ -215,7 +217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   speed: 2
-  jumpForce: 5
+  jumpForce: 13
   CanJump: 1
   canDoubleJump: 1
   groundCheck: {fileID: 695113933997386881}
@@ -223,6 +225,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  model: {fileID: 926748019128133554}
 --- !u!114 &-8583611898088411976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,6 +289,24 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-46958172760977952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2817390880039839120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 506319458, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkMecanimAnimator
+  Animator: {fileID: 1772852031411262978}
+  ApplyTiming: 2
+  SyncSettings: 79
+  StateHashes: 000000006f6fa7fcca2b40432fa012ad8ae4f5126cdc3087c998d738
+  TriggerHashes: 00000000
+  TotalWords: 1
 --- !u!1 &7128324174896953473
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,7 +318,7 @@ GameObject:
   - component: {fileID: 5217516001389480293}
   - component: {fileID: 7349096201156398016}
   - component: {fileID: 4630356534473329264}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: head
   m_TagString: Untagged
   m_Icon: {fileID: 1206586993520771344, guid: 0000000000000000d000000000000000, type: 0}
@@ -326,7 +347,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7128324174896953473}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
