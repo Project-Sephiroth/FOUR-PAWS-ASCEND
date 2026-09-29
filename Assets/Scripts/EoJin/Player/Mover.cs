@@ -10,6 +10,7 @@ public class Mover : NetworkBehaviour
 
     private PlayerInput input;
     private Rigidbody2D rb;
+    private Animator anim;
 
     [Header("이동")]
     [SerializeField] private float speed = 2f;
@@ -27,6 +28,9 @@ public class Mover : NetworkBehaviour
     [SerializeField] private float groundCheckRadius = 0.15f;
     [SerializeField] private LayerMask groundLayer;
 
+    [Header("애니메이션")]
+    [SerializeField] private SpriteRenderer model;
+
     #endregion
 
 
@@ -36,6 +40,7 @@ public class Mover : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         input = GetComponent<PlayerInput>();
+        anim = GetComponent<Animator>();
     }
 
     public override void Spawned()
@@ -67,7 +72,21 @@ public class Mover : NetworkBehaviour
 
     private void Move(Vector2 moveInput)
     {
+        if (moveInput.magnitude > 0)
+        {
+            anim.SetBool("IsWalk", true);
+            RPC_FlipModel(moveInput.x < 0);
+        }
+        else
+            anim.SetBool("IsWalk", false);
+
         rb.linearVelocity = new Vector2(moveInput.x * speed, rb.linearVelocity.y);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_FlipModel(bool doFlip)
+    {
+        model.flipX = doFlip;
     }
 
     private void Jump(bool jumpInput)
@@ -76,7 +95,12 @@ public class Mover : NetworkBehaviour
 
         //착지했다면 더블점프 초기화
         if (isGrounded)
+        {
+            anim.SetBool("IsJump", false);
             doubleJumped = false;
+        }
+        else
+            anim.SetBool("IsJump", true);
 
         if (!jumpInput)
             return;

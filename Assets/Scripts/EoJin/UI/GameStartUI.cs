@@ -13,6 +13,9 @@ public class GameStartUI : MonoBehaviour
 
     public void StartGame()
     {
+        if (GameManager.Instance.MyCharacterType == MyEnum.CharacterType.None)
+            return;
+
         NetworkGameManager.Instance.LoadScene("GameScene");
     }
 

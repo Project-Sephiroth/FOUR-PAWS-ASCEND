@@ -18,6 +18,11 @@ public class SelectCharacterUI : MonoBehaviour
         UnRegisterButtonEvents();
     }
 
+    public void ShowUI()
+    {
+        gameObject.SetActive(true);
+    }
+
     void OnSelect(MyEnum.CharacterType type)
     {
         Debug.Log($"캐릭터 선택 버튼: {type}");
