@@ -1,25 +1,25 @@
 fileFormatVersion: 2
-guid: 48889496fc13f9248acf032b419fd6be
+guid: b3e2768748c92aa41b75c1e161916f3f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6393505594047268360
-    second: mouse Walk_0
+      213: -7629070562746636510
+    second: Mouse Idle_0
   - first:
-      213: 3302107031838897782
-    second: mouse Walk_1
+      213: -3921638620741269938
+    second: Mouse Idle_1
   - first:
-      213: 4652707651796928511
-    second: mouse Walk_2
+      213: -6041435177966793020
+    second: Mouse Idle_2
   - first:
-      213: -827280607562383437
-    second: mouse Walk_3
+      213: 5269958367929478699
+    second: Mouse Idle_3
   - first:
-      213: 187837413619728633
-    second: mouse Walk_4
+      213: 5873265697150200250
+    second: Mouse Idle_4
   - first:
-      213: -3368683015724668358
-    second: mouse Walk_5
+      213: 3652992879254519882
+    second: Mouse Idle_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -52,7 +52,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -66,7 +66,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -88,9 +88,9 @@ TextureImporter:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
-    resizeAlgorithm: 0
+    resizeAlgorithm: 1
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -115,133 +115,133 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: mouse Walk_0
+      name: Mouse Idle_0
       rect:
         serializedVersion: 2
-        x: 6
+        x: 0
         y: 0
-        width: 22
-        height: 27
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 80609aaa67b4ab850800000000000000
-      internalID: 6393505594047268360
+      spriteID: 227e8156eb8102690800000000000000
+      internalID: -7629070562746636510
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse Walk_1
+      name: Mouse Idle_1
       rect:
         serializedVersion: 2
-        x: 38
+        x: 32
         y: 0
-        width: 22
-        height: 25
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 676b313a9d073dd20800000000000000
-      internalID: 3302107031838897782
+      spriteID: e468341c37a8399c0800000000000000
+      internalID: -3921638620741269938
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse Walk_2
+      name: Mouse Idle_2
       rect:
         serializedVersion: 2
-        x: 70
+        x: 64
         y: 0
-        width: 22
-        height: 26
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ff7091d45fcb19040800000000000000
-      internalID: 4652707651796928511
+      spriteID: 4ce8dbbe6b2882ca0800000000000000
+      internalID: -6041435177966793020
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse Walk_3
+      name: Mouse Idle_3
       rect:
         serializedVersion: 2
-        x: 102
+        x: 96
         y: 0
-        width: 22
-        height: 27
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3bfbca8aba8e484f0800000000000000
-      internalID: -827280607562383437
+      spriteID: b2ea885d637a22940800000000000000
+      internalID: 5269958367929478699
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse Walk_4
+      name: Mouse Idle_4
       rect:
         serializedVersion: 2
-        x: 134
+        x: 128
         y: 0
-        width: 22
-        height: 25
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9f0055ae1255b9200800000000000000
-      internalID: 187837413619728633
+      spriteID: ab9ef1e9808028150800000000000000
+      internalID: 5873265697150200250
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse Walk_5
+      name: Mouse Idle_5
       rect:
         serializedVersion: 2
-        x: 166
+        x: 160
         y: 0
-        width: 22
-        height: 26
+        width: 32
+        height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a3ae6de25a80041d0800000000000000
-      internalID: -3368683015724668358
+      spriteID: a404ff65ba902b230800000000000000
+      internalID: 3652992879254519882
       vertices: []
       indices: 
       edges: []
@@ -250,7 +250,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 58f044433e7588a4b84e08a3293a667f
     internalID: 0
     vertices: []
     indices: 
@@ -258,14 +258,16 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":6.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      mouse Walk_0: 6393505594047268360
-      mouse Walk_1: 3302107031838897782
-      mouse Walk_2: 4652707651796928511
-      mouse Walk_3: -827280607562383437
-      mouse Walk_4: 187837413619728633
-      mouse Walk_5: -3368683015724668358
+      Mouse Idle_0: -7629070562746636510
+      Mouse Idle_1: -3921638620741269938
+      Mouse Idle_2: -6041435177966793020
+      Mouse Idle_3: 5269958367929478699
+      Mouse Idle_4: 5873265697150200250
+      Mouse Idle_5: 3652992879254519882
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
