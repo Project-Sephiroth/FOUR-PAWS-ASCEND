@@ -1,10 +1,11 @@
+using Fusion;
 using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
 /// 머리는 누군가를 태울 수 있고, 맞으면 기절 하기도 합니다
 /// </summary>
-public class Head : MonoBehaviour
+public class Head : NetworkBehaviour
 {
     /// <summary>
     /// 충돌한 물체를 리턴

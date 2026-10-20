@@ -1,5 +1,6 @@
 using Fusion;
 using UnityEngine;
+using UnityEngine.Windows;
 
 /// <summary>
 /// Liftable 에 탈 수 있습니다.
@@ -10,14 +11,12 @@ public class Rider : NetworkBehaviour, IRideable
     private Lifter curLifter; //현재 타고 있는 태울 수 있는 객체
     private Rigidbody2D rb;
     private Collider2D col;
-    private NetworkTransform networkTransform;
 
     private void Awake()
     {
         input = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
-        networkTransform = GetComponent<NetworkTransform>();
     }
 
     private void Update()
@@ -34,7 +33,13 @@ public class Rider : NetworkBehaviour, IRideable
         if (curLifter != null)
             return;
 
-        RPC_SetLifter(lifter);
+        curLifter = lifter;
+        input.CanMoveInput = false;
+
+        transform.SetParent(curLifter.Head.transform);
+        transform.position = curLifter.Head.transform.position;
+
+        RPC_OnRide();
     }
 
     /// <summary>
@@ -45,20 +50,19 @@ public class Rider : NetworkBehaviour, IRideable
         if (curLifter == null)
             return;
 
+        curLifter.OnRiderDrop();
+        transform.SetParent(null, true);
+        transform.position = curLifter.transform.position;
+
+        input.CanMoveInput = true;
+        curLifter = null;
+
         RPC_OnDrop();
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_SetLifter(Lifter lifter)
+    public void RPC_OnRide()
     {
-        if (lifter == null)
-            return;
-
-        curLifter = lifter;
-
-        transform.SetParent(curLifter.Head.transform);
-        networkTransform.Teleport(curLifter.Head.transform.position);
-
         col.enabled = false;
         rb.simulated = false;
     }
@@ -66,14 +70,7 @@ public class Rider : NetworkBehaviour, IRideable
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_OnDrop()
     {
-        curLifter.OnRiderDrop();
-
         col.enabled = true;
         rb.simulated = true;
-
-        networkTransform.Teleport(curLifter.transform.position);
-        transform.SetParent(null, true);
-        
-        curLifter = null;
     }
 }

@@ -97,6 +97,7 @@ MonoBehaviour:
   - {fileID: -8583611898088411976}
   - {fileID: -1734148059368601399}
   - {fileID: -46958172760977952}
+  - {fileID: 4630356534473329264}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &9100768190659140526
 MonoBehaviour:
@@ -112,7 +113,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkTransform
   _stateAuthorityChangeErrorCorrectionDelta: 0
   SyncScale: 0
-  SyncParent: 0
+  SyncParent: 1
   _autoAOIOverride: 1
   ConfigFlags: 0
   PhysicsSettings:
@@ -222,7 +223,7 @@ MonoBehaviour:
   groundCheckRadius: 0.15
   groundLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   model: {fileID: 926748019128133554}
 --- !u!114 &-8583611898088411976
 MonoBehaviour:
@@ -237,6 +238,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lifter
   head: {fileID: 4630356534473329264}
+  _CanLift:
+    RawValue: 0
 --- !u!114 &-1734148059368601399
 MonoBehaviour:
   m_ObjectHideFlags: 0

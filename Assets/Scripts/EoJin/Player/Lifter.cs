@@ -9,7 +9,7 @@ public class Lifter : NetworkBehaviour, ILiftable
     [SerializeField] private Head head; //나의 머리
     public Head Head => head; //다른 객체에서 나의 머리 확인 가능
 
-    private Rider curRider = null; //현재 탑승한 타겟
+    [Networked] public Rider CurRider { get; set; } //현재 탑승한 타겟
 
     private void Start()
     {
@@ -36,7 +36,7 @@ public class Lifter : NetworkBehaviour, ILiftable
             return;
 
         //현재 탑승하고 있는 rider 가 있으면 더이상 태우지 않습니다
-        if (curRider == null)
+        if (CurRider == null)
             Lift(newRider);
     }
 
@@ -46,16 +46,14 @@ public class Lifter : NetworkBehaviour, ILiftable
     /// <param name="rider"></param>
     public void Lift(Rider rider)
     {
-        curRider = rider; 
-        curRider.Ride(this);
+        CurRider = rider;
+        CurRider.Ride(this);
     }
 
     public void OnRiderDrop()
     {
         //현재 탑승하고 있는 rider 가 없으면 return
-        if (curRider == null)
-            return;
-
-        curRider = null;
+        CurRider = null;
     }
+
 }
