@@ -1,36 +1,29 @@
 using Fusion;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 /// <summary>
-/// Liftable 에 탈 수 있습니다
+/// Liftable 에 탈 수 있습니다.
 /// </summary>
 public class Rider : NetworkBehaviour, IRideable
 {
     private PlayerInput input; //input 을 받는 Player 객체
     private Lifter curLifter; //현재 타고 있는 태울 수 있는 객체
     private Rigidbody2D rb;
-    private FixedJoint2D rideJoint;
+    private Collider2D col;
+    private NetworkTransform networkTransform;
 
     private void Awake()
     {
         input = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<Collider2D>();
+        networkTransform = GetComponent<NetworkTransform>();
     }
 
     private void Update()
     {
-        //탑승 중이 아니라면
-        if (curLifter == null)
-            return;
-
-        Ride();
-
-        if (input != null && input.JumpInput) //인풋을 받을 수 있고 점프했다면
-        {
-            input.JumpInput = false;
+        if (input.JumpInput) //인풋을 받을 수 있고 점프했다면
             Drop(); //내리기
-        }
     }
 
     /// <summary>
@@ -38,26 +31,10 @@ public class Rider : NetworkBehaviour, IRideable
     /// </summary>
     public void Ride(Lifter lifter)
     {
-        curLifter = lifter;
+        if (curLifter != null)
+            return;
 
-        //Lifter와 물리적으로 연결
-        Debug.Log($"{gameObject.name} 이 {lifter.gameObject.name} 과 물리적으로 연결 됨");
-        rideJoint = gameObject.AddComponent<FixedJoint2D>();
-
-        rideJoint.connectedBody = curLifter.Rb;
-        rideJoint.enableCollision = false;
-
-        if (input != null)
-        {
-            input.CanMoveInput = false;
-            input.MoveInput = Vector2.zero; //이동 입력이 있었다면 제거
-        }
-    }
-
-    void Ride()
-    {
-        //머리 위치로 이동
-        rb.position = curLifter.Head.transform.position;
+        RPC_SetLifter(lifter);
     }
 
     /// <summary>
@@ -65,21 +42,38 @@ public class Rider : NetworkBehaviour, IRideable
     /// </summary>
     public void Drop()
     {
-        if (curLifter != null)
-        {
-            curLifter.OnRiderDrop(this);
-            curLifter = null;
-        }
+        if (curLifter == null)
+            return;
 
-        if (rideJoint != null)
-        {
-            Destroy(rideJoint);
-            rideJoint = null;
-        }
-
-        //내린 후엔 move input 을 받습니다
-        input.MoveInput = Vector2.zero;
-        input.CanMoveInput = true;
+        RPC_OnDrop();
     }
 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_SetLifter(Lifter lifter)
+    {
+        if (lifter == null)
+            return;
+
+        curLifter = lifter;
+
+        transform.SetParent(curLifter.Head.transform);
+        networkTransform.Teleport(curLifter.Head.transform.position);
+
+        col.enabled = false;
+        rb.simulated = false;
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_OnDrop()
+    {
+        curLifter.OnRiderDrop();
+
+        col.enabled = true;
+        rb.simulated = true;
+
+        networkTransform.Teleport(curLifter.transform.position);
+        transform.SetParent(null, true);
+        
+        curLifter = null;
+    }
 }

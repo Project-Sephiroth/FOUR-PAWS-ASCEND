@@ -2,21 +2,17 @@ using Fusion;
 using UnityEngine;
 
 /// <summary>
-/// Rideable 을 옮깁니다
+/// Rideable 을 머리 위에 갖습니다. lifter 의 local 에서만 발현 됩니다.
 /// </summary>
 public class Lifter : NetworkBehaviour, ILiftable
 {
     [SerializeField] private Head head; //나의 머리
     public Head Head => head; //다른 객체에서 나의 머리 확인 가능
 
-    private Rider curRider; //현재 탑승한 타겟
-    private Rigidbody2D rb; //나의 리지드바디(몸무게 확인)
-    public Rigidbody2D Rb => rb;
+    private Rider curRider = null; //현재 탑승한 타겟
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-
         //머리에서 충돌이 일어났다면 확인합니다
         head.OnHit += OnHeadHit;
     }
@@ -33,33 +29,33 @@ public class Lifter : NetworkBehaviour, ILiftable
     /// <param name="target">머리에 부딪힌 오브젝트</param>
     private void OnHeadHit(GameObject target)
     {
-        //탈 수 있음 속성이 없으면 리턴
+        //탈 수 있음 속성이 없으면 return
         var newRider = target.GetComponent<Rider>();
 
         if (newRider == null)
             return;
 
-        Lift(newRider);
+        //현재 탑승하고 있는 rider 가 있으면 더이상 태우지 않습니다
+        if (curRider == null)
+            Lift(newRider);
     }
 
-    public void OnRiderDrop(IRideable rideable)
-    {
-        
-    }
-
+    /// <summary>
+    /// Rider 를 설정합니다
+    /// </summary>
+    /// <param name="rider"></param>
     public void Lift(Rider rider)
     {
-        //이미 누군가 타고 있다면 리턴
-        if (curRider != null)
-            return;
-
-        var targetRb = rider.gameObject.GetComponent<Rigidbody2D>();
-
-        //나보다 몸무게가 무겁다면 탑승할 수 없음
-        if (rb != null && targetRb != null && targetRb.mass > rb.mass)
-            return;
-
-        curRider = rider;
+        curRider = rider; 
         curRider.Ride(this);
+    }
+
+    public void OnRiderDrop()
+    {
+        //현재 탑승하고 있는 rider 가 없으면 return
+        if (curRider == null)
+            return;
+
+        curRider = null;
     }
 }
