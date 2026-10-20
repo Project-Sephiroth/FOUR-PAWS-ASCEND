@@ -12,4 +12,9 @@ public static class MyEnum
     {
         Default = 0, Player = 3, Ground = 6
     }
+
+    public enum Scene
+    {
+        Title, Lobby, Tutorial
+    }
 }
