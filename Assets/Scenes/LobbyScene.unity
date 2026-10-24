@@ -3098,10 +3098,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2540835244997823059, guid: 84f364cf4732f7f4aa88de9e587560b2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84f364cf4732f7f4aa88de9e587560b2, type: 3}
 --- !u!224 &264558428845425749 stripped
 RectTransform:
@@ -3260,7 +3257,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8086756599460746989, guid: af00670bce51224489e902f85e9ca814, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8561840703285925681, guid: af00670bce51224489e902f85e9ca814, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -3272,7 +3269,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9154222523660743256, guid: af00670bce51224489e902f85e9ca814, type: 3}
       propertyPath: m_Color.a
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3289,7 +3286,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 368847840597428238, guid: 2d77ca4e68db22b4aa29354fd5442636, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0000071851437
+      value: 0.00047150478
       objectReference: {fileID: 0}
     - target: {fileID: 3178434040364901016, guid: 2d77ca4e68db22b4aa29354fd5442636, type: 3}
       propertyPath: m_Name

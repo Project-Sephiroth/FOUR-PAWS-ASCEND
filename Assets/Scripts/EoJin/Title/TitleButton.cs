@@ -5,7 +5,7 @@ public class TitleButton : MonoBehaviour
 {
     public void GameStart()
     {
-        SceneManager.LoadScene(MyEnum.Scene.Lobby.ToString());
+        SceneManager.LoadScene("LobbyScene");
     }
 
     public void ExitGame()

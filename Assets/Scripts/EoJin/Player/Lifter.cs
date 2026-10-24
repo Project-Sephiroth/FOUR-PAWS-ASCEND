@@ -1,5 +1,6 @@
 using Fusion;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 /// <summary>
 /// Rideable 을 머리 위에 갖습니다. lifter 의 local 에서만 발현 됩니다.
@@ -8,25 +9,23 @@ public class Lifter : NetworkBehaviour, ILiftable
 {
     [SerializeField] private Head head; //나의 머리
     public Head Head => head; //다른 객체에서 나의 머리 확인 가능
-    private Rider curRider; //현재 탑승한 타겟
+    [Networked] public Rider CurRider { get; set; } //현재 탑승한 타겟
 
-    private void Start()
+    [SerializeField] LayerMask playerLayer;
+    [SerializeField] Interactor interactor;
+
+    void Start()
     {
-        //머리에서 충돌이 일어났다면 확인합니다
-        head.OnHit += OnHeadHit;
+        //Interactor 에서 인터랙션을 시도할 때 리프팅 시도
+        interactor.OnTryInteract += TryLift;
     }
 
-    private void OnDestroy()
+    void OnDestroy()
     {
-        if (head != null)
-            head.OnHit -= OnHeadHit;
+        interactor.OnTryInteract -= TryLift; 
     }
 
-    /// <summary>
-    /// 나의 머리에 무언가가 충돌했다면 Rideable 인지 확인합니다
-    /// </summary>
-    /// <param name="target">머리에 부딪힌 오브젝트</param>
-    private void OnHeadHit(GameObject target)
+    void TryLift(GameObject target)
     {
         //탈 수 있음 속성이 없으면 return
         var newRider = target.GetComponent<Rider>();
@@ -34,9 +33,11 @@ public class Lifter : NetworkBehaviour, ILiftable
         if (newRider == null)
             return;
 
-        //현재 탑승하고 있는 rider 가 있으면 더이상 태우지 않습니다
-        if (curRider == null)
-            Lift(newRider);
+        //현재 탑승하고 있는 rider 가 있으면 내립니다
+        if (CurRider != null)
+            OnRiderDrop();
+
+        Lift(newRider);
     }
 
     /// <summary>
@@ -45,15 +46,32 @@ public class Lifter : NetworkBehaviour, ILiftable
     /// <param name="rider"></param>
     public void Lift(Rider rider)
     {
-        curRider = rider;
+        CurRider = rider;
 
-        curRider.Ride(this);
+        RPC_RequestRide();
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_RequestRide()
+    {
+        Debug.Log($"{gameObject.name} 이 {CurRider.gameObject.name} 에게 탑승을 리퀘스트");
+        CurRider.Ride(this);
     }
 
     public void OnRiderDrop()
     {
         //현재 탑승하고 있는 rider 가 없으면 return
-        curRider = null;
+        RPC_RequestRiderDrop();
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_RequestRiderDrop()
+    {
+        if (CurRider == null)
+            return;
+
+        CurRider.Drop();
+        CurRider = null;
     }
 
 }

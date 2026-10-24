@@ -4,23 +4,33 @@ public class TitleCameraMovement : MonoBehaviour
 {
     [SerializeField] float moveAmount = 2.0f;
     [SerializeField] float moveSpeed = 1.5f;
-    bool isBack = false;
+    bool isBack = true;
+    [SerializeField] float lerpTime = 10f;
+    float timer = 0f;
 
     private void Update()
     {
-        if (isBack)
+        if (!isBack)
         {
-            transform.Translate(Vector3.forward * moveSpeed);
+            timer -= Time.deltaTime * lerpTime;
+            transform.Translate(Vector3.forward * (moveSpeed / timer));
 
             if (transform.position.z > -10 + moveAmount)
-                isBack = false;
+            {
+                isBack = true;
+                timer = lerpTime;
+            }
         }
         else
         {
-            transform.Translate(Vector3.back * moveSpeed);
+            timer -= Time.deltaTime * lerpTime;
+            transform.Translate(Vector3.back * (moveSpeed / timer));
 
             if (transform.position.z < -10 - moveAmount)
-                isBack = true;
+            {
+                isBack = false;
+                timer = lerpTime;
+            }
         }
         
     }

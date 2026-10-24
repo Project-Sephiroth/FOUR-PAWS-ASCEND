@@ -11,12 +11,16 @@ public class Rider : NetworkBehaviour, IRideable
     private Lifter curLifter; //현재 타고 있는 태울 수 있는 객체
     private Rigidbody2D rb;
     private Collider2D col;
+    private NetworkObject networkObj;
 
     private void Awake()
     {
         input = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
+
+        if (HasInputAuthority)
+            networkObj = GetComponent<NetworkObject>();
     }
 
     private void Update()
@@ -33,13 +37,16 @@ public class Rider : NetworkBehaviour, IRideable
         if (curLifter != null)
             return;
 
+        Debug.Log($"{lifter.gameObject.name} 에 {gameObject.name} 이 탑승");
+
         curLifter = lifter;
         input.CanMoveInput = false;
 
         transform.SetParent(curLifter.Head.transform);
         transform.position = curLifter.Head.transform.position;
 
-        RPC_OnRide();
+        col.enabled = false;
+        rb.simulated = false;
     }
 
     /// <summary>
@@ -50,27 +57,21 @@ public class Rider : NetworkBehaviour, IRideable
         if (curLifter == null)
             return;
 
-        curLifter.OnRiderDrop();
         transform.SetParent(null, true);
         transform.position = curLifter.transform.position;
 
         input.CanMoveInput = true;
         curLifter = null;
 
-        RPC_OnDrop();
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_OnRide()
-    {
-        col.enabled = false;
-        rb.simulated = false;
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_OnDrop()
-    {
         col.enabled = true;
         rb.simulated = true;
+
+        RPC_RequestLifterDrop();
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_RequestLifterDrop()
+    {
+        curLifter.OnRiderDrop();
     }
 }

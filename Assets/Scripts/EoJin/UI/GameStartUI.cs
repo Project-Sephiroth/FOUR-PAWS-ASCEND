@@ -1,6 +1,4 @@
-using Fusion;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameStartUI : MonoBehaviour
 {
