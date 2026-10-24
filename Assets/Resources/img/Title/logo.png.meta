@@ -1,79 +1,67 @@
 fileFormatVersion: 2
-guid: 833d33704059c834791f0daca7634959
+guid: 8a1e3237d8bbb774791aff80a86bfb31
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7077016587727338631
-    second: mouse ldie_0
+      213: -4320295261928297051
+    second: logo_0
   - first:
-      213: -5220454027091929552
-    second: mouse ldie_1
+      213: 5470614613321624601
+    second: logo_1
   - first:
-      213: -3237554980712589496
-    second: mouse ldie_2
+      213: 4560591551370500262
+    second: logo_2
   - first:
-      213: 3688635926069713605
-    second: mouse ldie_3
+      213: 6640445872580291462
+    second: logo_3
   - first:
-      213: 5891678207299665800
-    second: mouse ldie_4
+      213: 7220771215297418599
+    second: logo_4
   - first:
-      213: -4262505660152309243
-    second: mouse ldie_5
+      213: -8223382129855978605
+    second: logo_5
   - first:
-      213: -5937112063807528270
-    second: mouse ldie_6
+      213: -1318215486492414624
+    second: logo_6
   - first:
-      213: 3780117836119735465
-    second: mouse ldie_7
+      213: 2547678001213806659
+    second: logo_7
   - first:
-      213: -1810012125009419135
-    second: mouse ldie_8
+      213: 7966619702581107187
+    second: logo_8
   - first:
-      213: -8669406147050928277
-    second: mouse ldie_9
+      213: -4158264754640302621
+    second: logo_9
   - first:
-      213: 6984062044680996653
-    second: mouse ldie_10
+      213: -456560011164628789
+    second: logo_10
   - first:
-      213: 7803575957336265063
-    second: mouse ldie_11
+      213: 8265423726798506560
+    second: logo_11
   - first:
-      213: 7156572005765220406
-    second: mouse ldie_12
+      213: -5881772203921295813
+    second: logo_12
   - first:
-      213: 8837743477030996052
-    second: mouse ldie_13
+      213: 3279490269522818815
+    second: logo_13
   - first:
-      213: 3376808125575845746
-    second: mouse ldie_14
+      213: 5399540843189412849
+    second: logo_14
   - first:
-      213: 5063240492005831390
-    second: mouse ldie_15
+      213: -7659919998633512378
+    second: logo_15
   - first:
-      213: 7961453962279800020
-    second: mouse ldie_16
+      213: -5920777163311385063
+    second: logo_16
   - first:
-      213: -1084210326651914638
-    second: mouse ldie_17
+      213: -3217387466338767218
+    second: logo_17
   - first:
-      213: 8670819227410962688
-    second: mouse ldie_18
+      213: 209502182205696960
+    second: logo_18
   - first:
-      213: 667119909940250903
-    second: mouse ldie_19
-  - first:
-      213: 4861664521958522183
-    second: mouse ldie_20
-  - first:
-      213: -4304860867900932856
-    second: mouse ldie_21
-  - first:
-      213: 1459977848718477830
-    second: mouse ldie_22
-  - first:
-      213: 3449575712783147618
-    second: mouse ldie_23
+      213: 3686975677404464153
+    second: logo_19
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -115,7 +103,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -169,13 +157,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: mouse ldie_0
+      name: logo_0
       rect:
         serializedVersion: 2
-        x: 6
+        x: 0
         y: 0
-        width: 22
-        height: 25
+        width: 2144
+        height: 718
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -184,20 +172,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 78cf805471d963260800000000000000
-      internalID: 7077016587727338631
+      spriteID: 5ade5f3695a3b04c0800000000000000
+      internalID: -4320295261928297051
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse ldie_1
+      name: logo_1
       rect:
         serializedVersion: 2
-        x: 38
-        y: 0
-        width: 22
-        height: 24
+        x: 66
+        y: 500
+        width: 8
+        height: 7
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -206,20 +194,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0369de4b8b83d87b0800000000000000
-      internalID: -5220454027091929552
+      spriteID: 91ca81a91078beb40800000000000000
+      internalID: 5470614613321624601
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse ldie_2
+      name: logo_2
       rect:
         serializedVersion: 2
         x: 70
-        y: 0
-        width: 22
-        height: 22
+        y: 504
+        width: 10
+        height: 9
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -228,20 +216,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 84754d9f5e4e113d0800000000000000
-      internalID: -3237554980712589496
+      spriteID: 6a816195ad97a4f30800000000000000
+      internalID: 4560591551370500262
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse ldie_3
+      name: logo_3
       rect:
         serializedVersion: 2
-        x: 102
-        y: 0
+        x: 2088
+        y: 490
         width: 22
-        height: 24
+        height: 19
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -250,19 +238,173 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5ca112fd4daa03330800000000000000
-      internalID: 3688635926069713605
+      spriteID: 68b6b59a65a972c50800000000000000
+      internalID: 6640445872580291462
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse ldie_4
+      name: logo_4
       rect:
         serializedVersion: 2
-        x: 134
-        y: 0
-        width: 22
+        x: 60
+        y: 427
+        width: 44
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7651b2cb925553460800000000000000
+      internalID: 7220771215297418599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logo_5
+      rect:
+        serializedVersion: 2
+        x: 2099
+        y: 383
+        width: 63
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 393a3a1b58da0ed80800000000000000
+      internalID: -8223382129855978605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logo_6
+      rect:
+        serializedVersion: 2
+        x: 2078
+        y: 403
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06d633ecff1c4bde0800000000000000
+      internalID: -1318215486492414624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logo_7
+      rect:
+        serializedVersion: 2
+        x: 2082
+        y: 407
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3481d68d4ab2b5320800000000000000
+      internalID: 2547678001213806659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logo_8
+      rect:
+        serializedVersion: 2
+        x: 2092
+        y: 406
+        width: 10
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f999f8196e1f8e60800000000000000
+      internalID: 7966619702581107187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logo_9
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 272
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ed43a1bc30ea46c0800000000000000
+      internalID: -4158264754640302621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logo_10
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 280
+        width: 25
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc842ebb619f9a9f0800000000000000
+      internalID: -456560011164628789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: logo_11
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 281
+        width: 19
         height: 25
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -272,20 +414,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 88fb1053d1273c150800000000000000
-      internalID: 5891678207299665800
+      spriteID: 04a09e1661fa4b270800000000000000
+      internalID: 8265423726798506560
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse ldie_5
+      name: logo_12
       rect:
         serializedVersion: 2
-        x: 166
-        y: 0
-        width: 22
-        height: 24
+        x: 54
+        y: 256
+        width: 9
+        height: 11
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -294,20 +436,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 50a97819fa988d4c0800000000000000
-      internalID: -4262505660152309243
+      spriteID: b36318fe75fbf5ea0800000000000000
+      internalID: -5881772203921295813
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse ldie_6
+      name: logo_13
       rect:
         serializedVersion: 2
-        x: 198
-        y: 0
-        width: 22
-        height: 22
+        x: 62
+        y: 246
+        width: 18
+        height: 18
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -316,20 +458,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2b2e01db8042b9da0800000000000000
-      internalID: -5937112063807528270
+      spriteID: ff6f14f4607138d20800000000000000
+      internalID: 3279490269522818815
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse ldie_7
+      name: logo_14
       rect:
         serializedVersion: 2
-        x: 230
-        y: 0
-        width: 22
-        height: 24
+        x: 2084
+        y: 256
+        width: 10
+        height: 9
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -338,20 +480,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9acf80fd42da57430800000000000000
-      internalID: 3780117836119735465
+      spriteID: 1f3a484f9c50fea40800000000000000
+      internalID: 5399540843189412849
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse ldie_8
+      name: logo_15
       rect:
         serializedVersion: 2
-        x: 262
-        y: 0
-        width: 22
-        height: 25
+        x: 2066
+        y: 222
+        width: 20
+        height: 21
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -360,20 +502,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 184e9a9ef8b81e6e0800000000000000
-      internalID: -1810012125009419135
+      spriteID: 642f981685f72b590800000000000000
+      internalID: -7659919998633512378
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse ldie_9
+      name: logo_16
       rect:
         serializedVersion: 2
-        x: 293
-        y: 0
-        width: 23
-        height: 24
+        x: 2089
+        y: 178
+        width: 62
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -382,20 +524,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b67017faa0510b780800000000000000
-      internalID: -8669406147050928277
+      spriteID: 91674922a8c25dda0800000000000000
+      internalID: -5920777163311385063
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse ldie_10
+      name: logo_17
       rect:
         serializedVersion: 2
-        x: 325
-        y: 0
-        width: 23
-        height: 23
+        x: 2092
+        y: 232
+        width: 6
+        height: 7
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -404,20 +546,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d27cf7e2d6f5ce060800000000000000
-      internalID: 6984062044680996653
+      spriteID: e8e6514552b8953d0800000000000000
+      internalID: -3217387466338767218
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse ldie_11
+      name: logo_18
       rect:
         serializedVersion: 2
-        x: 357
-        y: 0
-        width: 22
-        height: 24
+        x: 2084
+        y: 212
+        width: 10
+        height: 7
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -426,20 +568,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7619ec2fcfedb4c60800000000000000
-      internalID: 7803575957336265063
+      spriteID: 0cb2a0eef1d48e200800000000000000
+      internalID: 209502182205696960
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: mouse ldie_12
+      name: logo_19
       rect:
         serializedVersion: 2
-        x: 389
-        y: 0
-        width: 22
-        height: 25
+        x: 2076
+        y: 186
+        width: 6
+        height: 7
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -448,250 +590,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 63804257250415360800000000000000
-      internalID: 7156572005765220406
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse ldie_13
-      rect:
-        serializedVersion: 2
-        x: 421
-        y: 0
-        width: 22
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 45845743ed8f5aa70800000000000000
-      internalID: 8837743477030996052
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse ldie_14
-      rect:
-        serializedVersion: 2
-        x: 453
-        y: 0
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 277d99f5915dcde20800000000000000
-      internalID: 3376808125575845746
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse ldie_15
-      rect:
-        serializedVersion: 2
-        x: 485
-        y: 0
-        width: 23
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ed2b16ab66e344640800000000000000
-      internalID: 5063240492005831390
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse ldie_16
-      rect:
-        serializedVersion: 2
-        x: 517
-        y: 0
-        width: 23
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4dc40557234cc7e60800000000000000
-      internalID: 7961453962279800020
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse ldie_17
-      rect:
-        serializedVersion: 2
-        x: 550
-        y: 0
-        width: 22
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2763a1ac37c14f0f0800000000000000
-      internalID: -1084210326651914638
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse ldie_18
-      rect:
-        serializedVersion: 2
-        x: 582
-        y: 0
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0091579b520f45870800000000000000
-      internalID: 8670819227410962688
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse ldie_19
-      rect:
-        serializedVersion: 2
-        x: 614
-        y: 0
-        width: 22
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 71944960606124900800000000000000
-      internalID: 667119909940250903
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse ldie_20
-      rect:
-        serializedVersion: 2
-        x: 646
-        y: 0
-        width: 22
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 74df470ef1a187340800000000000000
-      internalID: 4861664521958522183
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse ldie_21
-      rect:
-        serializedVersion: 2
-        x: 678
-        y: 0
-        width: 22
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 80df84949df0244c0800000000000000
-      internalID: -4304860867900932856
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse ldie_22
-      rect:
-        serializedVersion: 2
-        x: 710
-        y: 0
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 60acdcc3e12e24410800000000000000
-      internalID: 1459977848718477830
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: mouse ldie_23
-      rect:
-        serializedVersion: 2
-        x: 742
-        y: 0
-        width: 22
-        height: 24
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 262214a85da5fdf20800000000000000
-      internalID: 3449575712783147618
+      spriteID: 914c23b18d4ca2330800000000000000
+      internalID: 3686975677404464153
       vertices: []
       indices: 
       edges: []
@@ -700,7 +600,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -710,30 +610,26 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      mouse ldie_0: 7077016587727338631
-      mouse ldie_1: -5220454027091929552
-      mouse ldie_10: 6984062044680996653
-      mouse ldie_11: 7803575957336265063
-      mouse ldie_12: 7156572005765220406
-      mouse ldie_13: 8837743477030996052
-      mouse ldie_14: 3376808125575845746
-      mouse ldie_15: 5063240492005831390
-      mouse ldie_16: 7961453962279800020
-      mouse ldie_17: -1084210326651914638
-      mouse ldie_18: 8670819227410962688
-      mouse ldie_19: 667119909940250903
-      mouse ldie_2: -3237554980712589496
-      mouse ldie_20: 4861664521958522183
-      mouse ldie_21: -4304860867900932856
-      mouse ldie_22: 1459977848718477830
-      mouse ldie_23: 3449575712783147618
-      mouse ldie_3: 3688635926069713605
-      mouse ldie_4: 5891678207299665800
-      mouse ldie_5: -4262505660152309243
-      mouse ldie_6: -5937112063807528270
-      mouse ldie_7: 3780117836119735465
-      mouse ldie_8: -1810012125009419135
-      mouse ldie_9: -8669406147050928277
+      logo_0: -4320295261928297051
+      logo_1: 5470614613321624601
+      logo_10: -456560011164628789
+      logo_11: 8265423726798506560
+      logo_12: -5881772203921295813
+      logo_13: 3279490269522818815
+      logo_14: 5399540843189412849
+      logo_15: -7659919998633512378
+      logo_16: -5920777163311385063
+      logo_17: -3217387466338767218
+      logo_18: 209502182205696960
+      logo_19: 3686975677404464153
+      logo_2: 4560591551370500262
+      logo_3: 6640445872580291462
+      logo_4: 7220771215297418599
+      logo_5: -8223382129855978605
+      logo_6: -1318215486492414624
+      logo_7: 2547678001213806659
+      logo_8: 7966619702581107187
+      logo_9: -4158264754640302621
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
