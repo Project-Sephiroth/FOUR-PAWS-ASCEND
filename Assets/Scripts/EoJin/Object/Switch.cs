@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 public class Switch : NetworkBehaviour
 {
-    [Tooltip("true : 스위치에 닿아야지만 On")]
+    [Header("스위치에 닿고 있을 때만 작동되는가?")]
     [SerializeField] bool isWait = true;
     public UnityEvent<bool> action;
     private Animator anim;

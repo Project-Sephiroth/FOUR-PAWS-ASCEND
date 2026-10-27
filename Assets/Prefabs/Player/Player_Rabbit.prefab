@@ -68,7 +68,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0.85}
-  m_Radius: 1
+  m_Radius: 1.5
 --- !u!114 &8927662265328794544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,10 +126,11 @@ GameObject:
   - component: {fileID: 4364208555585910114}
   - component: {fileID: 1466466799367401990}
   - component: {fileID: 638091196604807358}
-  - component: {fileID: -8583611898088411976}
   - component: {fileID: -1734148059368601399}
   - component: {fileID: 1772852031411262978}
   - component: {fileID: -46958172760977952}
+  - component: {fileID: 4342583732267826579}
+  - component: {fileID: 5667559860964636251}
   m_Layer: 3
   m_Name: Player_Rabbit
   m_TagString: Player
@@ -176,10 +177,12 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 9100768190659140526}
   - {fileID: 638091196604807358}
-  - {fileID: -8583611898088411976}
   - {fileID: -1734148059368601399}
   - {fileID: -46958172760977952}
+  - {fileID: 4342583732267826579}
+  - {fileID: 5667559860964636251}
   - {fileID: 4630356534473329264}
+  - {fileID: 8927662265328794544}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &9100768190659140526
 MonoBehaviour:
@@ -307,24 +310,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 192
   model: {fileID: 926748019128133554}
---- !u!114 &-8583611898088411976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2817390880039839120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54d456372e7b516478419d2647c9f7bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Lifter
-  head: {fileID: 4630356534473329264}
-  _CurRider: {fileID: 0}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  interactor: {fileID: 0}
 --- !u!114 &-1734148059368601399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -377,10 +362,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkMecanimAnimator
   Animator: {fileID: 1772852031411262978}
   ApplyTiming: 2
-  SyncSettings: 79
+  SyncSettings: 78
   StateHashes: 000000006f6fa7fcca2b40432fa012ad8ae4f5126cdc3087c998d738
   TriggerHashes: 00000000
   TotalWords: 1
+--- !u!114 &4342583732267826579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2817390880039839120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 550677713882ebd489a1542faf897c0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactor
+  interactRange: {fileID: 8927662265328794544}
+  detectLayer:
+    serializedVersion: 2
+    m_Bits: 8
+--- !u!114 &5667559860964636251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2817390880039839120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e63c286db484a644aa7d24800d1644af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Carrier
+  head: {fileID: 4630356534473329264}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  interactor: {fileID: 4342583732267826579}
+  _CurPassenger: {fileID: 0}
 --- !u!1 &7128324174896953473
 GameObject:
   m_ObjectHideFlags: 0
@@ -457,7 +476,7 @@ BoxCollider2D:
     adaptiveTilingThreshold: 0
     drawMode: 0
     adaptiveTiling: 0
-  m_AutoTiling: 0
+  m_AutoTiling: 1
   m_Size: {x: 0.65, y: 0.07}
   m_EdgeRadius: 0
 --- !u!114 &4630356534473329264

@@ -5,7 +5,6 @@ public class LobbyUI : MonoBehaviour
 {
     [SerializeField] NetworkLauncher launcher;
     [SerializeField] LoadingUI loadingUI;
-    [SerializeField] SelectCharacterUI selectCharacterUI;
     [SerializeField] GameObject uiParent;
 
     [SerializeField] GameObject elementPrefab;
@@ -108,7 +107,6 @@ public class LobbyUI : MonoBehaviour
     {
         launcher.TryAccessSession(sessionName);
         HideUI();
-        selectCharacterUI.ShowUI();
     }
 
     public void CreatNewSession()

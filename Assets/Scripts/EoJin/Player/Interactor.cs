@@ -2,17 +2,20 @@ using Fusion;
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// 가까운 범위 내에 있는 오브젝트를 클릭 시 인터랙션을 시도합니다
+/// </summary>
 public class Interactor : NetworkBehaviour
 {
     [SerializeField] private InteractRange interactRange;
     [SerializeField] LayerMask detectLayer;
 
-    public GameObject curClick;
-    public GameObject curRange;
+    private GameObject curClick; //현재 클릭한 대상
+    private GameObject curRange; //현재 범위 내에 있는 대상
 
     public event UnityAction<GameObject> OnTryInteract;
 
-    private void Awake()
+    public override void Spawned()
     {
         if (!HasStateAuthority)
             return;
@@ -20,17 +23,15 @@ public class Interactor : NetworkBehaviour
         interactRange.OnDetect += OnDetect;
     }
 
-    private void OnDestroy()
+    public override void Despawned(NetworkRunner runner, bool hasState)
     {
-        if (!HasStateAuthority)
-            return;
-
-        interactRange.OnDetect -= OnDetect;
+        if (interactRange != null)
+            interactRange.OnDetect -= OnDetect;
     }
 
     public void Update()
     {
-        if (!HasStateAuthority)
+        if (Object == null || !Object.IsValid || !HasStateAuthority)
             return;
 
         GetMouseClickRay();
@@ -41,29 +42,37 @@ public class Interactor : NetworkBehaviour
     /// </summary>
     void GetMouseClickRay()
     {
-        if (!HasStateAuthority)
+        if (!Input.GetMouseButtonDown(0))
             return;
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Collider2D hit = Physics2D.OverlapPoint(mousePos, detectLayer);
+        //이전 클릭 초기화
+        curClick = null;
 
-            if (hit != null)
-                OnClick(hit.gameObject);
+        if (Camera.main == null)
+            return;
 
-            //클릭이 있을 때 상호작용 시도
-            TryIntetact();
-        }
+        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        Collider2D hit = Physics2D.OverlapPoint(mousePos, detectLayer);
+
+        if (hit != null)
+            OnClick(hit.gameObject);
+
+        TryIntetact();
     }
 
     void TryIntetact()
     {
-        //현재 클릭한 개체와 닿아있는 개체가 다르면 리턴
-        if (curClick != curRange)
+        if (!HasStateAuthority)
             return;
 
-        OnTryInteract(curRange);
+        if (curClick == null)
+            return;
+
+        if (!interactRange.Contains(curClick))
+            return;
+
+        OnTryInteract?.Invoke(curRange);
 
         //클릭 초기화
         curClick = null;
@@ -77,6 +86,8 @@ public class Interactor : NetworkBehaviour
             return;
 
         curClick = clickTarget;
+
+        Debug.Log($"Interactor 에 클릭 된 target 을 {clickTarget} 으로 설정");
     }
 
     void OnDetect(GameObject detectTarget)
@@ -84,6 +95,8 @@ public class Interactor : NetworkBehaviour
         //이미 캐싱 됐다면 리턴
         if (detectTarget == curRange)
             return;
+
+        Debug.Log($"Interactor 에 감지 된 target 을 {detectTarget} 으로 설정");
 
         curRange = detectTarget;
     }

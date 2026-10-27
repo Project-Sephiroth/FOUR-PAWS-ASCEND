@@ -4,11 +4,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using static Unity.Collections.Unicode;
 
 public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] private NetworkRunner runnerPrefab; //네트워크에 접속 할 대상(나) 프리팹
     [SerializeField] private NetworkGameManager networkGMPrefab; //네트워크 게임 매니저 프리팹
+    [SerializeField] NetworkObject networkCanvas;
 
     private NetworkGameManager networkGM; //네트워크 게임 매니저 내부 참조
     private NetworkRunner runner; //네트워크 접속 대상 내부 참조
@@ -40,7 +43,9 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log($"로비 접속: {result.Ok}");
 
         if (result.Ok)
+        {
             OnLobbyJoined?.Invoke();
+        }
     }
 
     /// <summary>
@@ -84,7 +89,12 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
         {
             Debug.Log("방 접속 성공");
 
-            networkGM = runner.Spawn(networkGMPrefab, Vector3.zero,Quaternion.identity);
+            if (runner.IsSharedModeMasterClient)
+            {
+                networkGM = runner.Spawn(networkGMPrefab, Vector3.zero, Quaternion.identity);
+                runner.Spawn(networkCanvas, Vector3.zero, Quaternion.identity);
+            }
+            
         }
         else
         {
@@ -104,8 +114,27 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
     {
     }
 
+    private bool isLeaving = false;
+
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
+        ReturnToLobby();
+    }
+
+    public async void ReturnToLobby()
+    {
+        if (isLeaving)
+            return;
+
+        isLeaving = true;
+
+        if (runner != null && runner.IsRunning)
+        {
+            await runner.Shutdown();
+            Destroy(runner.gameObject);
+        }
+
+        SceneManager.LoadScene("Lobby");
     }
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
