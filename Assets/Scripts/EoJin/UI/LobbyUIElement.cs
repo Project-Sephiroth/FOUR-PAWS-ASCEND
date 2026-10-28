@@ -14,6 +14,6 @@ public class LobbyUIElement : MonoBehaviour
     {
         mySessionName = sessionName;
         sessionNameText.text = sessionName;
-        sessionPlayerCountText.text = $"{joinedCount} / {GameManager.Instance.MaxPlayerCount}";
+        sessionPlayerCountText.text = $"{joinedCount} / {GameManager.MaxPlayerCount}";
     }
 }

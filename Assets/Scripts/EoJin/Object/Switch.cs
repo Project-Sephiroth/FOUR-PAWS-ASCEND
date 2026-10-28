@@ -2,11 +2,11 @@ using Fusion;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Switch : NetworkBehaviour
+public class Switch : NetworkBehaviour, IInteractable
 {
-    [Tooltip("true : 스위치에 닿아야지만 On")]
+    [Header("스위치에 닿고 있을 때만 작동되는가?")]
     [SerializeField] bool isWait = true;
-    public UnityEvent<bool> action;
+    public UnityEvent<bool> switchAction;
     private Animator anim;
 
     private GameObject curOperator = null;
@@ -19,7 +19,7 @@ public class Switch : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (Object == null || !Object.IsValid || !HasStateAuthority)
+        if (Object == null || !Object.IsValid)
             return;
 
         if (!collision.CompareTag("Player"))
@@ -30,7 +30,7 @@ public class Switch : NetworkBehaviour
             if (curOperator != null) //이미 조작하고 있는 플레이어가 있다면 리턴
                 return;
 
-            curOperator = collision.gameObject;  //스위치 조작 플레이어 등록
+            curOperator = collision.gameObject; //스위치 조작 플레이어 등록
 
             RPC_Switch(true);
         }
@@ -63,7 +63,15 @@ public class Switch : NetworkBehaviour
     public void RPC_Switch(bool doOn)
     {
         anim.SetBool("IsOn", doOn);
-        action?.Invoke(doOn);
+        switchAction?.Invoke(doOn);
         isOn = doOn;
+    }
+
+    public void OnInteract(Interactor interactor)
+    {
+        if (Object == null || !Object.IsValid || !HasStateAuthority)
+            return;
+
+        RPC_Switch(!isOn);
     }
 }

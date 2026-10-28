@@ -1,37 +1,47 @@
+
 using UnityEngine;
 
 public class TitleCameraMovement : MonoBehaviour
 {
-    [SerializeField] float moveAmount = 2.0f;
-    [SerializeField] float moveSpeed = 1.5f;
-    bool isBack = true;
-    [SerializeField] float lerpTime = 10f;
+    [SerializeField] float duration = 2.0f;
+    [SerializeField] float moveDistance = 3.0f;
+
     float timer = 0f;
+    bool isBack = true;
+
+    Vector3 fwdDest;
+    Vector3 backDest;
+
+    private void Start()
+    {
+        fwdDest = transform.position;
+        backDest = fwdDest + Vector3.back * moveDistance;
+    }
 
     private void Update()
     {
-        if (!isBack)
-        {
-            timer -= Time.deltaTime * lerpTime;
-            transform.Translate(Vector3.forward * (moveSpeed / timer));
+        timer += Time.deltaTime;
 
-            if (transform.position.z > -10 + moveAmount)
-            {
-                isBack = true;
-                timer = lerpTime;
-            }
+        float t = Mathf.Clamp01(timer / duration);
+
+        if (isBack)
+        {
+            float smooth = 1f - Mathf.Pow(1f - t, 3f);
+
+            transform.position = Vector3.Lerp(fwdDest, backDest, smooth);
         }
         else
         {
-            timer -= Time.deltaTime * lerpTime;
-            transform.Translate(Vector3.back * (moveSpeed / timer));
+            float smooth = Mathf.Pow(t, 3f);
 
-            if (transform.position.z < -10 - moveAmount)
-            {
-                isBack = false;
-                timer = lerpTime;
-            }
+            transform.position = Vector3.Lerp(backDest, fwdDest, smooth);
         }
-        
+
+        if (timer >= duration)
+        {
+            timer = 0f;
+            isBack = !isBack;
+        }
     }
 }
+

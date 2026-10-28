@@ -26,5 +26,5 @@ public class GameManager : MonoBehaviour
         Debug.Log($"GameManager 에서 나의 캐릭터를 {type} 으로 변경했습니다");
     }
 
-    public int MaxPlayerCount = 4;
+    public const int MaxPlayerCount = 4;
 }

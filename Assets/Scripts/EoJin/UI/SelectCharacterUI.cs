@@ -1,47 +1,85 @@
+using Fusion;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Events;
 
-public class SelectCharacterUI : MonoBehaviour
+public class SelectCharacterUI : NetworkBehaviour
 {
-    [SerializeField] Button rabbit;
-    [SerializeField] Button bear;
-    [SerializeField] Button mouse;
-    [SerializeField] Button frog;
+    [SerializeField] SelectCharacterButton rabbit;
+    [SerializeField] SelectCharacterButton bear;
+    [SerializeField] SelectCharacterButton mouse;
+    [SerializeField] SelectCharacterButton frog;
+    public event UnityAction OnSelect;
 
-    private void Start()
+    public override void Spawned()
     {
+        base.Spawned();
+
         RegisterButtonEvents();
     }
-
-    private void OnDisable()
+    
+    public override void Despawned(NetworkRunner runner, bool hasState)
     {
+        base.Despawned(runner, hasState);
+
         UnRegisterButtonEvents();
     }
 
-    public void ShowUI()
-    {
-        gameObject.SetActive(true);
-    }
-
-    void OnSelect(MyEnum.CharacterType type)
+    void OnButtonSelected(MyEnum.CharacterType type)
     {
         Debug.Log($"캐릭터 선택 버튼: {type}");
+
+        if (GameManager.Instance.MyCharacterType == MyEnum.CharacterType.None)
+            RPC_OnSelectCharacter(type);
+        else
+            RPC_OnSelectCharacter(type, GameManager.Instance.MyCharacterType);
+        
         GameManager.Instance.SetMyCharacter(type);
+        NetworkGameManager.Instance.SetCharacter(GameManager.Instance.MyPlayerId, type);
+
+        OnSelect?.Invoke();
     }
 
-    void RegisterButtonEvents()
+    [Rpc(RpcSources.All, RpcTargets.All)]
+    public void RPC_OnSelectCharacter(MyEnum.CharacterType newType, MyEnum.CharacterType prevType = MyEnum.CharacterType.None)
     {
-        rabbit.onClick.AddListener(() => { OnSelect(MyEnum.CharacterType.Rabbit); });
-        bear.onClick.AddListener(() => { OnSelect(MyEnum.CharacterType.Bear); });
-        mouse.onClick.AddListener(() => { OnSelect(MyEnum.CharacterType.Mouse); });
-        frog.onClick.AddListener(() => { OnSelect(MyEnum.CharacterType.Frog); });
+        if (prevType != MyEnum.CharacterType.None)
+            BlockCharacterButton(prevType, false);
+
+        BlockCharacterButton(newType, true);
     }
 
-    void UnRegisterButtonEvents()
+    void BlockCharacterButton(MyEnum.CharacterType type, bool isBlock)
     {
-        rabbit.onClick.RemoveAllListeners();
-        bear.onClick.RemoveAllListeners();
-        mouse.onClick.RemoveAllListeners();
-        frog.onClick.RemoveAllListeners();
+        switch (type)
+        {
+            case MyEnum.CharacterType.Rabbit:
+                rabbit.Blocked(isBlock);
+                break;
+            case MyEnum.CharacterType.Bear:
+                bear.Blocked(isBlock);
+                break;
+            case MyEnum.CharacterType.Mouse:
+                mouse.Blocked(isBlock);
+                break;
+            case MyEnum.CharacterType.Frog:
+                frog.Blocked(isBlock);
+                break;
+        }
+    }
+
+    private void RegisterButtonEvents()
+    {
+        rabbit.OnClick += OnButtonSelected;
+        bear.OnClick += OnButtonSelected;
+        mouse.OnClick += OnButtonSelected;
+        frog.OnClick += OnButtonSelected;
+    }
+
+    private void UnRegisterButtonEvents()
+    {
+        rabbit.OnClick -= OnButtonSelected;
+        bear.OnClick -= OnButtonSelected;
+        mouse.OnClick -= OnButtonSelected;
+        frog.OnClick -= OnButtonSelected;
     }
 }
