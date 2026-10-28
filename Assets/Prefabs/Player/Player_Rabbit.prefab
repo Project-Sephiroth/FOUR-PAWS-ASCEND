@@ -394,6 +394,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e63c286db484a644aa7d24800d1644af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Carrier
+  interactRange: {fileID: 0}
+  detectLayer:
+    serializedVersion: 2
+    m_Bits: 0
   head: {fileID: 4630356534473329264}
   playerLayer:
     serializedVersion: 2
@@ -568,8 +572,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 558289701
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1874543673780299772, guid: d841631d402a8eb47bbc8c9e36e1136c, type: 3}

@@ -1,7 +1,6 @@
 using Fusion;
 using UnityEngine;
 using UnityEngine.Events;
-using static UnityEngine.GraphicsBuffer;
 
 public class SelectCharacterButton : NetworkBehaviour
 {

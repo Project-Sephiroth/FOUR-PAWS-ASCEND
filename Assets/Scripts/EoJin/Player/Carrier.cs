@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// Carriable 을 머리 위에 갖습니다. Carrier 의 local 에서만 발현 됩니다.
 /// </summary>
-public class Carrier : NetworkBehaviour
+public class Carrier : Interactor
 {
     [SerializeField] private Head head; //나의 머리
     public Head Head => head; //다른 객체에서 나의 머리 확인 가능
@@ -20,27 +20,26 @@ public class Carrier : NetworkBehaviour
     {
         base.Spawned();
 
-        //Interactor 에서 인터랙션을 시도할 때 리프팅 시도
-        interactor.OnTryInteract += TryCarry;
-
         ApplyPassenger();
     }
 
     public override void Despawned(NetworkRunner runner, bool hasState)
     {
         base.Despawned(runner, hasState);
-        interactor.OnTryInteract -= TryCarry; 
     }
 
-    void TryCarry(GameObject target)
+    void TryCarry()
     {
         if (!HasStateAuthority)
             return;
 
         //탈 수 있음 속성이 없거나 이미 타고 있다면 return
-        var newPassenger = target.GetComponent<Passenger>();
+        if (interactor.CurInteractable is Passenger)
+            return;
 
-        if (newPassenger == null || newPassenger == CurPassenger)
+        var newPassenger = interactor.CurInteractable as Passenger;
+
+        if (newPassenger == CurPassenger)
             return;
 
         Carry(newPassenger);

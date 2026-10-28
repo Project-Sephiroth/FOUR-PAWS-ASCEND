@@ -79,7 +79,13 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
         curCarrier.RPC_RequestPassengerDrop(this);
     }
 
-    public void OnInteract()
+    public void OnInteract(Interactor interactor)
     {
+        Carrier carrier = interactor.GetComponent<Carrier>();
+
+        if (carrier == null)
+            return;
+
+        carrier.Carry(this);
     }
 }
