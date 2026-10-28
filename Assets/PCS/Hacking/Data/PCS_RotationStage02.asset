@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cafe3f8379242d48b1698d5db88a135, type: 3}
+  m_Name: PCS_RotationStage02
+  m_EditorClassIdentifier: Assembly-CSharp::FourPaws.PCS.Hacking.PCS_RotationStageData
+  stageId: rotation-02
+  displayNumber: 2
+  cells:
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
+  - {x: 0, y: 1}
+  - {x: -1, y: 1}
+  - {x: -1, y: 0}
+  - {x: 0, y: -1}
+  - {x: 1, y: -1}
+  - {x: 2, y: 0}
+  - {x: 1, y: 1}
+  - {x: 0, y: 2}
+  - {x: -1, y: 2}
+  - {x: -2, y: 1}
+  - {x: 2, y: -1}
+  rootIndex: 0
+  fixedTiles: 0000000009000000
+  shuffleLimit: 16
+  minimumClicks: 4
+  graphs:
+  - variantId: loop-a
+    solvedMasks: 3800000035000000250000001200000007000000020000000700000008000000080000000800000031000000200000000c000000
+    fallbackTurns: 00000000040000000500000004000000050000000400000005000000040000000500000000000000050000000400000005000000
+  - variantId: loop-b
+    solvedMasks: 290000000f000000280000000b00000025000000040000000500000018000000140000002000000010000000210000000a000000
+    fallbackTurns: 00000000040000000500000004000000050000000400000005000000040000000500000000000000050000000400000005000000
