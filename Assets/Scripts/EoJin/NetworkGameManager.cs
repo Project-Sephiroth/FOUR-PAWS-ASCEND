@@ -1,7 +1,5 @@
 using Fusion;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 
 public class NetworkGameManager : NetworkBehaviour
 {
@@ -9,6 +7,9 @@ public class NetworkGameManager : NetworkBehaviour
 
     [Networked]
     public int PlayerIdIndex { get; set; }
+
+    [Networked, Capacity(4)]
+    public NetworkArray<int> PlayerCharacterType => default;
 
     public PlayerSpawner PlayerSpawner { get; private set; }
 
@@ -38,5 +39,10 @@ public class NetworkGameManager : NetworkBehaviour
 
         Runner.LoadScene(sceneName);
         Debug.Log($"NetworkManager 에서 Scene 을 {sceneName}로 변경");
+    }
+
+    public void SetCharacter(int playerId, MyEnum.CharacterType characterType)
+    {
+        PlayerCharacterType.Set(playerId, (int)characterType);
     }
 }

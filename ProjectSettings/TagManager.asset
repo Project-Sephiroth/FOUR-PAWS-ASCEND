@@ -16,7 +16,7 @@ TagManager:
   - Ground
   - Head
   - Interact
-  - 
+  - Object
   - 
   - 
   - 
@@ -42,6 +42,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Player
+    uniqueID: 558289701
     locked: 0
   m_RenderingLayers:
   - Default
