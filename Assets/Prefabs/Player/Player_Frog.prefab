@@ -345,7 +345,9 @@ MonoBehaviour:
     m_Bits: 512
   tonguePivot: {fileID: 5813377695839847349}
   line: {fileID: 6507309972623953729}
+  tongueSpeed: 15
   TongueTarget: {fileID: 0}
+  _EndPos: {x: 0, y: 0}
 --- !u!120 &6507309972623953729
 LineRenderer:
   serializedVersion: 3
@@ -393,7 +395,7 @@ LineRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 30
   m_MaskInteraction: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}

@@ -43,8 +43,17 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Object
+    uniqueID: 1726656355
+    locked: 0
   - name: Player
     uniqueID: 558289701
+    locked: 0
+  - name: InteractableObject
+    uniqueID: 3395742385
+    locked: 0
+  - name: Effect
+    uniqueID: 1312611439
     locked: 0
   m_RenderingLayers:
   - Default

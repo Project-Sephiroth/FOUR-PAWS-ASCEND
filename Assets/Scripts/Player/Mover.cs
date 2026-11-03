@@ -33,9 +33,7 @@ public class Mover : NetworkBehaviour
 
     #endregion
 
-
     #region Cycle
-
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -66,7 +64,6 @@ public class Mover : NetworkBehaviour
     }
 
     #endregion
-
 
     #region Movement
 

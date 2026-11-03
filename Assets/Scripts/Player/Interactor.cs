@@ -92,6 +92,9 @@ public class Interactor : NetworkBehaviour
                 curInteratcble = curClick.GetComponent<IInteractable>();
         }
 
+        if (curInteratcble == null)
+            return;
+
         curInteratcble.OnInteract(this);
         Debug.Log($"Interactor °¡ {curInteratcble} ¿¡ OnInteract");
 
