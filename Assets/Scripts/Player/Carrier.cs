@@ -39,14 +39,12 @@ public class Carrier : Interactor
             return;
 
         //탈 수 있음 속성이 없거나 이미 타고 있다면 return
-        if (CurInteractable is Passenger)
-            return;
+        if (curClick == null)
+            return; 
 
-        Debug.Log("토끼가 태우기를 시도");
+        var newPassenger = curClick.GetComponent<Passenger>();
 
-        var newPassenger = CurInteractable as Passenger;
-
-        if (newPassenger == CurPassenger)
+        if (newPassenger == null || newPassenger == CurPassenger)
             return;
 
         Carry(newPassenger);
