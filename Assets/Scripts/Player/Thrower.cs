@@ -1,12 +1,11 @@
-
+using Fusion;
 using UnityEngine;
 using static IMoveable;
 
 public class Thrower : Interactor
 {
+    [SerializeField] private Mover mover;
     [SerializeField] private SpriteRenderer model; //모델이 바라보는 방향에 따라 던지기 때문에 참조
-    [SerializeField] private Transform holdPoint;
-    public Transform HoldPoint => holdPoint;
 
     [Header("던지기 설정")]
     [SerializeField] private float minDistance = 1f;
@@ -125,6 +124,12 @@ public class Thrower : Interactor
         if (aimState != AimState.None || movingObject.IsMoving || movingObject.IsHeld)
             return;
 
+        if (mover != null) //들고 있을 때 이동 제한
+        {
+            mover.CanMove = false;
+            mover.CanJump = false;
+        }
+
         selectedObject = movingObject;
 
         aimDirection = model.flipX ? -1f : 1f;
@@ -136,7 +141,7 @@ public class Thrower : Interactor
         aimState = AimState.Distance;
 
         // 물체를 곰의 손에 들도록 요청
-        selectedObject.RPC_RequestHold(this);
+        TryHold(movingObject.GetComponent<NetworkObject>());
 
         if (anim != null)
             anim.SetBool("IsGrab", true);
@@ -147,12 +152,18 @@ public class Thrower : Interactor
     private void Throw()
     {
         selectedObject.RPC_RequestMove(MoveType.Parabola, GetDestination(), throwSpeed, GetArcHeight());
-        selectedObject.RPC_RequestReleaseHold();
+        selectedObject.RPC_RequestRelease();
 
         CancelAim();
 
         if (anim != null)
             anim.SetTrigger("Throw");
+
+        if (mover != null) //이동 재설정
+        {
+            mover.CanMove = true;
+            mover.CanJump = true;
+        }
     }
 
     private void UpdateDistance()
@@ -224,7 +235,7 @@ public class Thrower : Interactor
     private void CancelAim(bool releaseObject = true)
     {
         if (releaseObject && selectedObject != null && Object != null && Object.IsValid)
-            selectedObject.RPC_RequestReleaseHold();
+            selectedObject.RPC_RequestRelease();
 
         selectedObject = null;
         aimState = AimState.None;

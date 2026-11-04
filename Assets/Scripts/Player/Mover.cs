@@ -15,6 +15,8 @@ public class Mover : NetworkBehaviour
     [Header("이동")]
     [SerializeField] private float speed = 2f;
 
+    public bool CanMove = true;
+
     [Header("점프")]
     [SerializeField] private float jumpForce = 5f;
 
@@ -49,18 +51,13 @@ public class Mover : NetworkBehaviour
     public override void FixedUpdateNetwork()
     {
         //아직 네트워크 Spawn 전이면 실행하지 않음
-        if (Object == null)
+        if (Object == null || !HasStateAuthority || input == null)
             return;
 
-        //내 캐릭터만 조작
-        if (!HasStateAuthority)
-            return;
-
-        if (input == null)
-            return;
-
-        Move(input.MoveInput);
-        Jump(input.JumpInput);
+        if (CanMove)
+            Move(input.MoveInput);
+        if (CanJump)
+            Jump(input.JumpInput);
     }
 
     #endregion

@@ -25,7 +25,7 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
 
     [Networked] public NetworkBool IsMoving { get; private set; }
 
-    [Networked] public NetworkObject Holder { get; private set; }
+    [Networked] public Interactor Holder { get; private set; }
 
     public bool IsHeld => Holder != null;
 
@@ -41,66 +41,39 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
         if (!HasStateAuthority)
             return;
 
-        if (Holder != null)
-        {
-            FollowHolder();
-            return;
-        }
-
         if (IsMoving)
             Move();
     }
 
     public void OnInteract(Interactor interactor)
     {
-        if (interactor is Tongue tongue)
-            tongue.Pull(this);
-
         if (interactor is Thrower thrower)
             thrower.TryThrow(this);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_RequestHold(Thrower thrower)
+    public void RPC_RequestHold(Interactor interactor)
     {
-        if (thrower == null || IsMoving || IsHeld)
+        if (interactor == null || IsMoving || IsHeld)
             return;
-
-        if (thrower == null || thrower.HoldPoint == null)
-            return;
-
-        Holder = thrower.Object;
 
         rb.simulated = false;
         col.enabled = false;
-
-        //들 위치로 이동
-        transform.position = thrower.HoldPoint.position;
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_RequestReleaseHold()
+    public void RPC_RequestRelease()
     {
-        if (!IsHeld)
-            return;
-
-        ReleaseHold();
-    }
-
-    private void FollowHolder()
-    {
-        if (Holder == null)
-            return;
-
-        Thrower thrower = Holder.GetComponentInChildren<Thrower>();
-
-        if (thrower == null || thrower.HoldPoint == null)
-        {
+        if (IsHeld)
             ReleaseHold();
-            return;
-        }
 
-        transform.position = thrower.HoldPoint.position;
+        Holder = null;
+
+        rb.simulated = true;
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+
+        col.enabled = true;
     }
 
     private void ReleaseHold()

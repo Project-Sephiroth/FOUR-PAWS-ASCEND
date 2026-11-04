@@ -109,7 +109,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1312611439
-  m_SortingLayer: 2
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 80ba3ddbd4731a44dba94bc6905fff46, type: 3}
@@ -423,6 +423,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   speed: 2
+  CanMove: 1
   jumpForce: 5
   CanJump: 1
   canDoubleJump: 0
@@ -504,8 +505,9 @@ MonoBehaviour:
   detectLayer:
     serializedVersion: 2
     m_Bits: 512
-  model: {fileID: 7250350725784135061}
   holdPoint: {fileID: 4043050016199447679}
+  mover: {fileID: -4307343292715752888}
+  model: {fileID: 7250350725784135061}
   minDistance: 1
   maxDistance: 3
   minAngle: 0
@@ -514,6 +516,7 @@ MonoBehaviour:
   cycleTime: 2
   throwArrow: {fileID: 6698800869872373626}
   arrowBaseLength: 1
+  anim: {fileID: 4196723348654146878}
 --- !u!1 &8080396380600934420
 GameObject:
   m_ObjectHideFlags: 0
@@ -592,7 +595,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 558289701
-  m_SortingLayer: 1
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -4073193331973322913, guid: cd07c49769e647d4cb78d1c44c89ba60, type: 3}

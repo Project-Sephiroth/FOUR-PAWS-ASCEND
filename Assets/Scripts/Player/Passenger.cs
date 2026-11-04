@@ -86,6 +86,6 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
         if (carrier == null)
             return;
 
-        carrier.Carry(this);
+        carrier.TryCarry();
     }
 }
