@@ -14,15 +14,19 @@ public class Interactor : NetworkBehaviour
     [SerializeField] private InteractRange interactRange;
     [SerializeField] LayerMask detectLayer;
 
-    private GameObject curClick; //현재 클릭한 대상
+    protected GameObject curClick; //현재 클릭한 대상
     private GameObject curRange; //현재 범위 내에 있는 대상
 
     public event UnityAction<Vector2> OnClick;
 
-    private IInteractable curInteratcble;
+    protected IInteractable curInteratcble;
     public IInteractable CurInteractable => curInteratcble;
 
     protected Vector2 mousePos;
+
+    [SerializeField] protected Transform holdPoint;
+    public Transform HoldPoint => holdPoint;
+    [Networked] public NetworkObject CurHoldObject { get; set; }
 
     public override void Spawned()
     {
@@ -92,6 +96,9 @@ public class Interactor : NetworkBehaviour
                 curInteratcble = curClick.GetComponent<IInteractable>();
         }
 
+        if (curInteratcble == null)
+            return;
+
         curInteratcble.OnInteract(this);
         Debug.Log($"Interactor 가 {curInteratcble} 에 OnInteract");
 
@@ -99,7 +106,7 @@ public class Interactor : NetworkBehaviour
         curClick = null;
     }
 
-    protected void TryClick(GameObject clickTarget) 
+    protected virtual void TryClick(GameObject clickTarget) 
     { 
         IInteractable interactable = clickTarget.GetComponent<IInteractable>();
 
@@ -109,6 +116,21 @@ public class Interactor : NetworkBehaviour
         curClick = clickTarget;
 
         Debug.Log($"Interactor 에 클릭 된 target 을 {clickTarget} 으로 설정");
+    }
+
+    protected virtual void TryHold(NetworkObject target)
+    {
+        if (target == null)
+            return;
+
+        CurHoldObject = target;
+        CurHoldObject.transform.SetParent(holdPoint, true);
+        CurHoldObject.transform.position = holdPoint.position;
+    }
+
+    protected virtual void ReleaseHold()
+    {
+        CurHoldObject.transform.SetParent(null, true);
     }
 
     protected void OnDetect(GameObject detectTarget)

@@ -1,4 +1,5 @@
 using Fusion;
+using System.Security.Cryptography;
 using UnityEngine;
 
 /// <summary>
@@ -8,9 +9,6 @@ public class Carrier : Interactor
 {
     [SerializeField] private Head head; //나의 머리
     public Head Head => head; //다른 객체에서 나의 머리 확인 가능
-
-    [SerializeField] LayerMask playerLayer;
-    [SerializeField] Interactor interactor;
 
     [Networked, OnChangedRender(nameof(ApplyPassenger))]
     public Passenger CurPassenger { get; set; }
@@ -28,18 +26,25 @@ public class Carrier : Interactor
         base.Despawned(runner, hasState);
     }
 
-    void TryCarry()
+    protected override void TryIntetact()
+    {
+        base.TryIntetact();
+
+        TryCarry();
+    }
+
+    public void TryCarry()
     {
         if (!HasStateAuthority)
             return;
 
         //탈 수 있음 속성이 없거나 이미 타고 있다면 return
-        if (interactor.CurInteractable is Passenger)
-            return;
+        if (curClick == null)
+            return; 
 
-        var newPassenger = interactor.CurInteractable as Passenger;
+        var newPassenger = curClick.GetComponent<Passenger>();
 
-        if (newPassenger == CurPassenger)
+        if (newPassenger == null || newPassenger == CurPassenger)
             return;
 
         Carry(newPassenger);
@@ -49,7 +54,7 @@ public class Carrier : Interactor
     /// Passenger 를 설정합니다
     /// </summary>
     /// <param name="rider"></param>
-    public void Carry(Passenger passenger)
+    private void Carry(Passenger passenger)
     {
         if (!HasStateAuthority || passenger == null)
             return;

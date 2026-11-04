@@ -24,18 +24,12 @@ public class PlayerInput : NetworkBehaviour
 
     void GetMoveInput()
     {
-        MoveInput = Vector2.zero;
-
-        if (Input.GetKey(KeyCode.LeftArrow))
-            MoveInput.x -= 1;
-
-        if (Input.GetKey(KeyCode.RightArrow))
-            MoveInput.x += 1;
+        MoveInput.x = Input.GetAxis("Horizontal");
     }
 
     void GetJumpInput()
     {
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
             JumpInput = true;
     }
 }
