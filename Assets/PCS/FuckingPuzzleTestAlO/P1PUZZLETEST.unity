@@ -735,7 +735,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 068f29babf1725744a71b8ddc48f6afc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PCS_AllPuzzleSequenceLauncher
-  mode: 2
+  mode: 3
   session: {fileID: 234297290}
   closeButton: {fileID: 819856923}
   p1Stages:
