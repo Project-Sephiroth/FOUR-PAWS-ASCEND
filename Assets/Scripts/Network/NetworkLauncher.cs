@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using static Unity.Collections.Unicode;
 
 public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] private NetworkRunner runnerPrefab; //네트워크에 접속 할 대상(나) 프리팹
     [SerializeField] private NetworkGameManager networkGMPrefab; //네트워크 게임 매니저 프리팹
-    [SerializeField] NetworkObject networkCanvas;
+    [SerializeField] NetworkObject selectCharUI;
+    [SerializeField] Transform UICanvas;
 
     private NetworkGameManager networkGM; //네트워크 게임 매니저 내부 참조
     private NetworkRunner runner; //네트워크 접속 대상 내부 참조
@@ -92,7 +92,8 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
             if (runner.IsSharedModeMasterClient)
             {
                 networkGM = runner.Spawn(networkGMPrefab, Vector3.zero, Quaternion.identity);
-                runner.Spawn(networkCanvas, Vector3.zero, Quaternion.identity);
+                var temp = runner.Spawn(selectCharUI, Vector3.zero, Quaternion.identity);
+                temp.transform.SetParent(UICanvas, false); //selectCharUI 를 UICanvas 의 자식으로
             }
             
         }

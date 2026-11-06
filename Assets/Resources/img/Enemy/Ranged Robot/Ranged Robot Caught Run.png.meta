@@ -1,40 +1,43 @@
 fileFormatVersion: 2
-guid: 612fa97a350434448bbfc5447d5c609f
+guid: 9159418f481aead45980a70e94178e16
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6284826299034562289
-    second: "\uACF0 \uB358\uC9C0\uB294 \uBAA8\uC158-Sheet_0"
+      213: -570705451310734108
+    second: Ranged Robot Caught Run_0
   - first:
-      213: -1235469190973026084
-    second: "\uACF0 \uB358\uC9C0\uB294 \uBAA8\uC158-Sheet_1"
+      213: -3294221588679841244
+    second: Ranged Robot Caught Run_1
   - first:
-      213: 1625880388540582310
-    second: "\uACF0 \uB358\uC9C0\uB294 \uBAA8\uC158-Sheet_2"
+      213: -3335164961573676237
+    second: Ranged Robot Caught Run_2
   - first:
-      213: 8464590811021621294
-    second: "\uACF0 \uB358\uC9C0\uB294 \uBAA8\uC158-Sheet_3"
+      213: -4639068638751303627
+    second: Ranged Robot Caught Run_3
   - first:
-      213: -598190557140462287
-    second: "\uACF0 \uB358\uC9C0\uB294 \uBAA8\uC158-Sheet_4"
+      213: -2162647848598237247
+    second: Ranged Robot Caught Run_4
   - first:
-      213: -2477763919638556951
-    second: "\uACF0 \uB358\uC9C0\uB294 \uBAA8\uC158-Sheet_5"
+      213: 3563864977575942327
+    second: Ranged Robot Caught Run_5
   - first:
-      213: -3999758324865820550
-    second: "\uACF0 \uB358\uC9C0\uB294 \uBAA8\uC158-Sheet_6"
+      213: 9202011987229642109
+    second: Ranged Robot Caught Run_6
   - first:
-      213: 4973274439049476265
-    second: "\uACF0 \uB358\uC9C0\uB294 \uBAA8\uC158-Sheet_7"
+      213: -4165575892835746775
+    second: Ranged Robot Caught Run_7
   - first:
-      213: -2944669940938618590
-    second: "\uACF0 \uB358\uC9C0\uB294 \uBAA8\uC158-Sheet_8"
+      213: 1694536183606932421
+    second: Ranged Robot Caught Run_8
   - first:
-      213: -4460626078159501903
-    second: "\uACF0 \uB358\uC9C0\uB294 \uBAA8\uC158-Sheet_9"
+      213: 5688699456710281642
+    second: Ranged Robot Caught Run_9
   - first:
-      213: 9179645877796551477
-    second: "\uACF0 \uB358\uC9C0\uB294 \uBAA8\uC158-Sheet_10"
+      213: 8953567333603070836
+    second: Ranged Robot Caught Run_10
+  - first:
+      213: -8376011645657772369
+    second: Ranged Robot Caught Run_11
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -130,243 +133,265 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Bear Throwing_0
+      name: Ranged Robot Caught Run_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 19
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 9464cb9aca196f747a299e5ab5572221
-      internalID: -1658728927
+      spriteID: 4e4ae3f6a627418f0800000000000000
+      internalID: -570705451310734108
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Throwing_1
+      name: Ranged Robot Caught Run_1
       rect:
         serializedVersion: 2
-        x: 64
+        x: 83
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 99bd1a28dd6d84f49a06672ba911c2df
-      internalID: -439090489
+      spriteID: 42aa05b2be29842d0800000000000000
+      internalID: -3294221588679841244
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Throwing_2
+      name: Ranged Robot Caught Run_2
       rect:
         serializedVersion: 2
-        x: 128
+        x: 147
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 9114080a864c23744acc50a7fc469576
-      internalID: 347580998
+      spriteID: 33b521e432d17b1d0800000000000000
+      internalID: -3335164961573676237
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Throwing_3
+      name: Ranged Robot Caught Run_3
       rect:
         serializedVersion: 2
-        x: 192
+        x: 211
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: acd4ad0163e4d6f4aa61ced39e01dc4c
-      internalID: 300764447
+      spriteID: 538d292e6a7be9fb0800000000000000
+      internalID: -4639068638751303627
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Throwing_4
+      name: Ranged Robot Caught Run_4
       rect:
         serializedVersion: 2
-        x: 256
+        x: 275
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: f51e5fc0922c035439e3086e2d4d2096
-      internalID: -2052367745
+      spriteID: 1cf0a0a6d3bbcf1e0800000000000000
+      internalID: -2162647848598237247
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Throwing_5
+      name: Ranged Robot Caught Run_5
       rect:
         serializedVersion: 2
-        x: 320
+        x: 339
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: ffc42f12bee9c9c4fa6a6362e5d3af7f
-      internalID: 1038507253
+      spriteID: 7b89edf9054657130800000000000000
+      internalID: 3563864977575942327
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Throwing_6
+      name: Ranged Robot Caught Run_6
       rect:
         serializedVersion: 2
-        x: 384
+        x: 403
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 5b580c2de375f1243b203ea62702e323
-      internalID: 1209838274
+      spriteID: d7d85b5e52d14bf70800000000000000
+      internalID: 9202011987229642109
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Throwing_7
+      name: Ranged Robot Caught Run_7
       rect:
         serializedVersion: 2
-        x: 448
+        x: 467
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 36106a08f414f364e80927d6e67f8129
-      internalID: -1356031744
+      spriteID: 92c389eabc6e036c0800000000000000
+      internalID: -4165575892835746775
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Throwing_8
+      name: Ranged Robot Caught Run_8
       rect:
         serializedVersion: 2
-        x: 512
+        x: 531
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 0ba897c0621596547b20cf0b6d6e65ec
-      internalID: -791677949
+      spriteID: 5c3ffe25ea3348710800000000000000
+      internalID: 1694536183606932421
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Throwing_9
+      name: Ranged Robot Caught Run_9
       rect:
         serializedVersion: 2
-        x: 576
+        x: 595
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: a2ca72b339438da46badc549a82f885e
-      internalID: 1098891589
+      spriteID: aa98c2f040252fe40800000000000000
+      internalID: 5688699456710281642
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Throwing_10
+      name: Ranged Robot Caught Run_10
       rect:
         serializedVersion: 2
-        x: 640
+        x: 659
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: c4d02f562683d164e88019ade945cb6c
-      internalID: -642351466
+      spriteID: 473d3f74d06714c70800000000000000
+      internalID: 8953567333603070836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ranged Robot Caught Run_11
+      rect:
+        serializedVersion: 2
+        x: 723
+        y: 0
+        width: 26
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fae880a49cd62cb80800000000000000
+      internalID: -8376011645657772369
       vertices: []
       indices: 
       edges: []
@@ -375,7 +400,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: e98925ad06688964db313a2b8198615d
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -383,21 +408,20 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":11.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      Bear Throwing_0: -1658728927
-      Bear Throwing_1: -439090489
-      Bear Throwing_10: -642351466
-      Bear Throwing_2: 347580998
-      Bear Throwing_3: 300764447
-      Bear Throwing_4: -2052367745
-      Bear Throwing_5: 1038507253
-      Bear Throwing_6: 1209838274
-      Bear Throwing_7: -1356031744
-      Bear Throwing_8: -791677949
-      Bear Throwing_9: 1098891589
+      Ranged Robot Caught Run_0: -570705451310734108
+      Ranged Robot Caught Run_1: -3294221588679841244
+      Ranged Robot Caught Run_10: 8953567333603070836
+      Ranged Robot Caught Run_11: -8376011645657772369
+      Ranged Robot Caught Run_2: -3335164961573676237
+      Ranged Robot Caught Run_3: -4639068638751303627
+      Ranged Robot Caught Run_4: -2162647848598237247
+      Ranged Robot Caught Run_5: 3563864977575942327
+      Ranged Robot Caught Run_6: 9202011987229642109
+      Ranged Robot Caught Run_7: -4165575892835746775
+      Ranged Robot Caught Run_8: 1694536183606932421
+      Ranged Robot Caught Run_9: 5688699456710281642
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

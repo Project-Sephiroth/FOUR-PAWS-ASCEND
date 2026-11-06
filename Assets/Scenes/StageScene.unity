@@ -562,6 +562,34 @@ PrefabInstance:
       propertyPath: SortKey
       value: 314392179
       objectReference: {fileID: 0}
+    - target: {fileID: 4070602120189774081, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
+      propertyPath: StateHashes.Array.size
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070602120189774081, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
+      propertyPath: TriggerHashes.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070602120189774081, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
+      propertyPath: 'StateHashes.Array.data[7]'
+      value: -1120978645
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070602120189774081, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
+      propertyPath: 'StateHashes.Array.data[8]'
+      value: -1979020776
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070602120189774081, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
+      propertyPath: 'StateHashes.Array.data[9]'
+      value: -773675943
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070602120189774081, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
+      propertyPath: 'StateHashes.Array.data[10]'
+      value: 745170866
+      objectReference: {fileID: 0}
+    - target: {fileID: 4070602120189774081, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
+      propertyPath: 'TriggerHashes.Array.data[1]'
+      value: -1907200461
+      objectReference: {fileID: 0}
     - target: {fileID: 7809413871449971425, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
       propertyPath: m_Name
       value: Player_Bear

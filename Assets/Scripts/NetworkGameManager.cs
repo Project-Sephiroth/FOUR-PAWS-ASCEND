@@ -13,6 +13,8 @@ public class NetworkGameManager : NetworkBehaviour
 
     public PlayerSpawner PlayerSpawner { get; private set; }
 
+    public PlayerRef PlayerRef { get; private set; }
+
     public override void Spawned()
     {
         Instance = this;
@@ -44,5 +46,10 @@ public class NetworkGameManager : NetworkBehaviour
     public void SetCharacter(int playerId, MyEnum.CharacterType characterType)
     {
         PlayerCharacterType.Set(playerId, (int)characterType);
+    }
+
+    public void SetPlayerRef(PlayerRef playerRef)
+    {
+        this.PlayerRef = playerRef;
     }
 }
