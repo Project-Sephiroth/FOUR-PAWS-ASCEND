@@ -10,6 +10,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using Newtonsoft.Json.Linq;
 using Object = UnityEngine.Object;
 
 namespace PCS.Nov04.EditorTools
@@ -18,11 +19,13 @@ namespace PCS.Nov04.EditorTools
     {
         public const string Root = "Assets/PCS/PCS MAP TRY/";
         public const string Run = "C:/FOUR-PAWS-PCS-BRIEF/NOV04_CIMPL_20261105/run-001";
+        public const string CorrectionBackup = Run + "/backups/CORRECTION_20261106_A";
         public static readonly string[] SceneNames = { "PCS_MAP00_Malkuth", "PCS_MAP01_Yesod", "PCS_MAP02_Hod", "PCS_MAP03_Netzach" };
 
         [Serializable] public class FileRecord { public string path, sha256; public long bytes; }
         [Serializable] public class BackupRecord { public string source, backup, sha256; public long bytes; public bool readback_verified; }
         [Serializable] public class SourceBaseline { public FileRecord[] files; public BackupRecord[] backups; public string[] approvedProjectFiles; }
+        [Serializable] public class CorrectionBaseline { public FileRecord[] files; public BackupRecord[] backups; public string[] editable; public string head; }
         [Serializable] public class ObjectRecord
         {
             public string id, path, type, json, source;
@@ -118,6 +121,11 @@ namespace PCS.Nov04.EditorTools
         }
         public static void ProtectedGuard()
         {
+            if (File.Exists(CorrectionBackup + "/BASELINE.json"))
+            {
+                CorrectionGuard();
+                return;
+            }
             var baseline = Read<SourceBaseline>("SOURCE_BASELINE.json");
             var editableScenes = Enumerable.Range(0, 4).Select(ScenePath).ToArray();
             foreach (var file in baseline.files)
@@ -129,6 +137,571 @@ namespace PCS.Nov04.EditorTools
                 Require(backup.readback_verified && File.Exists(backup.backup) &&
                     new FileInfo(backup.backup).Length == backup.bytes && Hash(backup.backup) == backup.sha256,
                     "Backup verification " + backup.source);
+        }
+        public static void CorrectionGuard()
+        {
+            var baseline = JsonUtility.FromJson<CorrectionBaseline>(File.ReadAllText(CorrectionBackup + "/BASELINE.json"));
+            Require(baseline.head == "ba72b87b36f948ddb9627923ca2c24b48b835cfd", "Current user correction baseline");
+            foreach (var file in baseline.files)
+                if (!baseline.editable.Contains(file.path))
+                    Require(File.Exists(file.path) && Hash(file.path) == file.sha256, "Correction protected source " + file.path);
+            foreach (var backup in baseline.backups)
+                Require(backup.readback_verified && File.Exists(backup.backup) &&
+                    new FileInfo(backup.backup).Length == backup.bytes && Hash(backup.backup) == backup.sha256,
+                    "Latest correction backup " + backup.source);
+        }
+        [Serializable] public class GeometryRecord
+        {
+            public string id, path, type, sprite, source;
+            public bool active, enabled;
+            public int order;
+            public Vector3 center, size, scale;
+            public Vector4 rect;
+        }
+        [Serializable] public class GeometryScene
+        {
+            public string path;
+            public List<GeometryRecord> records = new List<GeometryRecord>();
+        }
+        [Serializable] public class GeometryAudit { public List<GeometryScene> scenes = new List<GeometryScene>(); }
+        public static GeometryScene Geometry(Scene scene)
+        {
+            var output = new GeometryScene { path = scene.path };
+            foreach (var transform in Transforms(scene))
+            foreach (var component in transform.GetComponents<Component>().Where(c => c is SpriteRenderer || c is Collider2D))
+            {
+                var sprite = component as SpriteRenderer;
+                var collider = component as Collider2D;
+                var bounds = sprite != null ? sprite.bounds : collider.bounds;
+                output.records.Add(new GeometryRecord { id = ID(component), path = FullPath(transform),
+                    type = component.GetType().Name, active = transform.gameObject.activeInHierarchy,
+                    enabled = sprite != null ? sprite.enabled : collider.enabled,
+                    sprite = sprite == null || sprite.sprite == null ? null : sprite.sprite.name + " | " + AssetDatabase.GetAssetPath(sprite.sprite),
+                    source = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(transform.gameObject),
+                    order = sprite == null ? 0 : sprite.sortingOrder,
+                    center = bounds.center, size = bounds.size, scale = transform.lossyScale,
+                    rect = new Vector4(bounds.min.x, bounds.min.y, bounds.max.x, bounds.max.y) });
+            }
+            return output;
+        }
+        public static void CorrectionCapture(Scene scene, string name, Vector2 center, float halfHeight, float aspect = 16f / 9)
+        {
+            bool dirty = scene.isDirty;
+            string sha = Hash(scene.path), physics = Physics(scene);
+            var image = Render(MapCamera(scene), center, halfHeight, aspect);
+            try { File.WriteAllBytes(Run + "/work/generation_staging/" + name + ".png", image.EncodeToPNG()); }
+            finally { Object.DestroyImmediate(image); }
+            Require(scene.isDirty == dirty && Hash(scene.path) == sha && Physics(scene) == physics, "Correction capture restores camera");
+        }
+        public static void CorrectionCaptureSet(Scene scene, int slot, string suffix)
+        {
+            if (slot == 0)
+            {
+                CorrectionCapture(scene, "CORR_M0_Overview_" + suffix, new Vector2(52, 24), 25, 3);
+                CorrectionCapture(scene, "CORR_M0_StartRabbit_" + suffix, new Vector2(-2, 33), 7);
+                CorrectionCapture(scene, "CORR_M0_StartMouse_" + suffix, new Vector2(26, 33), 7);
+                CorrectionCapture(scene, "CORR_M0_Rabbit_" + suffix, new Vector2(13, 22), 12);
+                CorrectionCapture(scene, "CORR_M0_Bear_" + suffix, new Vector2(94, 18), 8);
+                CorrectionCapture(scene, "CORR_M0_Assemble_" + suffix, new Vector2(58, 9), 9, 4);
+            }
+            if (slot == 2)
+            {
+                CorrectionCapture(scene, "CORR_M2_Overview_" + suffix, new Vector2(18, 3), 11, 3);
+                CorrectionCapture(scene, "CORR_M2_Rabbit_" + suffix, new Vector2(17, 4), 5, 3.5f);
+                CorrectionCapture(scene, "CORR_M2_Entry_" + suffix, new Vector2(-4, 1), 7);
+            }
+            if (slot == 3) CorrectionCapture(scene, "CORR_M3_Overview_" + suffix, new Vector2(0, 4), 13, 2.5f);
+            if (slot == 4) CorrectionCapture(scene, "CORR_Intro_Overview_" + suffix, new Vector2(40, 4), 15, 4);
+        }
+        [MenuItem("Tools/NOV04 Visual/21 Correction geometry and before views")]
+        public static void CorrectionGeometryBefore()
+        {
+            Stable(); CorrectionGuard();
+            string output = CorrectionBackup + "/GEOMETRY_BEFORE.json";
+            Require(!File.Exists(output), "Correction geometry exists; reuse saved evidence");
+            string original = SceneManager.GetActiveScene().path;
+            var audit = new GeometryAudit();
+            try
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    var scene = i == 4 ? EditorSceneManager.OpenScene(Root + "Scenes/PCS_MAP00_StartRooms4_NOV04.unity", OpenSceneMode.Single) : Open(i);
+                    audit.scenes.Add(Geometry(scene));
+                    CorrectionCaptureSet(scene, i, "before");
+                }
+                File.WriteAllText(output, JsonUtility.ToJson(audit, true), new UTF8Encoding(false));
+            }
+            finally { Stable(); EditorSceneManager.OpenScene(original, OpenSceneMode.Single); }
+            CorrectionGuard();
+            Note("CORRECTION_A", "GEOMETRY_BEFORE_PASS", "Current Native bounds and before views; no Scene writes");
+        }
+        static SceneRecord CorrectionBefore(int slot)
+        {
+            var baseline = JsonUtility.FromJson<NativeBaseline>(File.ReadAllText(CorrectionBackup + "/NATIVE_BEFORE.json"));
+            return baseline.scenes.Single(s => s.path == (slot == 4 ? Root + "Scenes/PCS_MAP00_StartRooms4_NOV04.unity" : ScenePath(slot)));
+        }
+        static void CorrectionSceneGate(int slot)
+        {
+            Stable(); CorrectionGuard();
+            var before = CorrectionBefore(slot);
+            Require(Hash(before.path) == before.sha256, "User Scene changed after correction snapshot: " + before.path);
+        }
+        static void SameRecords(SceneRecord before, Scene scene, Func<ObjectRecord, bool> predicate)
+        {
+            var current = Snapshot(scene).records.ToDictionary(r => r.id);
+            foreach (var old in before.records.Where(predicate))
+                Require(current.TryGetValue(old.id, out var value) && old.json == value.json && old.worldMatrix.SequenceEqual(value.worldMatrix),
+                    "Protected Native component: " + old.path + " / " + old.type);
+        }
+        static bool FunctionalOrDoor(ObjectRecord record)
+        {
+            return record.path.Contains("/ELEVATORS/") || record.path.Contains("/START ELAVATOR/") ||
+                record.path.Contains("ASCEND ELAVATOR") || record.path.Contains("DoorRoot") ||
+                record.path.Contains("Gate") || record.path.Contains("AbilityBoard_SLOT");
+        }
+        static void RecordOverride(Object value)
+        {
+            if (PrefabUtility.IsPartOfPrefabInstance(value)) PrefabUtility.RecordPrefabInstancePropertyModifications(value);
+        }
+        static void CrispRect(SpriteRenderer renderer, Sprite sprite, float left, float bottom, float right, float top)
+        {
+            Undo.RecordObject(renderer, "NOV04 correction art"); Undo.RecordObject(renderer.transform, "NOV04 correction art transform");
+            Require(renderer.GetComponent<Collider2D>() == null && renderer.GetComponent<MonoBehaviour>() == null,
+                "CrispRect requires separate visual child: " + FullPath(renderer.transform));
+            renderer.sprite = sprite;
+            renderer.transform.rotation = Quaternion.identity;
+            var scale = renderer.transform.lossyScale;
+            renderer.transform.localScale = Vector3.Scale(renderer.transform.localScale,
+                new Vector3(1 / scale.x, 1 / scale.y, 1 / scale.z));
+            renderer.drawMode = SpriteDrawMode.Tiled; renderer.tileMode = SpriteTileMode.Continuous;
+            SetWorldRect(renderer, left, bottom, right, top);
+            RecordOverride(renderer); RecordOverride(renderer.transform);
+        }
+        static void RoomArt(SpriteRenderer renderer, Sprite sprite, Vector4 rect)
+        {
+            renderer.sprite = sprite; renderer.drawMode = SpriteDrawMode.Tiled;
+            renderer.tileMode = SpriteTileMode.Continuous;
+            renderer.transform.localScale = Vector3.one;
+            renderer.transform.rotation = Quaternion.identity;
+            renderer.size = new Vector2(rect.z - rect.x, rect.w - rect.y);
+            renderer.transform.position = new Vector3((rect.x + rect.z) * .5f, (rect.y + rect.w) * .5f, 0);
+        }
+        [MenuItem("Tools/NOV04 Visual/22 Correct shared startroom art and grouping")]
+        public static void CorrectSharedStartRooms()
+        {
+            Stable(); CorrectionGuard(); CorrectionSceneGate(0); CorrectionSceneGate(4);
+            string path = Root + "PCS_Resources/Public/PCS_StartRooms4_NOV04.prefab";
+            var baseline = JsonUtility.FromJson<CorrectionBaseline>(File.ReadAllText(CorrectionBackup + "/BASELINE.json"));
+            Require(Hash(path) == baseline.files.Single(f => f.path == path).sha256, "Shared correction already applied or user Prefab changed");
+            var source = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            var oldIDs = source.GetComponentsInChildren<Transform>(true).ToDictionary(t => t.name, t => ID(t.gameObject));
+            var root = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                var wall = Sprite(Root + "PCS_Resources/Public/MetalModules_R3.png", "Wall");
+                var ceiling = Sprite(Root + "PCS_Resources/Public/MetalModules_R3.png", "Ceiling");
+                var rabbit = root.transform.Find("RabbitStart");
+                Require(rabbit != null && rabbit.childCount == 5, "Current user Rabbit grouping");
+                var offsets = rabbit.Cast<Transform>().ToDictionary(t => t.name.Substring("Rabbit_".Length), t => t.localPosition);
+                var roleNames = new[] { "Rabbit", "Mouse", "Frog", "Bear" };
+                for (int i = 0; i < roleNames.Length; i++)
+                {
+                    string role = roleNames[i];
+                    var group = i == 0 ? rabbit : new GameObject(role + "Start").transform;
+                    if (i > 0) group.SetParent(root.transform, false);
+                    group.localPosition = new Vector3(7 + 28 * i, 12.56f, 0);
+                    foreach (string piece in offsets.Keys)
+                    {
+                        var leaf = i == 0 ? group.Find(role + "_" + piece) : root.transform.Find(role + "_" + piece);
+                        Require(leaf != null, "Current role piece " + role + "/" + piece);
+                        leaf.SetParent(group, false); leaf.localPosition = offsets[piece]; leaf.localScale = Vector3.one;
+                        var art = leaf.GetComponent<SpriteRenderer>(); var box = leaf.GetComponent<BoxCollider2D>();
+                        Require(art != null && box != null, "Owned role visual / static box");
+                        if (piece == "RoomRight") box.size = new Vector2(.5f, 4.5f * 1.1922f);
+                        var center = leaf.position; var size = box.size;
+                        Vector4 rect = new Vector4(center.x - size.x / 2, center.y - size.y / 2, center.x + size.x / 2, center.y + size.y / 2);
+                        if (piece == "LeftWall") rect.x -= 1;
+                        if (piece == "RoomCeiling") rect.w += 2;
+                        if (piece == "Floor") rect.y = rect.w - .9f;
+                        if (piece == "RoomRight") rect.z = 3.5f + 28 * i - 3;
+                        RoomArt(art, piece == "Floor" || piece == "RoomCeiling" ? ceiling : wall, rect);
+                        // The visual expands outward; the box retains its original center and shape.
+                        box.offset = new Vector2(center.x - leaf.position.x, center.y - leaf.position.y);
+                    }
+                }
+                var background = Sprite(Root + "PCS_Resources/Public/IndustrialBackground_NOV04.png");
+                foreach (var art in root.GetComponentsInChildren<SpriteRenderer>(true).Where(s => s.name.StartsWith("Background_")))
+                {
+                    string[] parts = art.name.Split('_'); int role = int.Parse(parts[1]); int row = int.Parse(parts[2]);
+                    if (row != 0) { art.enabled = false; continue; }
+                    var group = root.transform.Find(roleNames[role] + "Start");
+                    art.transform.SetParent(group, true);
+                    art.sprite = background; art.drawMode = SpriteDrawMode.Simple;
+                    art.transform.localScale = Vector3.one * .375f;
+                    art.transform.position = new Vector3(-6 + role * 28, 3.5f, .1f);
+                    art.color = new Color(.54f, .65f, .7f, 1); art.sortingOrder = -90; art.enabled = true;
+                    art.flipX = role % 2 == 1;
+                }
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+            source = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            foreach (var pair in oldIDs)
+                Require(source.GetComponentsInChildren<Transform>(true).Any(t => t.name == pair.Key && ID(t.gameObject) == pair.Value), "Shared Prefab existing fileID retained: " + pair.Key);
+            Note("CORR_SHARED", "PREFAB_SAVED_NATIVE_PASS", "Current Rabbit pattern; other three grouped; outward tiled art; four restrained panels,12 old panel renderers OFF; original leaf IDs and GUID preserved");
+            CorrectionGuard();
+        }
+        [MenuItem("Tools/NOV04 Visual/27 Fix shared background sampling only")]
+        public static void FixSharedBackgroundSampling()
+        {
+            Stable(); CorrectionGuard(); CorrectionSceneGate(0); CorrectionSceneGate(4);
+            string path = Root + "PCS_Resources/Public/PCS_StartRooms4_NOV04.prefab";
+            Require(Hash(path) == "23c9b8765a552a1b320b363d8eadd161cc4244a72efe574ced9e08632ddd92ca", "Expected own first correction only");
+            var root = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                var panels = root.GetComponentsInChildren<SpriteRenderer>(true).Where(s => s.name.StartsWith("Background_") && s.enabled).ToArray();
+                Require(panels.Length == 4 && root.transform.Find("BearStart") != null, "Previously saved correction, four panels");
+                foreach (var art in panels) { art.drawMode = SpriteDrawMode.Simple; art.transform.localScale = Vector3.one * .375f; }
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+            Note("CORR_SHARED_SAMPLING", "SIMPLE_UNIFORM_PASS", "Four owned panels use Simple,uniform0.375; original PNG/import meta protected; SHA256=" + Hash(path));
+            CorrectionGuard();
+        }
+        [MenuItem("Tools/NOV04 Visual/23 Correct Malkuth saved scene")]
+        public static void CorrectMalkuthMenu() { Attempt("CORR_M0", CorrectMalkuth); }
+        static void CorrectMalkuth()
+        {
+            CorrectionSceneGate(0);
+            var scene = BeginStage(0, "CORR_M0"); var before = Snapshot(scene);
+            var ceiling = Sprite(Root + "PCS_Resources/Public/MetalModules_R3.png", "Ceiling");
+            var wall = Sprite(Root + "PCS_Resources/Public/MetalModules_R3.png", "Wall");
+            var plate = Sprite(Root + "PCS_Resources/Public/MetalModules_R3.png", "Plate");
+            var column = Sprite(Root + "PCS_Resources/Public/MetalModules_R3.png", "Column");
+            var own = Transforms(scene).Single(t => t.name == "StartRooms4_NOV04_OPTIONAL");
+            // Existing user activation is kept. Only the shared sample's own disabled boxes are normalized.
+            foreach (var renderer in own.GetComponentsInChildren<SpriteRenderer>(true).Where(s => !s.name.StartsWith("Background_")))
+            {
+                var sourceArt = PrefabUtility.GetCorrespondingObjectFromSource(renderer);
+                Require(sourceArt != null, "Existing shared role source");
+                renderer.transform.localScale = Vector3.one;
+                renderer.transform.localPosition = sourceArt.transform.localPosition;
+                var box = renderer.GetComponent<BoxCollider2D>(); var sourceBox = sourceArt.GetComponent<BoxCollider2D>();
+                bool enabled = box.enabled; box.size = sourceBox.size; box.offset = sourceBox.offset; box.enabled = enabled;
+                RecordOverride(box); RecordOverride(renderer.transform);
+            }
+            long[] roofArt = { 1222576186, 1007925305, 823386158, 744615598 };
+            long[] roofBoxes = { 17913349, 1159775673, 1836950455, 16008586 };
+            var physicalIDs = PhysicsIDs(scene, roofBoxes.Select(id => (Object)ComponentID<BoxCollider2D>(scene, id))
+                .Concat(own.GetComponentsInChildren<Collider2D>(true).Cast<Object>()));
+            string physical = ExistingPhysics(scene, physicalIDs);
+            for (int i = 0; i < 4; i++)
+            {
+                float left = 3.5f + i * 28, right = 27 + i * 28;
+                CrispRect(ComponentID<SpriteRenderer>(scene, roofArt[i]), ceiling, left, 29.5f, right, 30);
+                var box = ComponentID<BoxCollider2D>(scene, roofBoxes[i]); Undo.RecordObject(box, "NOV04 startroom drop opening");
+                box.size = new Vector2(right - left, .5f);
+                box.offset = box.transform.InverseTransformPoint(new Vector3((left + right) * .5f, 29.75f, box.transform.position.z));
+                RecordOverride(box);
+                Require(Mathf.Abs(box.bounds.min.x - left) < .002f, "Three-and-half unit static drop opening");
+            }
+            var support = Transforms(scene).Single(t => t.name == "Bear_Supports_NOV04");
+            foreach (var art in support.GetComponentsInChildren<SpriteRenderer>(true))
+            {
+                var b = art.bounds;
+                CrispRect(art, art.name == "Rail" ? ceiling : column, b.min.x, b.min.y, b.max.x, b.max.y);
+            }
+            var leftGround = ComponentID<SpriteRenderer>(scene, 434329203);
+            CrispRect(leftGround, leftGround.sprite, 84, 12.65625f, 102, 14);
+            var rightGround = ComponentID<SpriteRenderer>(scene, 996052306); Undo.RecordObject(rightGround, "NOV04 continuous ground visual"); rightGround.enabled = false;
+            var rabbitGround = ComponentID<SpriteRenderer>(scene, 142566646);
+            CrispRect(rabbitGround, rabbitGround.sprite, 0, 12.65625f, 18, 14);
+            var exterior = NewRoot(scene, "Malkuth_ExteriorFinish_NOV04");
+            var fill = Visual(exterior.transform, "Assemble_Underfill", plate, Vector3.zero, Vector2.one, -2, new Color(.28f, .36f, .4f, 1));
+            CrispRect(fill, plate, -3.18f, -7, 111.82f, 8.056245f);
+            fill = Visual(exterior.transform, "Rabbit_GroundUnderfill", wall, Vector3.zero, Vector2.one, -2, new Color(.46f, .55f, .59f, 1));
+            CrispRect(fill, wall, 0, 9.65f, 18, 13);
+            // The ascent elevator and bridge remain outside the underfill's right edge.
+            Require(ExistingPhysics(scene, physicalIDs) == physical, "M0 all existing physics except approved four opening boxes and owned room boxes");
+            SameRecords(before, scene, FunctionalOrDoor);
+            SaveStage(scene, "CORR_M0", before);
+            CorrectionCaptureSet(SceneManager.GetActiveScene(), 0, "after");
+            Note("CORR_M0_DETAIL", "OPENINGS_AND_VISUALS_PASS", "4 roof left edges +3.0;3.5-wide shafts,box top30 unchanged; all functional prefabs/doors/boards preserved; Rabbit top14; Assemble gameplay top unchanged; roof outward thickening HOLD near adjacent startrooms");
+        }
+        [MenuItem("Tools/NOV04 Visual/24 Save corrected shared intro scene")]
+        public static void CorrectIntroMenu() { Attempt("CORR_INTRO", CorrectIntro); }
+        static void CorrectIntro()
+        {
+            CorrectionSceneGate(4);
+            var before = CorrectionBefore(4);
+            var scene = EditorSceneManager.OpenScene(before.path, OpenSceneMode.Single);
+            Require(Transforms(scene).Count(t => new[] { "RabbitStart", "MouseStart", "FrogStart", "BearStart" }.Contains(t.name)) == 4, "Four role groups");
+            Require(Transforms(scene).Count(t => t.name.EndsWith("_Floor")) == 4, "Four original role floor leaves");
+            var camera = MapCamera(scene);
+            Undo.RecordObject(camera.transform, "NOV04 corrected four-room overview");
+            camera.transform.position = new Vector3(36, 3, camera.transform.position.z);
+            SaveStage(scene, "CORR_INTRO", before);
+            CorrectionCaptureSet(SceneManager.GetActiveScene(), 4, "after");
+        }
+        [MenuItem("Tools/NOV04 Visual/25 Correct Hod visual and entry barrier")]
+        public static void CorrectHodMenu() { Attempt("CORR_M2", CorrectHod); }
+        static void CorrectHod()
+        {
+            CorrectionSceneGate(2);
+            var scene = BeginStage(2, "CORR_M2"); var before = Snapshot(scene);
+            var physicalIDs = PhysicsIDs(scene); string physics = ExistingPhysics(scene, physicalIDs);
+            var art = ComponentID<SpriteRenderer>(scene, 1721528771);
+            var bounds = art.bounds;
+            Require(art.sprite.name == "Tiles_0", "Current upper Rabbit platform source");
+            // One source-height band; preserve the saved width and walking top.
+            SetWorldRect(art, bounds.min.x, bounds.max.y - art.sprite.bounds.size.y * .29767442f, bounds.max.x, bounds.max.y);
+            var wall = NewRoot(scene, "Hod_EntrySafetyWall_NOV04");
+            wall.transform.position = new Vector3(-9.864584f, 0, 0);
+            wall.layer = ComponentID<BoxCollider2D>(scene, 2144840289).gameObject.layer;
+            var renderer = Undo.AddComponent<SpriteRenderer>(wall);
+            renderer.sprite = Sprite(Root + "PCS_Resources/Public/MetalModules_R3.png", "Plate");
+            renderer.sharedMaterial = art.sharedMaterial;
+            renderer.drawMode = SpriteDrawMode.Tiled; renderer.tileMode = SpriteTileMode.Continuous;
+            renderer.size = new Vector2(1.5f, 14); renderer.sortingOrder = 0;
+            renderer.color = new Color(.55f, .65f, .69f, 1);
+            var target = new Bounds(wall.transform.position, new Vector3(1.5f, 14, .1f));
+            foreach (var collider in Transforms(scene).SelectMany(t => t.GetComponents<Collider2D>()).Where(c => c.enabled && c.gameObject.activeInHierarchy))
+            {
+                var b = collider.bounds;
+                float x = Mathf.Min(b.max.x, target.max.x) - Mathf.Max(b.min.x, target.min.x);
+                float y = Mathf.Min(b.max.y, target.max.y) - Mathf.Max(b.min.y, target.min.y);
+                Require(x <= .005f || y <= .005f, "Hod safety barrier intersects current collider " + FullPath(collider.transform));
+            }
+            var box = Undo.AddComponent<BoxCollider2D>(wall); box.size = new Vector2(1.5f, 14);
+            Require(ExistingPhysics(scene, physicalIDs) == physics, "Hod existing collider/rigidbody/effector invariant");
+            SameRecords(before, scene, r => FunctionalOrDoor(r) || r.path.Contains("PCS_HodCrusher_N02_EDITOR_PREVIEW_ONLY_NO_DAMAGE"));
+            SaveStage(scene, "CORR_M2", before);
+            CorrectionCaptureSet(SceneManager.GetActiveScene(), 2, "after");
+            Note("CORR_M2_DETAIL", "ONE_BAND_AND_BARRIER_PASS", "Single Rabbit strip top4.5 and old width retained; all old physics and elevator unchanged; new static wall x[-10.614584,-9.114584],y[-7,7] joins current SafeLeftApproach without overlap; actual character escape NOT_TESTED");
+        }
+        [MenuItem("Tools/NOV04 Visual/26 Correct Netzach options and outside finish")]
+        public static void CorrectNetzachMenu() { Attempt("CORR_M3", CorrectNetzach); }
+        static void CorrectNetzach()
+        {
+            CorrectionSceneGate(3);
+            var scene = BeginStage(3, "CORR_M3"); var before = Snapshot(scene); string physics = Physics(scene);
+            var plate = Sprite(Root + "PCS_Resources/Public/MetalModules_R3.png", "Plate");
+            var ceiling = Sprite(Root + "PCS_Resources/Public/MetalModules_R3.png", "Ceiling");
+            var wall = Sprite(Root + "PCS_Resources/Public/MetalModules_R3.png", "Wall");
+            var bottom = ComponentID<SpriteRenderer>(scene, 1687242053); var b = bottom.bounds;
+            CrispRect(bottom, plate, b.min.x, -8, b.max.x, b.max.y);
+            bottom.color = new Color(.48f, .58f, .63f, 1);
+            var top = ComponentID<SpriteRenderer>(scene, 814113968); b = top.bounds;
+            CrispRect(top, plate, b.min.x, b.min.y, b.max.x, 16);
+            top.color = bottom.color;
+            foreach (long id in new long[] { 1550043218, 1315056298 })
+            {
+                var art = ComponentID<SpriteRenderer>(scene, id); b = art.bounds;
+                CrispRect(art, wall, b.min.x, b.min.y, b.max.x, b.max.y);
+            }
+            var alternate = NewRoot(scene, "Netzach_Background_Alt_Optional");
+            alternate.transform.position = new Vector3(4.5f, 4.5f, .2f);
+            alternate.transform.localScale = Vector3.one * 1.5f;
+            var background = Undo.AddComponent<SpriteRenderer>(alternate);
+            background.sprite = Sprite(Root + "PCS_Resources/Public/IndustrialBackground_NOV04.png");
+            background.sharedMaterial = bottom.sharedMaterial;
+            background.sortingOrder = -90; background.color = new Color(.59f, .69f, .74f, 1);
+            var glass = NewRoot(scene, "Netzach_GlassOverlay_Optional");
+            glass.transform.position = new Vector3(7.94f, 4.355f, -.05f);
+            var overlay = Undo.AddComponent<SpriteRenderer>(glass);
+            overlay.sprite = Sprite(Root + "PCS_Resources/Public/GlassWall_NOV04.png");
+            overlay.sharedMaterial = bottom.sharedMaterial; overlay.drawMode = SpriteDrawMode.Sliced;
+            overlay.size = new Vector2(18.06f, 8.71f); overlay.sortingOrder = 10;
+            overlay.color = new Color(.76f, .95f, 1, .55f);
+            Require(Physics(scene) == physics, "Netzach full original physical state invariant");
+            SameRecords(before, scene, r => r.path.StartsWith("Netzach/PUZZLE_AREAS/") || r.path.StartsWith("Netzach/ELEVATORS/") || r.path.StartsWith("Netzach/BACKGROUND/") || r.path.StartsWith("PuzzleWall_B_Glass_NOV04/"));
+            SaveStage(scene, "CORR_M3", before);
+            CorrectionCaptureSet(SceneManager.GetActiveScene(), 3, "after");
+            Note("CORR_M3_DETAIL", "OPTIONS_AND_OUTWARD_FINISH_PASS", "Bottom grows only below0; ceiling only above8.71; neutral puzzle/gate/Elevator/all physics preserved; right wall footprint unchanged,additional thickening HOLD; two optional Sprite-only roots default ON; original background retained");
+        }
+        [MenuItem("Tools/NOV04 Visual/28 Continue remaining correction stages once")]
+        public static void ContinueCorrections()
+        {
+            Stable(); CorrectionGuard();
+            Require(Read<QAFile>("NATIVE_QA.json").records.Any(r => r.stage == "CORR_SHARED_SAMPLING" && r.status == "SIMPLE_UNIFORM_PASS"), "Shared source sampling checkpoint");
+            Attempt("CORR_M0", CorrectMalkuth);
+            if (SceneManager.GetActiveScene().isDirty) return;
+            Attempt("CORR_INTRO", CorrectIntro);
+            if (SceneManager.GetActiveScene().isDirty) return;
+            Attempt("CORR_M2", CorrectHod);
+            if (SceneManager.GetActiveScene().isDirty) return;
+            Attempt("CORR_M3", CorrectNetzach);
+            Stable(); CorrectionGuard();
+        }
+        [MenuItem("Tools/NOV04 Visual/29 Finish room background coverage and Hod retry")]
+        public static void FinishCorrectionCoverage()
+        {
+            Stable(); CorrectionGuard();
+            string path = Root + "PCS_Resources/Public/PCS_StartRooms4_NOV04.prefab";
+            Require(Hash(path) == "c7bfda737a44e1444a7e978fc387c5ce3bb2f99273adeec9c705222adbc7bdcd", "Expected own uniform sampling checkpoint");
+            var root = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                var panels = root.GetComponentsInChildren<SpriteRenderer>(true).Where(s => s.name.StartsWith("Background_") && s.enabled).ToArray();
+                Require(panels.Length == 4, "Four current room panels");
+                foreach (var art in panels)
+                {
+                    art.transform.localScale = Vector3.one * .55f;
+                    var position = art.transform.position; position.y = 5; art.transform.position = position;
+                }
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+            Note("CORR_ROOM_COVERAGE", "SAVED", "Four uniform0.55 panels,centerY5 in shared source; above-entry player-sized camera coverage; no PNG/import edits; SHA256=" + Hash(path));
+            Attempt("CORR_M2", CorrectHod);
+            Stable(); CorrectionGuard();
+        }
+        static string ComparableNativeJSON(ObjectRecord record)
+        {
+            if (record.type != "UnityEngine.MeshFilter") return record.json;
+            var json = JObject.Parse(record.json);
+            var mesh = json["MeshFilter"]?["m_Mesh"] as JObject;
+            // TMP generates a new hidden mesh on each scene load. Asset fileIDs are never normalized.
+            if (mesh?["instanceID"] != null && (int)mesh["instanceID"] < 0) mesh["instanceID"] = 0;
+            return json.ToString(Newtonsoft.Json.Formatting.None);
+        }
+        static void PreservedNativeRecords(SceneRecord original, SceneRecord current, Func<ObjectRecord, bool> predicate)
+        {
+            var lookup = current.records.ToDictionary(r => r.id);
+            foreach (var old in original.records.Where(predicate))
+            {
+                ObjectRecord value;
+                if (old.type == "UnityEngine.MeshFilter" && old.id.StartsWith("UNSAVED_INSTANCE_"))
+                {
+                    var matches = current.records.Where(r => r.type == old.type && r.path == old.path && r.id.StartsWith("UNSAVED_INSTANCE_")).ToArray();
+                    Require(matches.Length == 1, "Exactly one TMP transient MeshFilter at " + old.path);
+                    value = matches[0];
+                }
+                else Require(lookup.TryGetValue(old.id, out value), "Persistent Native identity " + old.id);
+                Require(ComparableNativeJSON(old) == ComparableNativeJSON(value) && old.worldMatrix.SequenceEqual(value.worldMatrix),
+                    "Final current-user Native preservation " + old.path + " / " + old.type);
+            }
+        }
+        [MenuItem("Tools/NOV04 Visual/31 Finish Hod approach visual then final QA")]
+        public static void FinishHodApproachAndQA()
+        {
+            Attempt("CORR_M2_APPROACH", () =>
+            {
+                Stable(); CorrectionGuard();
+                Require(Hash(ScenePath(2)) == "185db8280de13fd2537edce65306af3817a4b373f7b2f81d9083198c9cb1c7be", "Expected saved own Hod correction");
+                var scene = BeginStage(2, "CORR_M2_APPROACH"); var before = Snapshot(scene); string physics = Physics(scene);
+                var approach = ComponentID<BoxCollider2D>(scene, 1845465644); var b = approach.bounds;
+                var art = Visual(approach.transform.parent, "EntryApproach_Visual", Sprite(Root + "PCS_Resources/Public/MetalModules_R3.png", "Ceiling"),
+                    new Vector3(b.center.x, b.max.y - .25f, 0), new Vector2(b.size.x, .5f), 0, Color.white);
+                art.drawMode = SpriteDrawMode.Tiled;
+                Require(Physics(scene) == physics && Mathf.Abs(art.bounds.max.y - b.max.y) < .001f, "Approach visual only; saved collider top");
+                SaveStage(scene, "CORR_M2_APPROACH", before);
+                CorrectionCaptureSet(SceneManager.GetActiveScene(), 2, "after");
+            });
+            if (!SceneManager.GetActiveScene().isDirty) FinalCorrectionQA();
+        }
+        [MenuItem("Tools/NOV04 Visual/30 Final correction native QA no scene writes")]
+        public static void FinalCorrectionQA()
+        {
+            Stable(); CorrectionGuard();
+            Require(new[] { "CORR_M0", "CORR_INTRO", "CORR_M2", "CORR_M3" }.All(stage =>
+                Read<QAFile>("NATIVE_QA.json").records.Any(r => r.stage == stage && r.status == "SAVED_REOPENED_NATIVE_PASS")), "All correction save checkpoints");
+            VerifySaved(); PreviewQA();
+            var audit = new GeometryAudit(); var native = new NativeBaseline();
+            for (int i = 0; i < 5; i++)
+            {
+                var scene = i == 4 ? EditorSceneManager.OpenScene(Root + "Scenes/PCS_MAP00_StartRooms4_NOV04.unity", OpenSceneMode.Single) : Open(i);
+                var original = CorrectionBefore(i); var current = Snapshot(scene);
+                Require(current.missingScripts == 0 && current.missingSprites == 0, "Final references");
+                if (i == 1 || i == 3) Require(original.physics == current.physics, "Final full physics invariant " + i);
+                if (i == 0) PreservedNativeRecords(original, current, r =>
+                    (r.type.EndsWith("Collider2D") || r.type.EndsWith("Rigidbody2D") || r.type.EndsWith("PlatformEffector2D")) &&
+                    !r.path.StartsWith("StartRooms4_") && !new long[] { 17913349, 1159775673, 1836950455, 16008586 }.Any(id => r.id.EndsWith("-" + id + "-0")));
+                if (i == 2) PreservedNativeRecords(original, current, r => r.type.EndsWith("Collider2D") || r.type.EndsWith("Rigidbody2D") || r.type.EndsWith("PlatformEffector2D"));
+                if (i < 4) PreservedNativeRecords(original, current, r => FunctionalOrDoor(r) && !r.path.StartsWith("StartRooms4_"));
+                if (i == 3) PreservedNativeRecords(original, current, r => r.path.StartsWith("Netzach/PUZZLE_AREAS/") || r.path.StartsWith("Netzach/BACKGROUND/") || r.path.StartsWith("PuzzleWall_B_Glass_NOV04/"));
+                native.scenes.Add(current); audit.scenes.Add(Geometry(scene));
+                CorrectionCaptureSet(scene, i, "after");
+                if (i == 3) CaptureNetzachOptions(scene);
+                if (i == 0)
+                    for (int role = 0; role < 4; role++)
+                    foreach (float aspect in new[] { 16f / 9, 4f / 3, 21f / 9 })
+                        CorrectionCapture(scene, "CORR_M0_Player_" + role + "_" + aspect.ToString("F3", System.Globalization.CultureInfo.InvariantCulture), new Vector2(-4 + role * 28, 35), 5, aspect);
+                Note("CORRECTION_FINAL_M" + i, "SAVED_NATIVE_PROTECTION_PASS", current.sha256 + "; missing0/0; current-user baseline components protected");
+            }
+            File.WriteAllText(CorrectionBackup + "/NATIVE_AFTER.json", JsonUtility.ToJson(native, true), new UTF8Encoding(false));
+            File.WriteAllText(CorrectionBackup + "/GEOMETRY_AFTER.json", JsonUtility.ToJson(audit, true), new UTF8Encoding(false));
+            Stable(); CorrectionGuard();
+            Note("CORRECTION_FINAL", "NATIVE_AND_PROXY_QA_PASS", "5 saved scenes; original physics restrictions;9 doors,4 abilities,crusher sampling/restoration; Scene/Game visual acceptance separately pending human-readable capture review; Play/Build/network NOT_TESTED");
+        }
+        [MenuItem("Tools/NOV04 Visual/32 Align saved own Hod approach visual")]
+        public static void AlignOwnHodApproach()
+        {
+            Attempt("CORR_M2_APPROACH_ALIGN", () =>
+            {
+                Stable(); CorrectionGuard();
+                Require(Hash(ScenePath(2)) == "b5749e0146d7459096623e89bfa420f3a594349f04aa8dd3432727916ce49b1a", "Expected own saved approach before world alignment");
+                var scene = BeginStage(2, "CORR_M2_APPROACH_ALIGN");
+                var before = Snapshot(scene); string physics = Physics(scene);
+                var collider = ComponentID<BoxCollider2D>(scene, 1845465644);
+                var art = ComponentID<SpriteRenderer>(scene, 1516051613);
+                Require(art.name == "EntryApproach_Visual" && art.transform.parent == collider.transform.parent,
+                    "Only the owned correction visual under existing approach");
+                var bounds = collider.bounds;
+                SetWorldRect(art, bounds.min.x, bounds.max.y - .5f, bounds.max.x, bounds.max.y);
+                Require(Physics(scene) == physics && Mathf.Abs(art.bounds.min.x - bounds.min.x) < .001f &&
+                    Mathf.Abs(art.bounds.max.x - bounds.max.x) < .001f && Mathf.Abs(art.bounds.max.y - bounds.max.y) < .001f,
+                    "Owned approach visual matches saved collider span and top; original physics unchanged");
+                SaveStage(scene, "CORR_M2_APPROACH_ALIGN", before);
+                CorrectionCaptureSet(SceneManager.GetActiveScene(), 2, "after");
+            });
+            if (!SceneManager.GetActiveScene().isDirty) FinalCorrectionQA();
+        }
+        static void CaptureNetzachOptions(Scene scene)
+        {
+            var transforms = Transforms(scene);
+            var source = transforms.Single(t => t.name == "Netzach");
+            Require(source.position == Vector3.zero && source.rotation == Quaternion.identity && source.lossyScale == Vector3.one, "Netzach proxy world origin");
+            var extras = scene.GetRootGameObjects().Select(g => g.transform).Where(t => t.name == "PuzzleWall_B_Glass_NOV04" ||
+                t.name == "Netzach_Background_Alt_Optional" || t.name == "Netzach_GlassOverlay_Optional").ToArray();
+            Require(extras.Length == 3, "Three saved optional visual roots");
+            using (var proxy = new Nov04VisualProxy(source, extras))
+            {
+                var bg = proxy.root.transform.Find("Netzach_Background_Alt_Optional").gameObject;
+                var glass = proxy.root.transform.Find("Netzach_GlassOverlay_Optional").gameObject;
+                foreach (string mode in new[] { "Baseline", "AltNoGlass", "AltGlass" })
+                {
+                    bg.SetActive(mode != "Baseline"); glass.SetActive(mode == "AltGlass");
+                    var image = Render(proxy.camera, new Vector2(7.94f, 4.355f), 5.5f, 16f / 9);
+                    try { File.WriteAllBytes(Run + "/work/generation_staging/CORR_M3_" + mode + ".png", image.EncodeToPNG()); }
+                    finally { Object.DestroyImmediate(image); }
+                }
+            }
+            PreviewNote("CORRECTION_OPTIONS", "ISOLATED_TOGGLE_RESTORE_PASS", "Saved whole-chamber overlay and optional background each ON/OFF in Sprite-only preview Scene; original Scene hash/dirty/physics/full Native state unchanged");
+        }
+        [MenuItem("Tools/NOV04 Visual/20 Correction read-only native snapshot")]
+        public static void CorrectionSnapshot()
+        {
+            Stable(); CorrectionGuard();
+            string output = CorrectionBackup + "/NATIVE_BEFORE.json";
+            Require(!File.Exists(output), "Correction Native snapshot already exists; reuse it");
+            var snapshot = new NativeBaseline { originalScene = SceneManager.GetActiveScene().path,
+                modes = "PLAY_OFF; PREFAB_STAGE_NONE; ANIMATION_MODE_OFF; ALL_OPEN_SCENES_CLEAN; NOT_COMPILING" };
+            try
+            {
+                for (int i = 0; i < 4; i++) snapshot.scenes.Add(Snapshot(Open(i)));
+                var intro = EditorSceneManager.OpenScene(Root + "Scenes/PCS_MAP00_StartRooms4_NOV04.unity", OpenSceneMode.Single);
+                snapshot.scenes.Add(Snapshot(intro));
+                File.WriteAllText(output, JsonUtility.ToJson(snapshot, true), new UTF8Encoding(false));
+            }
+            finally
+            {
+                Stable();
+                if (!string.IsNullOrEmpty(snapshot.originalScene)) EditorSceneManager.OpenScene(snapshot.originalScene, OpenSceneMode.Single);
+            }
+            CorrectionGuard();
+            Note("CORRECTION_I00", "CURRENT_NATIVE_SNAPSHOT_PASS", snapshot.modes + "; latest user HEAD ba72b87; source and backup protected");
         }
         public static Scene Open(int index)
         {
@@ -207,7 +780,9 @@ namespace PCS.Nov04.EditorTools
             var qa = Read<QAFile>("NATIVE_QA.json");
             qa.records.Add(new QARecord { stage = stage, status = status, detail = detail, time = DateTimeOffset.Now.ToString("o") });
             Write("NATIVE_QA.json", qa);
-            File.WriteAllText(Run + "/CHECKPOINT.md", stage + " " + status + "\n" + detail + "\n", new UTF8Encoding(false));
+            if (File.Exists(CorrectionBackup + "/BASELINE.json"))
+                File.AppendAllText(Run + "/CHECKPOINT.md", "\n" + DateTimeOffset.Now.ToString("o") + " " + stage + " " + status + "\n" + detail + "\n", new UTF8Encoding(false));
+            else File.WriteAllText(Run + "/CHECKPOINT.md", stage + " " + status + "\n" + detail + "\n", new UTF8Encoding(false));
             Debug.Log("NOV04 " + stage + " " + status + ": " + detail);
         }
         [MenuItem("Tools/NOV04 Visual/00 Native read-only gate")]
@@ -333,7 +908,8 @@ namespace PCS.Nov04.EditorTools
             Require(report.scenes.Last().missingScripts == 0 && report.scenes.Last().missingSprites == 0, "Missing script / active Sprite");
             Note(stage, "SAVED_REOPENED_NATIVE_PASS", path + " SHA256 " + hash + "; objects=" + report.scenes.Last().objects);
             transaction = null;
-            CaptureCurrent(stage == "M0-INTRO" ? "M0INTRO" : stage.StartsWith("M0-") ? "M0" : stage, "after");
+            if (!stage.StartsWith("CORR_"))
+                CaptureCurrent(stage == "M0-INTRO" ? "M0INTRO" : stage.StartsWith("M0-") ? "M0" : stage, "after");
             ProtectedGuard(); Stable();
         }
         public static void RequireNewAsset(string path)
@@ -692,6 +1268,7 @@ namespace PCS.Nov04.EditorTools
         public static void ApplyApproved()
         {
             Stable(); ProtectedGuard();
+            Require(!File.Exists(CorrectionBackup + "/BASELINE.json"), "Correction mode: do not rerun the original builder");
             Require(File.Exists(Run + "/NATIVE_OBJECT_BASELINE.json"), "Run Native gate first");
             ImportBackground();
             Attempt("M0", Malkuth);
@@ -725,7 +1302,7 @@ namespace PCS.Nov04.EditorTools
             transaction = new StageTransaction { stage = stage, path = scene.path, sha = Hash(scene.path), undoGroup = Undo.GetCurrentGroup(), before = Snapshot(scene) };
             Undo.SetCurrentGroupName("NOV04 " + stage);
             foreach (var root in scene.GetRootGameObjects()) Undo.RegisterFullObjectHierarchyUndo(root, "NOV04 " + stage);
-            CaptureCurrent(stage, "before");
+            if (!stage.StartsWith("CORR_")) CaptureCurrent(stage, "before");
             return scene;
         }
         private static void RecoverOwnStage()
@@ -1069,6 +1646,21 @@ namespace PCS.Nov04.EditorTools
                 light.pointLightInnerAngle = 360; light.pointLightOuterAngle = 360;
                 light.intensity = 1;
                 lamp.SetActive(true);
+            }
+            catch { Dispose(); throw; }
+        }
+        public Nov04VisualProxy(Transform source, IEnumerable<Transform> extras) : this(source)
+        {
+            try
+            {
+                foreach (var extra in extras)
+                {
+                    var copy = Copy(extra, root.transform, false);
+                    copy.transform.localPosition = source.InverseTransformPoint(extra.position);
+                    copy.transform.localRotation = Quaternion.Inverse(source.rotation) * extra.rotation;
+                    copy.transform.localScale = Vector3.Scale(extra.lossyScale,
+                        new Vector3(1 / source.lossyScale.x, 1 / source.lossyScale.y, 1 / source.lossyScale.z));
+                }
             }
             catch { Dispose(); throw; }
         }
