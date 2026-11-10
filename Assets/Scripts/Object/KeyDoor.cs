@@ -1,25 +1,44 @@
 using Fusion;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// ¿­¼è¸¦ ¸ðµÎ È¹µæ ½Ã ¿­¸³´Ï´Ù.
+/// ï¿½ï¿½ï¿½è¸¦ ï¿½ï¿½ï¿½ È¹ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.
 /// </summary>
 public class KeyDoor : NetworkBehaviour
 {
-    [Header("Å° »ç¿ë ½Ã Å° ¾ø¾Ö±â")]
-    [SerializeField] bool disactiveKeys = false;
-    [Header("¿ÀÇÂ¿¡ ÇÊ¿äÇÑ Å°µé")]
+    [SerializeField] bool isBring = false;
+    List<Key> bringKeys;
+    [SerializeField] bool disactive = false;
     [SerializeField] private Key[] openKeys;
-    [Header("¿ÀÇÂ ¶§ ¹ß»ýÇÒ ÀÌº¥Æ®")]
     [SerializeField] private UnityEvent openAction;
 
     [Networked] public NetworkBool IsOpened { get; set; }
+
+    public override void Spawned()
+    {
+        base.Spawned();
+        bringKeys = new List<Key>();
+        bringKeys.Capacity = openKeys.Length;
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!HasStateAuthority || IsOpened)
             return;
+
+        if (isBring)
+        {
+            Key curKey = collision.gameObject.GetComponentInChildren<Key>();
+
+            if (!bringKeys.Contains(curKey))
+                bringKeys.Add(curKey);
+
+            if (bringKeys.Count < openKeys.Length)
+                return;
+        }
 
         if (!collision.gameObject.CompareTag("Player"))
             return;
@@ -39,7 +58,7 @@ public class KeyDoor : NetworkBehaviour
     {
         openAction?.Invoke();
 
-        if (disactiveKeys)
+        if (disactive)
         {
             for (int i = 0; i < openKeys.Length; i++)
                 openKeys[i].gameObject.SetActive(false);

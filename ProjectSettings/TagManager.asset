@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Spawn
   - Loading
+  - Key
   layers:
   - Default
   - TransparentFX

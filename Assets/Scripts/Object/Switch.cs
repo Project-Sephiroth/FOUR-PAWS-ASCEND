@@ -75,6 +75,7 @@ public class Switch : NetworkBehaviour, IInteractable
             return;
 
         RPC_Switch(!isOn);
+        SetOutlineMat(false);
     }
 
     public void SetOutlineMat(bool isOn)

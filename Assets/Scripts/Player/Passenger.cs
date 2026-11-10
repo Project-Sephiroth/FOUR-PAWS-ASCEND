@@ -16,7 +16,7 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
 
     public bool IsCarried => curCarrier != null;
 
-    public override void Spawned()
+    public void OnEnable()
     {
         input = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody2D>();
@@ -32,8 +32,11 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
             RequestDrop(); //³»¸®±â
     }
 
-    public virtual void OnInteract(Interactor interactor)
+    public void OnInteract(Interactor interactor)
     {
+        if (interactor == null)
+            return;
+
         Carrier carrier = interactor.GetComponent<Carrier>();
 
         if (carrier == null)
@@ -59,7 +62,7 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
         transform.SetParent(curCarrier.Head.transform);
         transform.position = curCarrier.Head.transform.position;
 
-        col.enabled = false;
+        col.isTrigger = true;
         rb.simulated = false;
     }
 
@@ -78,7 +81,7 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
             input.CanMoveInput = true;
         curCarrier = null;
 
-        col.enabled = true;
+        col.isTrigger = false;
         rb.simulated = true;
     }
 
@@ -96,6 +99,9 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
 
     public void SetOutlineMat(bool isOn)
     {
+        if (outlineMat == null)
+            return;
+
         outlineMat.SetOutline(isOn);
     }
 }

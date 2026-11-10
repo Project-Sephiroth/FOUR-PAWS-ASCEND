@@ -287,16 +287,14 @@ MonoBehaviour:
   interactRange: {fileID: 4961979422228578352}
   detectLayer:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 768
   holdPoint: {fileID: 5914864101770483648}
   _CurInteractObject: {fileID: 0}
   anim: {fileID: 36281683945568774}
   tonguePivot: {fileID: 5813377695839847349}
   line: {fileID: 6507309972623953729}
   tongueSpeed: 15
-  tongueDetectLayer:
-    serializedVersion: 2
-    m_Bits: 768
+  mover: {fileID: 5476022286700897556}
   _State: 0
   _EndPos: {x: 0, y: 0}
   _HoldOffset: {x: 0, y: 0}

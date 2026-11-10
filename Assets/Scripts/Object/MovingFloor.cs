@@ -83,6 +83,7 @@ public class MovingFloor : NetworkBehaviour
     /// </summary>
     public void StartMove()
     {
+        Debug.Log($"MovingFloor {gameObject.name}: 움직임 시작");
         if (!HasStateAuthority)
             return;
 

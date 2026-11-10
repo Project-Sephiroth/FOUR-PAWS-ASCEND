@@ -27,6 +27,9 @@ public class SelectCharacterButton : NetworkBehaviour
 
     public void OnButtonClicked()
     {
+        if (IsBlocked)
+            return;
+
         OnClick?.Invoke(myType);
     }
 
