@@ -29,6 +29,8 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
 
     public bool IsHeld => Holder != null;
 
+    [SerializeField] InteractableOutline outline;
+
 
     private void Awake()
     {
@@ -148,4 +150,8 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
             IsMoving = false;
     }
 
+    public void SetOutlineMat(bool isOn)
+    {
+        outline.SetOutline(isOn);
+    }
 }

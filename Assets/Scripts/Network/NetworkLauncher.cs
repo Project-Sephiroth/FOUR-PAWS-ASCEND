@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using static NetworkGameManager;
 
 public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -24,7 +25,9 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     private void Start()
     {
-        JoinLobby(); 
+        JoinLobby();
+
+        DontDestroyOnLoad(this.gameObject);
     }
 
     #region Lobby
@@ -103,6 +106,15 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
+    public void OnSceneLoadDone(NetworkRunner runner)
+    {
+        Debug.Log("씬 로드 완료");
+
+        //씬 전환 후 플레이어 오브젝트 스폰
+        if (SceneManager.GetActiveScene().name != SceneName.Lobby.ToString())
+            GameObject.FindWithTag("Spawn").GetComponent<PlayerSpawner>().SpawnCharacter(runner);
+    }
+
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
     {
     }
@@ -119,10 +131,10 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        ReturnToLobby();
+        ReturnToLobby(runner);
     }
 
-    public async void ReturnToLobby()
+    public async void ReturnToLobby(NetworkRunner runner)
     {
         if (isLeaving)
             return;
@@ -135,7 +147,7 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
             Destroy(runner.gameObject);
         }
 
-        SceneManager.LoadScene("Lobby");
+        SceneManager.LoadScene(SceneName.Lobby.ToString());
     }
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
@@ -174,15 +186,12 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
     {
     }
 
+
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
     {
     }
 
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
-    {
-    }
-
-    public void OnSceneLoadDone(NetworkRunner runner)
     {
     }
 

@@ -7,4 +7,6 @@ public interface IInteractable
     /// </summary>
     /// <param name="interactor"></param>
     public void OnInteract(Interactor interactor);
+    public void SetOutlineMat(bool isOn);
+
 }

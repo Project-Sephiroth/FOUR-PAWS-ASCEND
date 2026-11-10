@@ -12,6 +12,8 @@ public class Switch : NetworkBehaviour, IInteractable
     private GameObject curOperator = null;
     bool isOn = false;
 
+    [SerializeField] InteractableOutline outline;
+
     private void Awake()
     {
         anim = GetComponent<Animator>();
@@ -73,5 +75,10 @@ public class Switch : NetworkBehaviour, IInteractable
             return;
 
         RPC_Switch(!isOn);
+    }
+
+    public void SetOutlineMat(bool isOn)
+    {
+        outline.SetOutline(isOn);
     }
 }

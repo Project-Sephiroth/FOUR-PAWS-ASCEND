@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 4977600470123195208}
   - component: {fileID: 6154881667276453139}
   - component: {fileID: 6507309972623953729}
+  - component: {fileID: -1108707625085643393}
   m_Layer: 3
   m_Name: Player_Frog
   m_TagString: Player
@@ -71,6 +72,7 @@ MonoBehaviour:
   - {fileID: -14963800469289941}
   - {fileID: 4977600470123195208}
   - {fileID: 6154881667276453139}
+  - {fileID: -1108707625085643393}
   - {fileID: 4961979422228578352}
   - {fileID: 7946381705657237752}
   - {fileID: 4066162875382254432}
@@ -287,7 +289,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   holdPoint: {fileID: 5914864101770483648}
-  _CurHoldObject: {fileID: 0}
+  _CurInteractObject: {fileID: 0}
   anim: {fileID: 36281683945568774}
   tonguePivot: {fileID: 5813377695839847349}
   line: {fileID: 6507309972623953729}
@@ -347,7 +349,7 @@ LineRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 781912049
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Positions:
@@ -411,6 +413,18 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &-1108707625085643393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 505921429212253325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 566c927ce1df53b4e90f2d47374297cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraTarget
 --- !u!1 &1750155540070545492
 GameObject:
   m_ObjectHideFlags: 0
@@ -479,7 +493,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0.85}
-  m_Radius: 1.5
+  m_Radius: 0.85
 --- !u!114 &4961979422228578352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,6 +589,7 @@ GameObject:
   - component: {fileID: 3386914931190662794}
   - component: {fileID: 7969604923066544343}
   - component: {fileID: 7673159693932548790}
+  - component: {fileID: 4952996752419818945}
   m_Layer: 3
   m_Name: model_frog
   m_TagString: Untagged
@@ -623,7 +638,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: a0f1409ac37e453aaf54e457cc2bd421, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -665,10 +680,23 @@ SortingGroup:
   m_GameObject: {fileID: 4100260308554641846}
   m_Enabled: 1
   m_SortingLayerID: 558289701
-  m_SortingLayer: 3
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
+--- !u!114 &4952996752419818945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4100260308554641846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fca38fd8f856e6548807894fcfe3b7ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableOutline
+  spriteRenderer: {fileID: 7969604923066544343}
 --- !u!1 &5287254661084678659
 GameObject:
   m_ObjectHideFlags: 0

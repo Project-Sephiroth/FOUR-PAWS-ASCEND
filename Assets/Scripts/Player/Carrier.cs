@@ -104,16 +104,6 @@ public class Carrier : Interactor
         if (appliedPassenger == CurPassenger)
             return;
 
-        if (appliedPassenger != null)
-            appliedPassenger.OnDrop();
-
         appliedPassenger = CurPassenger;
-
-        if (appliedPassenger != null)
-        {
-            Debug.Log($"{gameObject.name} 이 어부바를 시도");
-
-            appliedPassenger.OnCarry(this);
-        }
     }
 }

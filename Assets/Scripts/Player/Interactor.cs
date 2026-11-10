@@ -20,13 +20,12 @@ public class Interactor : NetworkBehaviour
     public event UnityAction<Vector2> OnClick;
 
     protected IInteractable curInteratcble;
-    public IInteractable CurInteractable => curInteratcble;
 
     protected Vector2 mousePos;
 
     [SerializeField] protected Transform holdPoint;
     public Transform HoldPoint => holdPoint;
-    [Networked] public NetworkObject CurHoldObject { get; set; }
+    [Networked] public NetworkObject CurInteractObject { get; set; }
 
     public override void Spawned()
     {
@@ -52,7 +51,7 @@ public class Interactor : NetworkBehaviour
     }
 
     /// <summary>
-    /// 스크린의 마우스 포지션을 받아 얼드 내 게임 오브젝트를 반환합니다
+    /// 스크린의 마우스 포지션을 받아 월드 내 게임 오브젝트를 반환합니다
     /// </summary>
     protected virtual void GetMouseClickRay()
     {
@@ -70,7 +69,10 @@ public class Interactor : NetworkBehaviour
         Collider2D hit = Physics2D.OverlapPoint(mousePos, detectLayer);
 
         if (hit != null)
+        {
+            Debug.Log($"Interactor: {hit.gameObject.name} 을 클릭");
             TryClick(hit.gameObject);
+        }
     }
 
     protected virtual void TryIntetact()
@@ -78,15 +80,22 @@ public class Interactor : NetworkBehaviour
         if (!HasStateAuthority)
             return;
 
+        if (!Input.GetMouseButtonDown(0))
+            return;
+
+
         //클릭 타겟과 범위 타겟 둘 중 하나가 null 이면 return
         if (curClick == null || curRange == null)
             return;
+
+        Debug.Log($"인터랙션 시도");
 
         //상호작용 하는 데에 클릭과 범위 감지 모두 필요하다면
         if (interactWithClick && interactWithRange)
         {
             //클릭 타겟과 범위 타겟이 같을 경우에만 curInteractable 설정
             curInteratcble = curClick == curRange ? curClick.GetComponent<IInteractable>() : null;
+            Debug.Log($"클릭 및 범위 감지를 고려해 인터랙션 시도");
         }
         else
         {
@@ -99,15 +108,18 @@ public class Interactor : NetworkBehaviour
         if (curInteratcble == null)
             return;
 
+        CurInteractObject = curClick.GetComponent<NetworkObject>();
+
         curInteratcble.OnInteract(this);
+        curInteratcble.SetOutlineMat(true); //외곽선 효과
         Debug.Log($"Interactor 가 {curInteratcble} 에 OnInteract");
 
         //클릭 초기화
         curClick = null;
     }
 
-    protected virtual void TryClick(GameObject clickTarget) 
-    { 
+    protected virtual void TryClick(GameObject clickTarget)
+    {
         IInteractable interactable = clickTarget.GetComponent<IInteractable>();
 
         if (interactable == null)
@@ -116,6 +128,7 @@ public class Interactor : NetworkBehaviour
         curClick = clickTarget;
 
         Debug.Log($"Interactor 에 클릭 된 target 을 {clickTarget} 으로 설정");
+
     }
 
     protected virtual void TryHold(NetworkObject target)
@@ -123,14 +136,14 @@ public class Interactor : NetworkBehaviour
         if (target == null)
             return;
 
-        CurHoldObject = target;
-        CurHoldObject.transform.SetParent(holdPoint, true);
-        CurHoldObject.transform.position = holdPoint.position;
+        CurInteractObject = target;
+        CurInteractObject.transform.SetParent(holdPoint, true);
+        CurInteractObject.transform.position = holdPoint.position;
     }
 
     protected virtual void ReleaseHold()
     {
-        CurHoldObject.transform.SetParent(null, true);
+        CurInteractObject.transform.SetParent(null, true);
     }
 
     protected void OnDetect(GameObject detectTarget)

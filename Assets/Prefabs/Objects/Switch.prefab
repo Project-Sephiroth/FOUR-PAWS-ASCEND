@@ -58,7 +58,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: a0f1409ac37e453aaf54e457cc2bd421, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -899224911
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: -5138892601705250302, guid: a36f828a8a278c449bcdd1bc4b81d68a, type: 3}
@@ -222,6 +222,7 @@ MonoBehaviour:
   switchAction:
     m_PersistentCalls:
       m_Calls: []
+  outline: {fileID: 2386599319579613851}
 --- !u!1 &9210333348296486074
 GameObject:
   m_ObjectHideFlags: 0
@@ -232,6 +233,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3865119341806059250}
   - component: {fileID: 6097704485830034297}
+  - component: {fileID: 2386599319579613851}
   m_Layer: 9
   m_Name: handle
   m_TagString: Untagged
@@ -280,7 +282,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: a0f1409ac37e453aaf54e457cc2bd421, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -300,7 +302,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -899224911
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -4505345085058251112, guid: a36f828a8a278c449bcdd1bc4b81d68a, type: 3}
@@ -313,3 +315,16 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &2386599319579613851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9210333348296486074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fca38fd8f856e6548807894fcfe3b7ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableOutline
+  spriteRenderer: {fileID: 6097704485830034297}

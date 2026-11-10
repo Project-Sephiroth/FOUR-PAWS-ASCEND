@@ -141,6 +141,7 @@ GameObject:
   - component: {fileID: -8556835490579192334}
   - component: {fileID: 5072982804541711316}
   - component: {fileID: 2744550448471578549}
+  - component: {fileID: -596747215276389991}
   m_Layer: 3
   m_Name: Player_Mouse
   m_TagString: Player
@@ -189,6 +190,7 @@ MonoBehaviour:
   - {fileID: -5486389460404889778}
   - {fileID: -8556835490579192334}
   - {fileID: 2744550448471578549}
+  - {fileID: -596747215276389991}
   - {fileID: 368976050365780461}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &9211547091637837329
@@ -308,6 +310,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   speed: 2
+  CanMove: 1
   jumpForce: 5
   CanJump: 1
   canDoubleJump: 0
@@ -444,6 +447,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e523aafc74292ad488e544dfbdcb78cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Passenger
+  outlineMat: {fileID: 5726915882332102983}
+--- !u!114 &-596747215276389991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4353250075812841545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 566c927ce1df53b4e90f2d47374297cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraTarget
 --- !u!1 &8275741618073531482
 GameObject:
   m_ObjectHideFlags: 0
@@ -454,6 +470,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9206740877219596575}
   - component: {fileID: 6730078654515193778}
+  - component: {fileID: 5726915882332102983}
   m_Layer: 3
   m_Name: model_mouse
   m_TagString: Untagged
@@ -502,7 +519,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: a0f1409ac37e453aaf54e457cc2bd421, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -522,10 +539,10 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 558289701
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 6393505594047268360, guid: 48889496fc13f9248acf032b419fd6be, type: 3}
+  m_Sprite: {fileID: -6160634719178213201, guid: 3be1b3c4aef2f6c4483ac6d9a975fad8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -535,3 +552,16 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &5726915882332102983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8275741618073531482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fca38fd8f856e6548807894fcfe3b7ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractableOutline
+  spriteRenderer: {fileID: 6730078654515193778}
