@@ -125,6 +125,9 @@ public class Interactor : NetworkBehaviour
 
         CurInteractObject = target;
 
+        CurInteractObject.GetComponent<Collider2D>().enabled = false;
+        CurInteractObject.GetComponent<Rigidbody2D>().simulated = false;
+
         CurInteractObject.transform.SetParent(holdPoint, true);
         CurInteractObject.transform.position = holdPoint.position;
     }
@@ -134,7 +137,11 @@ public class Interactor : NetworkBehaviour
         if (CurInteractObject == null)
             return;
 
+        CurInteractObject.GetComponent<Collider2D>().enabled = true;
+        CurInteractObject.GetComponent<Rigidbody2D>().simulated = true;
+
         CurInteractObject.transform.SetParent(null, true);
+        CurInteractObject = null;
     }
 
     protected void OnDetect(GameObject detectTarget)

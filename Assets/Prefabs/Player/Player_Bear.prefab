@@ -253,6 +253,7 @@ GameObject:
   - component: {fileID: 4070602120189774081}
   - component: {fileID: 3535203046045987326}
   - component: {fileID: 1180311791982922275}
+  - component: {fileID: 6504094990509860313}
   m_Layer: 3
   m_Name: Player_Bear
   m_TagString: Player
@@ -305,6 +306,7 @@ MonoBehaviour:
   - {fileID: 4070602120189774081}
   - {fileID: 3535203046045987326}
   - {fileID: 1180311791982922275}
+  - {fileID: 6504094990509860313}
   - {fileID: 3904849516239620281}
   - {fileID: 2758368488505099682}
   ForceRemoteRenderTimeframe: 0
@@ -511,10 +513,10 @@ MonoBehaviour:
   _CurInteractObject: {fileID: 0}
   mover: {fileID: -4307343292715752888}
   model: {fileID: 7250350725784135061}
-  minDistance: 1
-  maxDistance: 3
+  minDistance: 3
+  maxDistance: 8
   minAngle: 0
-  maxAngle: 45
+  maxAngle: 60
   throwSpeed: 5
   cycleTime: 2
   throwArrow: {fileID: 6698800869872373626}
@@ -532,6 +534,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 566c927ce1df53b4e90f2d47374297cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraTarget
+--- !u!114 &6504094990509860313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7809413871449971425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd9e62ecb6aa5b943815ab74189f98a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RockMaker
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  rockPrefab: {fileID: 4412533703204020972, guid: 220f2cb61b766474eb6c49df55423b5c, type: 3}
+  thrower: {fileID: 3535203046045987326}
 --- !u!1 &8080396380600934420
 GameObject:
   m_ObjectHideFlags: 0
@@ -618,7 +637,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.53125, y: 0.90625}
+  m_Size: {x: 2, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

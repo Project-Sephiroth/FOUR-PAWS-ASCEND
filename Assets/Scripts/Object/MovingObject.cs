@@ -72,6 +72,8 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
         if (IsHeld)
             ReleaseHold();
 
+        transform.SetParent(null, true);
+
         Holder = null;
 
         rb.simulated = true;
