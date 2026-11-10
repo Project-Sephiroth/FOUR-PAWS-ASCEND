@@ -68,7 +68,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0.85}
-  m_Radius: 1.5
+  m_Radius: 0.85
 --- !u!114 &8927662265328794544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 1772852031411262978}
   - component: {fileID: -46958172760977952}
   - component: {fileID: 5667559860964636251}
+  - component: {fileID: -4394223172999840241}
   m_Layer: 3
   m_Name: Player_Rabbit
   m_TagString: Player
@@ -179,6 +180,7 @@ MonoBehaviour:
   - {fileID: -1734148059368601399}
   - {fileID: -46958172760977952}
   - {fileID: 5667559860964636251}
+  - {fileID: -4394223172999840241}
   - {fileID: 4630356534473329264}
   - {fileID: 8927662265328794544}
   ForceRemoteRenderTimeframe: 0
@@ -298,7 +300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50932fa9129160445b78de05b550c049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  speed: 2
+  speed: 2.5
   CanMove: 1
   jumpForce: 5
   CanJump: 1
@@ -380,14 +382,23 @@ MonoBehaviour:
   interactRange: {fileID: 8927662265328794544}
   detectLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 1032
   holdPoint: {fileID: 5217516001389480293}
+  _CurInteractObject: {fileID: 0}
   head: {fileID: 4630356534473329264}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  interactor: {fileID: 0}
   _CurPassenger: {fileID: 0}
+--- !u!114 &-4394223172999840241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2817390880039839120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 566c927ce1df53b4e90f2d47374297cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraTarget
 --- !u!1 &7128324174896953473
 GameObject:
   m_ObjectHideFlags: 0
@@ -557,7 +568,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 558289701
-  m_SortingLayer: 3
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1874543673780299772, guid: d841631d402a8eb47bbc8c9e36e1136c, type: 3}

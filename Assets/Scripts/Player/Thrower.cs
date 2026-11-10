@@ -11,7 +11,7 @@ public class Thrower : Interactor
     [SerializeField] private float minDistance = 1f;
     [SerializeField] private float maxDistance = 3f;
     [SerializeField] private float minAngle = 0f;
-    [SerializeField] private float maxAngle = 45f;
+    [SerializeField] private float maxAngle = 60f;
     [SerializeField] private float throwSpeed = 5f;
     [SerializeField] private float cycleTime = 2f;
 
@@ -35,7 +35,7 @@ public class Thrower : Interactor
     }
 
     private AimState aimState = AimState.None;
-    private MovingObject selectedObject;
+    private MovingObject curMovingObject;
 
     [SerializeField] private Animator anim; 
 
@@ -64,7 +64,7 @@ public class Thrower : Interactor
             return;
         }
 
-        if (selectedObject == null)
+        if (curMovingObject == null)
         {
             CancelAim();
             return;
@@ -86,6 +86,11 @@ public class Thrower : Interactor
         //클릭 시 현재 단계 확정
         if (Input.GetMouseButtonDown(0))
             ConfirmAim();
+    }
+
+    protected override void TryIntetact()
+    {
+        base.TryIntetact();
     }
 
     private void LateUpdate()
@@ -117,11 +122,11 @@ public class Thrower : Interactor
     public void TryThrow(MovingObject movingObject)
     {
         //권한이 없거나 던질 오브젝트가 없으면 리턴
-        if (!HasStateAuthority || movingObject == null)
+        if (movingObject == null)
             return;
 
-        //조준 중이거나 이미 잡고 이동 중인 오브젝트라면 던지기 시도 X
-        if (aimState != AimState.None || movingObject.IsMoving || movingObject.IsHeld)
+        //조준 중이면 던지기 시도 X
+        if (aimState != AimState.None)
             return;
 
         if (mover != null) //들고 있을 때 이동 제한
@@ -130,7 +135,7 @@ public class Thrower : Interactor
             mover.CanJump = false;
         }
 
-        selectedObject = movingObject;
+        curMovingObject = movingObject;
 
         aimDirection = model.flipX ? -1f : 1f;
 
@@ -151,8 +156,8 @@ public class Thrower : Interactor
 
     private void Throw()
     {
-        selectedObject.RPC_RequestMove(MoveType.Parabola, GetDestination(), throwSpeed, GetArcHeight());
-        selectedObject.RPC_RequestRelease();
+        curMovingObject.RPC_RequestMove(MoveType.Parabola, GetDestination(), throwSpeed, GetArcHeight());
+        curMovingObject.RPC_RequestRelease();
 
         CancelAim();
 
@@ -234,10 +239,10 @@ public class Thrower : Interactor
     /// <param name="releaseObject"></param>
     private void CancelAim(bool releaseObject = true)
     {
-        if (releaseObject && selectedObject != null && Object != null && Object.IsValid)
-            selectedObject.RPC_RequestRelease();
+        if (releaseObject && curMovingObject != null && Object != null && Object.IsValid)
+            curMovingObject.RPC_RequestRelease();
 
-        selectedObject = null;
+        curMovingObject = null;
         aimState = AimState.None;
         aimTimer = 0f;
 

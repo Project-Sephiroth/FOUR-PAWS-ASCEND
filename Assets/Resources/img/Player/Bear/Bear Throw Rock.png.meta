@@ -1,34 +1,25 @@
 fileFormatVersion: 2
-guid: 24114091a933cd04ab5c23b6fbd94819
+guid: 365c531274516684792b8c222979bf6a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8879258549265516664
-    second: Ranged Robot Spawn_0
+      213: -2247019998203194799
+    second: Bear Throw Rock_0
   - first:
-      213: 6082488947285179605
-    second: Ranged Robot Spawn_1
+      213: 7510292623825756757
+    second: Bear Throw Rock_1
   - first:
-      213: 4677680641193632077
-    second: Ranged Robot Spawn_2
+      213: -6194875811739345369
+    second: Bear Throw Rock_2
   - first:
-      213: 7399545091927766004
-    second: Ranged Robot Spawn_3
+      213: 8919843934478867251
+    second: Bear Throw Rock_3
   - first:
-      213: -587345333824329475
-    second: Ranged Robot Spawn_4
+      213: -1350667825761037539
+    second: Bear Throw Rock_4
   - first:
-      213: 1415552490045029330
-    second: Ranged Robot Spawn_5
-  - first:
-      213: 5146454093078968288
-    second: Ranged Robot Spawn_6
-  - first:
-      213: -6199093237558005727
-    second: Ranged Robot Spawn_7
-  - first:
-      213: 8092218651966202310
-    second: Ranged Robot Spawn_8
+      213: 8815190618065699175
+    second: Bear Throw Rock_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -124,7 +115,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Ranged Robot Spawn_0
+      name: Bear Throw Rock_0
       rect:
         serializedVersion: 2
         x: 0
@@ -139,14 +130,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 87842d13b96793b70800000000000000
-      internalID: 8879258549265516664
+      spriteID: 15256e3873bf0d0e0800000000000000
+      internalID: -2247019998203194799
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ranged Robot Spawn_1
+      name: Bear Throw Rock_1
       rect:
         serializedVersion: 2
         x: 64
@@ -161,14 +152,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5dc3c2d9877596450800000000000000
-      internalID: 6082488947285179605
+      spriteID: 552ee52a95be93860800000000000000
+      internalID: 7510292623825756757
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ranged Robot Spawn_2
+      name: Bear Throw Rock_2
       rect:
         serializedVersion: 2
         x: 128
@@ -183,14 +174,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d41611f72c57ae040800000000000000
-      internalID: 4677680641193632077
+      spriteID: 72edd956541670aa0800000000000000
+      internalID: -6194875811739345369
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ranged Robot Spawn_3
+      name: Bear Throw Rock_3
       rect:
         serializedVersion: 2
         x: 192
@@ -205,14 +196,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4f3f6df7e0770b660800000000000000
-      internalID: 7399545091927766004
+      spriteID: 33b198e8cc6a9cb70800000000000000
+      internalID: 8919843934478867251
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ranged Robot Spawn_4
+      name: Bear Throw Rock_4
       rect:
         serializedVersion: 2
         x: 256
@@ -227,14 +218,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: df8eae0e78459d7f0800000000000000
-      internalID: -587345333824329475
+      spriteID: d13d6f3c4c6714de0800000000000000
+      internalID: -1350667825761037539
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ranged Robot Spawn_5
+      name: Bear Throw Rock_5
       rect:
         serializedVersion: 2
         x: 320
@@ -249,74 +240,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2dbbd026d7d05a310800000000000000
-      internalID: 1415552490045029330
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Ranged Robot Spawn_6
-      rect:
-        serializedVersion: 2
-        x: 384
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0e7b3d60bb0eb6740800000000000000
-      internalID: 5146454093078968288
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Ranged Robot Spawn_7
-      rect:
-        serializedVersion: 2
-        x: 448
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 12034dd6b8568f9a0800000000000000
-      internalID: -6199093237558005727
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Ranged Robot Spawn_8
-      rect:
-        serializedVersion: 2
-        x: 512
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6c16c335df55d4070800000000000000
-      internalID: 8092218651966202310
+      spriteID: 76189298929d55a70800000000000000
+      internalID: 8815190618065699175
       vertices: []
       indices: 
       edges: []
@@ -325,7 +250,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 9ce2a57b94a4fac4484beaf7cb87cdaa
+    spriteID: 20085804ec6cc3448a05ccadf22c9364
     internalID: 0
     vertices: []
     indices: 
@@ -335,17 +260,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":9.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":6.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Ranged Robot Spawn_0: 8879258549265516664
-      Ranged Robot Spawn_1: 6082488947285179605
-      Ranged Robot Spawn_2: 4677680641193632077
-      Ranged Robot Spawn_3: 7399545091927766004
-      Ranged Robot Spawn_4: -587345333824329475
-      Ranged Robot Spawn_5: 1415552490045029330
-      Ranged Robot Spawn_6: 5146454093078968288
-      Ranged Robot Spawn_7: -6199093237558005727
-      Ranged Robot Spawn_8: 8092218651966202310
+      Bear Throw Rock_0: -2247019998203194799
+      Bear Throw Rock_1: 7510292623825756757
+      Bear Throw Rock_2: -6194875811739345369
+      Bear Throw Rock_3: 8919843934478867251
+      Bear Throw Rock_4: -1350667825761037539
+      Bear Throw Rock_5: 8815190618065699175
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

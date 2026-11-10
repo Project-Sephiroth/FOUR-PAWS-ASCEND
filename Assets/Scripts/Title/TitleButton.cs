@@ -5,7 +5,7 @@ public class TitleButton : MonoBehaviour
 {
     public void GameStart()
     {
-        SceneManager.LoadScene("LobbyScene");
+        SceneManager.LoadScene(NetworkGameManager.SceneName.Lobby.ToString());
     }
 
     public void ExitGame()

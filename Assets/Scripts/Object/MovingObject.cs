@@ -6,6 +6,7 @@ using static IMoveable;
 [RequireComponent(typeof(Rigidbody2D))]
 public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
 {
+    [SerializeField] bool canInteract = true;
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float arcHeight = 2f;
 
@@ -29,8 +30,10 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
 
     public bool IsHeld => Holder != null;
 
+    [SerializeField] InteractableOutline outline;
 
-    private void Awake()
+
+    private void OnEnable()
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
@@ -47,16 +50,18 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
 
     public void OnInteract(Interactor interactor)
     {
+        Debug.Log($"MovingObject: holder 를 {interactor.gameObject.name} 으로 설정");
+        Holder = interactor;
+
         if (interactor is Thrower thrower)
             thrower.TryThrow(this);
+        if (interactor is Tongue tongue)
+            tongue.TryTongue(this);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RequestHold(Interactor interactor)
     {
-        if (interactor == null || IsMoving || IsHeld)
-            return;
-
         rb.simulated = false;
         col.enabled = false;
     }
@@ -66,6 +71,8 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
     {
         if (IsHeld)
             ReleaseHold();
+
+        transform.SetParent(null, true);
 
         Holder = null;
 
@@ -148,4 +155,20 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
             IsMoving = false;
     }
 
+    public void SetOutlineMat(bool isOn)
+    {
+        if (outline != null)
+            outline.SetOutline(isOn);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!canInteract)
+            return;
+
+        IInteractable interactable = collision.gameObject.GetComponent<IInteractable>();
+
+        if (interactable != null)
+            interactable.OnInteract(null);
+    }
 }

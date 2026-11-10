@@ -9,7 +9,7 @@ public class Tongue : Interactor
     [SerializeField] private Transform tonguePivot;
     [SerializeField] private LineRenderer line;
     [SerializeField] private float tongueSpeed = 15f;
-    [SerializeField] private LayerMask tongueDetectLayer;
+    [SerializeField] private Mover mover;
 
     public enum TongueState
     {
@@ -35,58 +35,9 @@ public class Tongue : Interactor
         line.useWorldSpace = true;
         line.enabled = false;
 
+        interactWithClick = true;
         interactWithRange = false;
     }
-
-    public override void Update()
-    {
-        if (Object == null || !Object.IsValid || !HasStateAuthority)
-            return;
-
-        if (!Input.GetMouseButtonDown(0))
-            return;
-
-        //물체를 잡고 있다면 클릭으로 회수
-        if (State == TongueState.Holding)
-        {
-            RPC_Retract();
-            return;
-        }
-
-        //혀가 움직이는 동안 재발사 방지
-        if (State != TongueState.Idle)
-            return;
-
-        if (Camera.main == null)
-            return;
-
-        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        Collider2D hit = Physics2D.OverlapPoint(mousePosition, tongueDetectLayer);
-
-        if (hit == null)
-            return;
-
-        IInteractable interactable = hit.GetComponent<IInteractable>();
-
-        if (interactable == null)
-            return;
-
-        MovingObject movingObject = hit.GetComponent<MovingObject>();
-
-        if (movingObject != null)
-        {
-            if (movingObject.IsMoving || movingObject.IsHeld)
-                return;
-
-            AttachedTarget = movingObject;
-        }
-        else 
-            interactable.OnInteract(this);
-
-        RPC_FireTongue(hit.gameObject.transform.position);
-    }
-
 
     public override void FixedUpdateNetwork()
     {
@@ -95,13 +46,26 @@ public class Tongue : Interactor
         if (!HasStateAuthority)
             return;
 
+        //혀로 무언가 잡고 있을 땐 움직이기 X
+        if (AttachedTarget == null && mover.CanJump == true)
+        {
+            mover.CanMove = false;
+            mover.CanJump = false;
+        }
+        else if (AttachedTarget == null && mover.CanJump == false)
+        {
+            mover.CanMove = true;
+            mover.CanJump = true;
+        }
+
         switch (State)
         {
             case TongueState.Extending:
                 UpdateExtending();
                 break;
             case TongueState.Holding:
-                if (AttachedTarget == null)
+                //마우스 클릭 시 잡고 있는 물체를 끌어당김
+                if (Input.GetMouseButtonDown(0))
                     RPC_Retract();
                 break;
             case TongueState.Retracting:
@@ -110,14 +74,43 @@ public class Tongue : Interactor
         }
     }
 
+    protected override void TryIntetact()
+    {
+        base.TryIntetact();
+
+        //혀가 움직이는 동안 재발사 방지
+        if (State != TongueState.Idle)
+            return;
+
+        if (curInteratcble != null)
+        {
+            //혀 발사
+            RPC_FireTongue();
+        }
+    }
+
+    public void TryTongue(MovingObject movingObject)
+    {
+        //상호작용 한 애가 null 이 아닐경우 뱉기
+        if (AttachedTarget != null)
+            RPC_Retract();
+
+        //이미 상호작용 한 상태라면 return
+        if (AttachedTarget == movingObject)
+            return;
+
+        AttachedTarget = movingObject;
+        Debug.Log($"Tongue: attached target 을 {AttachedTarget.gameObject.name} 으로 설정");
+    }
+
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_FireTongue(Vector2 targetPos)
+    public void RPC_FireTongue()
     {
         if (State != TongueState.Idle)
             return;
 
-        EndPos = targetPos;
+        EndPos = curClick.transform.position;
 
         HoldOffset = Vector2.zero;
         TongueProgress = 0f;
@@ -134,7 +127,6 @@ public class Tongue : Interactor
     private void UpdateExtending()
     {
         TongueProgress += Runner.DeltaTime / PhaseDuration;
-        Debug.Log(TongueProgress);
 
         if (TongueProgress < 1f)
             return;
@@ -147,30 +139,20 @@ public class Tongue : Interactor
             return;
         }
 
-        if (AttachedTarget.IsMoving || AttachedTarget.IsHeld)
-        {
-            AttachedTarget = null;
-            RPC_Retract();
-            return;
-        }
-
         HoldOffset = (Vector2)AttachedTarget.transform.position - (Vector2)tonguePivot.position;
+        Debug.Log("Holding");
+
         State = TongueState.Holding;
 
         AttachedTarget.RPC_RequestHold(this);
         TryHold(AttachedTarget.GetComponent<NetworkObject>());
     }
 
+    /// <summary>
+    /// 혀 수납
+    /// </summary>
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_Retract()
-    {
-        BeginRetract();
-    }
-
-    /// <summary>
-    /// 혀 수납에 들어갑니다
-    /// </summary>
-    private void BeginRetract()
     {
         TongueProgress = 0f;
 

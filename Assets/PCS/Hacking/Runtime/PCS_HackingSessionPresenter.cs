@@ -32,8 +32,28 @@ namespace FourPaws.PCS.Hacking
             if(next)next.gameObject.SetActive(session.State==PCS_HackingSession.SessionState.StageSucceeded);
             if(newConfiguration)newConfiguration.gameObject.SetActive(session.IsRotation&&session.State!=PCS_HackingSession.SessionState.Completed);
         }
-        public void RotateTile(int index,long attempt)
-        {if(!session||commandFrame==Time.frameCount||!released||Input.GetKeyDown(KeyCode.R)||Input.GetKeyDown(KeyCode.Escape))return;rotationDirty=session.Rotate(index,attempt)||rotationDirty;Refresh();}
+        public void RotateTile(int index, long attempt)
+        {
+            if (session == null)
+                return;
+
+            if (session.State != PCS_HackingSession.SessionState.Running)
+                return;
+
+            if (!session.IsRotation)
+                return;
+
+            bool rotated = session.Rotate(index, attempt);
+
+            Debug.Log(
+                $"[PCS] 육각 타일 클릭: {index}, " +
+                $"회전 결과: {rotated}, " +
+                $"Attempt: {attempt}/{session.AttemptId}"
+            );
+
+            rotationDirty = rotated || rotationDirty;
+            Refresh();
+        }
         void LateUpdate()
         {
             if(!session)return;Refresh();if(session.State==PCS_HackingSession.SessionState.Closed||commandFrame==Time.frameCount)return;
@@ -41,7 +61,7 @@ namespace FourPaws.PCS.Hacking
             if(!released)released=!PCS_HackingDemoActor.AnyDemoKeyHeld()&&!Input.GetMouseButton(0);
             if(session.State!=PCS_HackingSession.SessionState.Running)return;
             session.Advance(Time.deltaTime);
-            if(!session.IsRotation&&released&&Input.GetKeyDown(KeyCode.Space)){var hit=session.Press(session.AttemptId);if(view&&session.State==PCS_HackingSession.SessionState.Running)view.feedback.text=hit==PCS_TimingPuzzle.Hit.Miss?"오입력입니다. 한도를 확인하세요.":hit==PCS_TimingPuzzle.Hit.AlreadyConnected?"이미 연결한 핀입니다. 불이익은 없습니다.":"핀을 연결했습니다.";}
+            if (!session.IsRotation && released && Input.GetMouseButtonDown(0)) { var hit=session.Press(session.AttemptId);if(view&&session.State==PCS_HackingSession.SessionState.Running)view.feedback.text=hit==PCS_TimingPuzzle.Hit.Miss?"오입력입니다. 한도를 확인하세요.":hit==PCS_TimingPuzzle.Hit.AlreadyConnected?"이미 연결한 핀입니다. 불이익은 없습니다.":"핀을 연결했습니다.";}
             if(useDemoAlarm&&session.State==PCS_HackingSession.SessionState.Running&&firstAlarmDelay>0&&alarmInterval>0&&!float.IsInfinity(firstAlarmDelay)&&!float.IsInfinity(alarmInterval)){elapsed+=Time.deltaTime;AlarmCount=elapsed<firstAlarmDelay?0:1+Mathf.FloorToInt((elapsed-firstAlarmDelay)/alarmInterval);}
             Refresh();
         }

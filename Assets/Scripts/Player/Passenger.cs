@@ -12,9 +12,11 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
     private Rigidbody2D rb;
     private Collider2D col;
 
+    private InteractableOutline outlineMat;
+
     public bool IsCarried => curCarrier != null;
 
-    public override void Spawned()
+    public void OnEnable()
     {
         input = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody2D>();
@@ -26,8 +28,21 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
         if (!HasStateAuthority || curCarrier == null)
             return;
 
-        if (input.JumpInput) //인풋을 받을 수 있고 점프했다면
+        if (input != null && input.JumpInput) //인풋을 받을 수 있고 점프했다면
             RequestDrop(); //내리기
+    }
+
+    public void OnInteract(Interactor interactor)
+    {
+        if (interactor == null)
+            return;
+
+        Carrier carrier = interactor.GetComponent<Carrier>();
+
+        if (carrier == null)
+            return;
+
+        OnCarry(carrier);
     }
 
     /// <summary>
@@ -41,12 +56,13 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
         Debug.Log($"{carrier.gameObject.name} 에 {gameObject.name} 이 탑승");
 
         curCarrier = carrier;
-        input.CanMoveInput = false;
+        if (input != null)
+            input.CanMoveInput = false;
 
         transform.SetParent(curCarrier.Head.transform);
         transform.position = curCarrier.Head.transform.position;
 
-        col.enabled = false;
+        col.isTrigger = true;
         rb.simulated = false;
     }
 
@@ -61,10 +77,11 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
         transform.SetParent(null, true);
         transform.position = curCarrier.transform.position;
 
-        input.CanMoveInput = true;
+        if (input != null)
+            input.CanMoveInput = true;
         curCarrier = null;
 
-        col.enabled = true;
+        col.isTrigger = false;
         rb.simulated = true;
     }
 
@@ -79,13 +96,12 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
         curCarrier.RPC_RequestPassengerDrop(this);
     }
 
-    public void OnInteract(Interactor interactor)
-    {
-        Carrier carrier = interactor.GetComponent<Carrier>();
 
-        if (carrier == null)
+    public void SetOutlineMat(bool isOn)
+    {
+        if (outlineMat == null)
             return;
 
-        carrier.TryCarry();
+        outlineMat.SetOutline(isOn);
     }
 }

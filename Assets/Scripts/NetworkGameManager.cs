@@ -1,5 +1,9 @@
 using Fusion;
+using Fusion.Sockets;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NetworkGameManager : NetworkBehaviour
 {
@@ -11,7 +15,9 @@ public class NetworkGameManager : NetworkBehaviour
     [Networked, Capacity(4)]
     public NetworkArray<int> PlayerCharacterType => default;
 
-    public PlayerSpawner PlayerSpawner { get; private set; }
+    public PlayerRef PlayerRef { get; private set; }
+
+    public enum SceneName { Title, Lobby, Malkuth }
 
     public override void Spawned()
     {
@@ -22,7 +28,6 @@ public class NetworkGameManager : NetworkBehaviour
 
         Debug.Log("NetworkGameManager 가 스폰");
 
-        PlayerSpawner = Runner.GetComponent<PlayerSpawner>();
         Debug.Log("PlayerSpawner 를 NetworkGameManager 에 할당");
     }
 
@@ -41,8 +46,14 @@ public class NetworkGameManager : NetworkBehaviour
         Debug.Log($"NetworkManager 에서 Scene 을 {sceneName}로 변경");
     }
 
+
     public void SetCharacter(int playerId, MyEnum.CharacterType characterType)
     {
         PlayerCharacterType.Set(playerId, (int)characterType);
+    }
+
+    public void SetPlayerRef(PlayerRef playerRef)
+    {
+        this.PlayerRef = playerRef;
     }
 }

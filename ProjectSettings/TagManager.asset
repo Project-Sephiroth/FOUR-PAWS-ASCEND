@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Spawn
   - Loading
+  - Key
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - Head
   - Interact
   - Object
-  - 
+  - Rock
   - 
   - 
   - 
@@ -43,14 +44,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Object
-    uniqueID: 1726656355
-    locked: 0
   - name: BehindEffect
     uniqueID: 781912049
     locked: 0
   - name: Player
     uniqueID: 558289701
+    locked: 0
+  - name: Object
+    uniqueID: 1726656355
     locked: 0
   - name: InteractableObject
     uniqueID: 3395742385

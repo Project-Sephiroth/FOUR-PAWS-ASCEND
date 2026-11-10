@@ -24,8 +24,6 @@ public class GameStartUI : NetworkBehaviour
     {
         for (int i = 0; i <= GameManager.MaxPlayerCount; i++)
         {
-            Debug.Log($"플레이어 {i}의 캐릭터 타입은 {(MyEnum.CharacterType)NetworkGameManager.Instance.PlayerCharacterType[i]}");
-
             //한 명이라도 설정이 안 됐다면
             if (NetworkGameManager.Instance.PlayerCharacterType[i] == (int)(MyEnum.CharacterType.None)) 
                 return; //리턴
@@ -44,7 +42,7 @@ public class GameStartUI : NetworkBehaviour
         if (GameManager.Instance.MyCharacterType == MyEnum.CharacterType.None)
             return;
 
-        NetworkGameManager.Instance.LoadScene("GameScene");
+        NetworkGameManager.Instance.LoadScene(NetworkGameManager.SceneName.Malkuth.ToString());
     }
 
     public async void QuitGame()

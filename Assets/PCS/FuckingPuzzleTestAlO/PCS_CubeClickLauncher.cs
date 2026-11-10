@@ -33,13 +33,15 @@ public class PCS_CubeClickLauncher : MonoBehaviour
         session.OnHackCompleted += HandleCompleted;
         session.OnHackCancelled += HandleCancelled;
     }
-
     private void OnDisable()
     {
-        if (session == null) return;
+        if (session != null)
+        {
+            session.OnHackCompleted -= HandleCompleted;
+            session.OnHackCancelled -= HandleCancelled;
+        }
 
-        session.OnHackCompleted -= HandleCompleted;
-        session.OnHackCancelled -= HandleCancelled;
+        ResetSession();
     }
 
     private void OnMouseDown()
@@ -151,5 +153,13 @@ public class PCS_CubeClickLauncher : MonoBehaviour
 
         // Inspector에 등록된 취소 이벤트 실행
         onPuzzleCancelled?.Invoke();
+    }
+
+    public void ResetSession()
+    {
+        waitingForResult = false;
+        activeSessionId = -1;
+
+        Debug.Log("[PCS] 퍼즐 세션 상태 초기화");
     }
 }

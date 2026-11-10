@@ -1,49 +1,43 @@
 fileFormatVersion: 2
-guid: 8112a8d036643954fa0facaab023afd8
+guid: 9159418f481aead45980a70e94178e16
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7574319620751118199
-    second: Bear Pick Up Rock_0
+      213: -570705451310734108
+    second: Ranged Robot Caught Run_0
   - first:
-      213: 1532724793971049554
-    second: Bear Pick Up Rock_1
+      213: -3294221588679841244
+    second: Ranged Robot Caught Run_1
   - first:
-      213: -2115801161574231637
-    second: Bear Pick Up Rock_2
+      213: -3335164961573676237
+    second: Ranged Robot Caught Run_2
   - first:
-      213: -2140530973445374322
-    second: Bear Pick Up Rock_3
+      213: -4639068638751303627
+    second: Ranged Robot Caught Run_3
   - first:
-      213: -3796572019014335737
-    second: Bear Pick Up Rock_4
+      213: -2162647848598237247
+    second: Ranged Robot Caught Run_4
   - first:
-      213: -4105658444496124143
-    second: Bear Pick Up Rock_5
+      213: 3563864977575942327
+    second: Ranged Robot Caught Run_5
   - first:
-      213: 2634097588513146409
-    second: Bear Pick Up Rock_6
+      213: 9202011987229642109
+    second: Ranged Robot Caught Run_6
   - first:
-      213: 6881704470209022244
-    second: Bear Pick Up Rock_7
+      213: -4165575892835746775
+    second: Ranged Robot Caught Run_7
   - first:
-      213: 2763602954281504565
-    second: Bear Pick Up Rock_8
+      213: 1694536183606932421
+    second: Ranged Robot Caught Run_8
   - first:
-      213: 9099299315143929875
-    second: Bear Pick Up Rock_9
+      213: 5688699456710281642
+    second: Ranged Robot Caught Run_9
   - first:
-      213: 7759300862400549079
-    second: Bear Pick Up Rock_10
+      213: 8953567333603070836
+    second: Ranged Robot Caught Run_10
   - first:
-      213: -909024438177105969
-    second: Bear Pick Up Rock_11
-  - first:
-      213: 8198753798551492031
-    second: Bear Pick Up Rock_12
-  - first:
-      213: 2164431120444892690
-    second: Bear Pick Up Rock_13
+      213: -8376011645657772369
+    second: Ranged Robot Caught Run_11
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,309 +133,265 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Bear Pick Up Rock_0
+      name: Ranged Robot Caught Run_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 19
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 980bbd57f6c92e690800000000000000
-      internalID: -7574319620751118199
+      spriteID: 4e4ae3f6a627418f0800000000000000
+      internalID: -570705451310734108
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Pick Up Rock_1
+      name: Ranged Robot Caught Run_1
       rect:
         serializedVersion: 2
-        x: 64
+        x: 83
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 25404135415554510800000000000000
-      internalID: 1532724793971049554
+      spriteID: 42aa05b2be29842d0800000000000000
+      internalID: -3294221588679841244
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Pick Up Rock_2
+      name: Ranged Robot Caught Run_2
       rect:
         serializedVersion: 2
-        x: 128
+        x: 147
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ba15205bd0a23a2e0800000000000000
-      internalID: -2115801161574231637
+      spriteID: 33b521e432d17b1d0800000000000000
+      internalID: -3335164961573676237
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Pick Up Rock_3
+      name: Ranged Robot Caught Run_3
       rect:
         serializedVersion: 2
-        x: 192
+        x: 211
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e8e3111bb6e4b42e0800000000000000
-      internalID: -2140530973445374322
+      spriteID: 538d292e6a7be9fb0800000000000000
+      internalID: -4639068638751303627
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Pick Up Rock_4
+      name: Ranged Robot Caught Run_4
       rect:
         serializedVersion: 2
-        x: 256
+        x: 275
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 70386722ddddf4bc0800000000000000
-      internalID: -3796572019014335737
+      spriteID: 1cf0a0a6d3bbcf1e0800000000000000
+      internalID: -2162647848598237247
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Pick Up Rock_5
+      name: Ranged Robot Caught Run_5
       rect:
         serializedVersion: 2
-        x: 320
+        x: 339
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 117c9beb565c507c0800000000000000
-      internalID: -4105658444496124143
+      spriteID: 7b89edf9054657130800000000000000
+      internalID: 3563864977575942327
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Pick Up Rock_6
+      name: Ranged Robot Caught Run_6
       rect:
         serializedVersion: 2
-        x: 384
+        x: 403
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9260a0bfcc13e8420800000000000000
-      internalID: 2634097588513146409
+      spriteID: d7d85b5e52d14bf70800000000000000
+      internalID: 9202011987229642109
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Pick Up Rock_7
+      name: Ranged Robot Caught Run_7
       rect:
         serializedVersion: 2
-        x: 448
+        x: 467
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 429c60c31c9b08f50800000000000000
-      internalID: 6881704470209022244
+      spriteID: 92c389eabc6e036c0800000000000000
+      internalID: -4165575892835746775
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Pick Up Rock_8
+      name: Ranged Robot Caught Run_8
       rect:
         serializedVersion: 2
-        x: 512
+        x: 531
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 53f4b26ae3a4a5620800000000000000
-      internalID: 2763602954281504565
+      spriteID: 5c3ffe25ea3348710800000000000000
+      internalID: 1694536183606932421
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Pick Up Rock_9
+      name: Ranged Robot Caught Run_9
       rect:
         serializedVersion: 2
-        x: 576
+        x: 595
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 310fb185484374e70800000000000000
-      internalID: 9099299315143929875
+      spriteID: aa98c2f040252fe40800000000000000
+      internalID: 5688699456710281642
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Pick Up Rock_10
+      name: Ranged Robot Caught Run_10
       rect:
         serializedVersion: 2
-        x: 640
+        x: 659
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7d054c816039eab60800000000000000
-      internalID: 7759300862400549079
+      spriteID: 473d3f74d06714c70800000000000000
+      internalID: 8953567333603070836
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Pick Up Rock_11
+      name: Ranged Robot Caught Run_11
       rect:
         serializedVersion: 2
-        x: 704
+        x: 723
         y: 0
-        width: 64
-        height: 64
+        width: 26
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fc7fd46f61f7263f0800000000000000
-      internalID: -909024438177105969
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Bear Pick Up Rock_12
-      rect:
-        serializedVersion: 2
-        x: 768
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fb5db831423d7c170800000000000000
-      internalID: 8198753798551492031
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Bear Pick Up Rock_13
-      rect:
-        serializedVersion: 2
-        x: 832
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2162beae2aa990e10800000000000000
-      internalID: 2164431120444892690
+      spriteID: fae880a49cd62cb80800000000000000
+      internalID: -8376011645657772369
       vertices: []
       indices: 
       edges: []
@@ -450,7 +400,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: a00afb7e32cef7a46b1a38b8751dc396
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -458,24 +408,20 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":14.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      Bear Pick Up Rock_0: -7574319620751118199
-      Bear Pick Up Rock_1: 1532724793971049554
-      Bear Pick Up Rock_10: 7759300862400549079
-      Bear Pick Up Rock_11: -909024438177105969
-      Bear Pick Up Rock_12: 8198753798551492031
-      Bear Pick Up Rock_13: 2164431120444892690
-      Bear Pick Up Rock_2: -2115801161574231637
-      Bear Pick Up Rock_3: -2140530973445374322
-      Bear Pick Up Rock_4: -3796572019014335737
-      Bear Pick Up Rock_5: -4105658444496124143
-      Bear Pick Up Rock_6: 2634097588513146409
-      Bear Pick Up Rock_7: 6881704470209022244
-      Bear Pick Up Rock_8: 2763602954281504565
-      Bear Pick Up Rock_9: 9099299315143929875
+      Ranged Robot Caught Run_0: -570705451310734108
+      Ranged Robot Caught Run_1: -3294221588679841244
+      Ranged Robot Caught Run_10: 8953567333603070836
+      Ranged Robot Caught Run_11: -8376011645657772369
+      Ranged Robot Caught Run_2: -3335164961573676237
+      Ranged Robot Caught Run_3: -4639068638751303627
+      Ranged Robot Caught Run_4: -2162647848598237247
+      Ranged Robot Caught Run_5: 3563864977575942327
+      Ranged Robot Caught Run_6: 9202011987229642109
+      Ranged Robot Caught Run_7: -4165575892835746775
+      Ranged Robot Caught Run_8: 1694536183606932421
+      Ranged Robot Caught Run_9: 5688699456710281642
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

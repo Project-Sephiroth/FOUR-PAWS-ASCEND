@@ -1,25 +1,25 @@
 fileFormatVersion: 2
-guid: 314e04354835f744290bf44743f87069
+guid: 46abff8e9bfb7bf4cabe3b997217a314
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 859464977987672885
-    second: Bear Holding Rock_0
+      213: -2287618189777190113
+    second: Bear Throw Ally Robot_0
   - first:
-      213: 7041354180949610048
-    second: Bear Holding Rock_1
+      213: -6050233975189268629
+    second: Bear Throw Ally Robot_1
   - first:
-      213: 8030527902501629229
-    second: Bear Holding Rock_2
+      213: -2025411946859105023
+    second: Bear Throw Ally Robot_2
   - first:
-      213: 5789994609626719291
-    second: Bear Holding Rock_3
+      213: 8201099611696419300
+    second: Bear Throw Ally Robot_3
   - first:
-      213: -7080017402916034839
-    second: Bear Holding Rock_4
+      213: -1628261492605726475
+    second: Bear Throw Ally Robot_4
   - first:
-      213: 1514274947483120635
-    second: Bear Holding Rock_5
+      213: -1378242082019771125
+    second: Bear Throw Ally Robot_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -115,7 +115,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Bear Holding Rock_0
+      name: Bear Throw Ally Robot_0
       rect:
         serializedVersion: 2
         x: 0
@@ -130,14 +130,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 53b18d508de6deb00800000000000000
-      internalID: 859464977987672885
+      spriteID: f13cb90706fb040e0800000000000000
+      internalID: -2287618189777190113
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Holding Rock_1
+      name: Bear Throw Ally Robot_1
       rect:
         serializedVersion: 2
         x: 64
@@ -152,14 +152,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 04e8635225ae7b160800000000000000
-      internalID: 7041354180949610048
+      spriteID: b6718dc4140490ca0800000000000000
+      internalID: -6050233975189268629
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Holding Rock_2
+      name: Bear Throw Ally Robot_2
       rect:
         serializedVersion: 2
         x: 128
@@ -174,14 +174,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d2de87b649a227f60800000000000000
-      internalID: 8030527902501629229
+      spriteID: 10571afb09a44e3e0800000000000000
+      internalID: -2025411946859105023
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Holding Rock_3
+      name: Bear Throw Ally Robot_3
       rect:
         serializedVersion: 2
         x: 192
@@ -196,14 +196,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b342a36bb613a5050800000000000000
-      internalID: 5789994609626719291
+      spriteID: 4e152c245a820d170800000000000000
+      internalID: 8201099611696419300
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Holding Rock_4
+      name: Bear Throw Ally Robot_4
       rect:
         serializedVersion: 2
         x: 256
@@ -218,14 +218,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9e62b9ffea9bebd90800000000000000
-      internalID: -7080017402916034839
+      spriteID: 5f0d9c3acc04769e0800000000000000
+      internalID: -1628261492605726475
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bear Holding Rock_5
+      name: Bear Throw Ally Robot_5
       rect:
         serializedVersion: 2
         x: 320
@@ -240,8 +240,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bf33101ba09c30510800000000000000
-      internalID: 1514274947483120635
+      spriteID: b0d77bee0208fdce0800000000000000
+      internalID: -1378242082019771125
       vertices: []
       indices: 
       edges: []
@@ -250,7 +250,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: d130a3578b0c7fc45aee8cb8712b8ae5
+    spriteID: 4ee07665f3a89f14591ee3627d262f69
     internalID: 0
     vertices: []
     indices: 
@@ -262,12 +262,12 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":6.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Bear Holding Rock_0: 859464977987672885
-      Bear Holding Rock_1: 7041354180949610048
-      Bear Holding Rock_2: 8030527902501629229
-      Bear Holding Rock_3: 5789994609626719291
-      Bear Holding Rock_4: -7080017402916034839
-      Bear Holding Rock_5: 1514274947483120635
+      Bear Throw Ally Robot_0: -2287618189777190113
+      Bear Throw Ally Robot_1: -6050233975189268629
+      Bear Throw Ally Robot_2: -2025411946859105023
+      Bear Throw Ally Robot_3: 8201099611696419300
+      Bear Throw Ally Robot_4: -1628261492605726475
+      Bear Throw Ally Robot_5: -1378242082019771125
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

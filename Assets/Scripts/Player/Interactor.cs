@@ -3,37 +3,36 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// 가까운 범위 내에 있는 오브젝트를 클릭 시 인터랙션을 시도합니다
+/// 가까운 범위 내의 오브젝트를 클릭 시 상호작용을 시도합니다.
 /// </summary>
 public class Interactor : NetworkBehaviour
 {
-    //클릭 or 범위 감지로 인터랙션을 시도
     protected bool interactWithClick = true;
     protected bool interactWithRange = true;
 
     [SerializeField] private InteractRange interactRange;
-    [SerializeField] LayerMask detectLayer;
+    [SerializeField] private LayerMask detectLayer;
 
-    protected GameObject curClick; //현재 클릭한 대상
-    private GameObject curRange; //현재 범위 내에 있는 대상
-
-    public event UnityAction<Vector2> OnClick;
+    protected GameObject curClick;
+    private GameObject curRange;
+    private GameObject curHover;
 
     protected IInteractable curInteratcble;
-    public IInteractable CurInteractable => curInteratcble;
-
     protected Vector2 mousePos;
 
     [SerializeField] protected Transform holdPoint;
     public Transform HoldPoint => holdPoint;
-    [Networked] public NetworkObject CurHoldObject { get; set; }
+
+    [Networked]
+    public NetworkObject CurInteractObject { get; set; }
 
     public override void Spawned()
     {
         if (!HasStateAuthority)
             return;
 
-        interactRange.OnDetect += OnDetect;
+        if (interactRange != null)
+            interactRange.OnDetect += OnDetect;
     }
 
     public override void Despawned(NetworkRunner runner, bool hasState)
@@ -47,75 +46,76 @@ public class Interactor : NetworkBehaviour
         if (Object == null || !Object.IsValid || !HasStateAuthority)
             return;
 
-        GetMouseClickRay();
+        if (Input.GetMouseButtonDown(0))
+            OnClick();
+
         TryIntetact();
     }
 
     /// <summary>
-    /// 스크린의 마우스 포지션을 받아 얼드 내 게임 오브젝트를 반환합니다
+    /// 모든 IInteractable의 외곽선 상태 변경
     /// </summary>
-    protected virtual void GetMouseClickRay()
+    private void SetOutline(GameObject target, bool enabled)
     {
-        if (!Input.GetMouseButtonDown(0))
+        if (target == null)
             return;
 
-        //이전 클릭 초기화
-        curClick = null;
+        IInteractable interactable = target.GetComponent<IInteractable>();
 
-        if (Camera.main == null)
-            return;
+        interactable?.SetOutlineMat(enabled);
+    }
 
+    /// <summary>
+    /// 마우스로 클릭한 월드 오브젝트를 감지합니다.
+    /// </summary>
+    protected virtual void OnClick()
+    {
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
         Collider2D hit = Physics2D.OverlapPoint(mousePos, detectLayer);
 
-        if (hit != null)
-            TryClick(hit.gameObject);
+        if (hit == null)
+            return;
+
+        Debug.Log($"Interactor: {hit.gameObject.name} 을 클릭");
+
+        curClick = hit.gameObject;
     }
 
+    /// <summary>
+    /// 상호작용 조건을 확인하고 모든 IInteractable을 호출합니다.
+    /// </summary>
     protected virtual void TryIntetact()
     {
         if (!HasStateAuthority)
             return;
 
-        //클릭 타겟과 범위 타겟 둘 중 하나가 null 이면 return
-        if (curClick == null || curRange == null)
+        if (!Input.GetMouseButtonDown(0))
             return;
 
-        //상호작용 하는 데에 클릭과 범위 감지 모두 필요하다면
-        if (interactWithClick && interactWithRange)
-        {
-            //클릭 타겟과 범위 타겟이 같을 경우에만 curInteractable 설정
-            curInteratcble = curClick == curRange ? curClick.GetComponent<IInteractable>() : null;
-        }
+        GameObject target = null;
+
+        //범위 감지 및 클릭이 모두 필요할 경우
+        if (interactWithRange && interactWithClick && curClick == curRange)
+            target = curClick;
         else
-        {
-            if (interactWithRange)
-                curInteratcble = curRange.GetComponent<IInteractable>();
-            if (interactWithClick)
-                curInteratcble = curClick.GetComponent<IInteractable>();
-        }
+            target = curClick;
 
-        if (curInteratcble == null)
+        if (target == null)
             return;
 
-        curInteratcble.OnInteract(this);
-        Debug.Log($"Interactor 가 {curInteratcble} 에 OnInteract");
+        IInteractable interactable = target.GetComponent<IInteractable>();
 
-        //클릭 초기화
-        curClick = null;
-    }
-
-    protected virtual void TryClick(GameObject clickTarget) 
-    { 
-        IInteractable interactable = clickTarget.GetComponent<IInteractable>();
+        CurInteractObject = target.GetComponent<NetworkObject>();
 
         if (interactable == null)
             return;
 
-        curClick = clickTarget;
+        curInteratcble = interactable;
 
-        Debug.Log($"Interactor 에 클릭 된 target 을 {clickTarget} 으로 설정");
+        curInteratcble.OnInteract(this);
+
+        Debug.Log($"Interactor 가 {target.name} 에 OnInteract");
     }
 
     protected virtual void TryHold(NetworkObject target)
@@ -123,24 +123,43 @@ public class Interactor : NetworkBehaviour
         if (target == null)
             return;
 
-        CurHoldObject = target;
-        CurHoldObject.transform.SetParent(holdPoint, true);
-        CurHoldObject.transform.position = holdPoint.position;
+        CurInteractObject = target;
+
+        CurInteractObject.GetComponent<Collider2D>().enabled = false;
+        CurInteractObject.GetComponent<Rigidbody2D>().simulated = false;
+
+        CurInteractObject.transform.SetParent(holdPoint, true);
+        CurInteractObject.transform.position = holdPoint.position;
     }
 
     protected virtual void ReleaseHold()
     {
-        CurHoldObject.transform.SetParent(null, true);
+        if (CurInteractObject == null)
+            return;
+
+        CurInteractObject.GetComponent<Collider2D>().enabled = true;
+        CurInteractObject.GetComponent<Rigidbody2D>().simulated = true;
+
+        CurInteractObject.transform.SetParent(null, true);
+        CurInteractObject = null;
     }
 
     protected void OnDetect(GameObject detectTarget)
     {
-        //이미 캐싱 됐다면 리턴
         if (detectTarget == curRange)
             return;
 
-        Debug.Log($"Interactor 에 감지 된 target 을 {detectTarget} 으로 설정");
-
+        GameObject previous = curRange;
         curRange = detectTarget;
+
+        //마우스가 올라가 있다면 외곽선 유지
+        if (previous != null && previous != curHover)
+            SetOutline(previous, false);
+
+        if (curRange != null)
+            SetOutline(curRange, true);
+
+        Debug.Log($"Interactor 에 감지 된 target 을 {detectTarget} 으로 설정");
     }
+
 }
