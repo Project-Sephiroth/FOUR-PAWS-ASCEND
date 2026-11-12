@@ -262,6 +262,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: MetalModules_R3_0
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 0
+        width: 39
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0064cf348ccfca443b44093252a03f44
+      internalID: -198480262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -281,6 +303,7 @@ TextureImporter:
       Column: -1546549874
       Corner: 915239593
       DoorFrame: -404586503
+      MetalModules_R3_0: -198480262
       Plate: -370875271
       Wall: -25371422
   mipmapLimitGroupName: 

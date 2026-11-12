@@ -1,0 +1,681 @@
+fileFormatVersion: 2
+guid: 6c494fdde8970854daf00345de0da526
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1206549929530995125
+    second: Stage Interface Yesod_0
+  - first:
+      213: -8221389703995925297
+    second: Stage Interface Yesod_1
+  - first:
+      213: -912552352100953769
+    second: Stage Interface Yesod_2
+  - first:
+      213: 188529367979191063
+    second: Stage Interface Yesod_3
+  - first:
+      213: -7118030239288442514
+    second: Stage Interface Yesod_4
+  - first:
+      213: 2355051392500157975
+    second: Stage Interface Yesod_5
+  - first:
+      213: 1000140029245863769
+    second: Stage Interface Yesod_6
+  - first:
+      213: -3605925740781181404
+    second: Stage Interface Yesod_7
+  - first:
+      213: -1305958734882571804
+    second: Stage Interface Yesod_8
+  - first:
+      213: -3893000843019686019
+    second: Stage Interface Yesod_9
+  - first:
+      213: 950934999339031350
+    second: Stage Interface Yesod_10
+  - first:
+      213: 622687747000443524
+    second: Stage Interface Yesod_11
+  - first:
+      213: -8438530858584369094
+    second: Stage Interface Yesod_12
+  - first:
+      213: 1728213989278558992
+    second: Stage Interface Yesod_13
+  - first:
+      213: 4456549393066115684
+    second: Stage Interface Yesod_14
+  - first:
+      213: 8354524781334586312
+    second: Stage Interface Yesod_15
+  - first:
+      213: 4365817117656208921
+    second: Stage Interface Yesod_16
+  - first:
+      213: -6664823630175598334
+    second: Stage Interface Yesod_17
+  - first:
+      213: -658222972443502988
+    second: Stage Interface Yesod_18
+  - first:
+      213: 245636570789417703
+    second: Stage Interface Yesod_19
+  - first:
+      213: -6152096945472975338
+    second: Stage Interface Yesod_20
+  - first:
+      213: 5055435537669728429
+    second: Stage Interface Yesod_21
+  - first:
+      213: -3708164034495138431
+    second: Stage Interface Yesod_22
+  - first:
+      213: 5475917360289302630
+    second: Stage Interface Yesod_23
+  - first:
+      213: -4785963052963277794
+    second: Stage Interface Yesod_24
+  - first:
+      213: 7532158674703116972
+    second: Stage Interface Yesod_25
+  - first:
+      213: -305389690857181403
+    second: Stage Interface Yesod_26
+  - first:
+      213: 2536825666281866698
+    second: Stage Interface Yesod_27
+  - first:
+      213: -9160351360247914677
+    second: Stage Interface Yesod_28
+  - first:
+      213: -5988401754686579799
+    second: Stage Interface Yesod_29
+  - first:
+      213: 615559721842333694
+    second: Stage Interface Yesod_30
+  - first:
+      213: -8031448424914898385
+    second: Stage Interface Yesod_31
+  - first:
+      213: -2968047743168618433
+    second: Stage Interface Yesod_32
+  - first:
+      213: 463450082125795534
+    second: Stage Interface Yesod_33
+  - first:
+      213: 6931803587655723528
+    second: Stage Interface Yesod_34
+  - first:
+      213: -945868936334802862
+    second: Stage Interface Yesod_35
+  - first:
+      213: 4007576032481692744
+    second: Stage Interface Yesod_36
+  - first:
+      213: 1813410054050489954
+    second: Stage Interface Yesod_37
+  - first:
+      213: 5090439048967574638
+    second: Stage Interface Yesod_38
+  - first:
+      213: -4421167757923314110
+    second: Stage Interface Yesod_39
+  - first:
+      213: -57913281182261256
+    second: Stage Interface Yesod_40
+  - first:
+      213: -1421817762611193724
+    second: Stage Interface Yesod_41
+  - first:
+      213: 8979832795981928082
+    second: Stage Interface Yesod_42
+  - first:
+      213: 1719052826641704631
+    second: Stage Interface Yesod_43
+  - first:
+      213: 976886659145668316
+    second: Stage Interface Yesod_44
+  - first:
+      213: -7712146242270504412
+    second: Stage Interface Yesod_45
+  - first:
+      213: -6922355412587072547
+    second: Stage Interface Yesod_46
+  - first:
+      213: -8883322990912019790
+    second: Stage Interface Yesod_47
+  - first:
+      213: 5186415428435574832
+    second: Stage Interface Yesod_48
+  - first:
+      213: 403033349255811266
+    second: Stage Interface Yesod_49
+  - first:
+      213: 2284240097273908682
+    second: Stage Interface Yesod_50
+  - first:
+      213: 3241347078445297274
+    second: Stage Interface Yesod_51
+  - first:
+      213: -5934453449735004422
+    second: Stage Interface Yesod_52
+  - first:
+      213: -4781669338889954802
+    second: Stage Interface Yesod_53
+  - first:
+      213: -3750924617175102187
+    second: Stage Interface Yesod_54
+  - first:
+      213: -646223595410952265
+    second: Stage Interface Yesod_55
+  - first:
+      213: -5701620905577215798
+    second: Stage Interface Yesod_56
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Stage Interface Yesod_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4e488e4b39714fe0800000000000000
+      internalID: -1206549929530995125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_1
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fccd44d7f91c7ed80800000000000000
+      internalID: -8221389703995925297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_2
+      rect:
+        serializedVersion: 2
+        x: 770
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 751531e7876f553f0800000000000000
+      internalID: -912552352100953769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_3
+      rect:
+        serializedVersion: 2
+        x: 1155
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71be028167acd9200800000000000000
+      internalID: 188529367979191063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_4
+      rect:
+        serializedVersion: 2
+        x: 1540
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6149b6d53da73d90800000000000000
+      internalID: -7118030239288442514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_5
+      rect:
+        serializedVersion: 2
+        x: 1925
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71ec2cd83c2dea020800000000000000
+      internalID: 2355051392500157975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_6
+      rect:
+        serializedVersion: 2
+        x: 2310
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95739d0ce0631ed00800000000000000
+      internalID: 1000140029245863769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_7
+      rect:
+        serializedVersion: 2
+        x: 2695
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 426ec4ec4ad25fdc0800000000000000
+      internalID: -3605925740781181404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_8
+      rect:
+        serializedVersion: 2
+        x: 3080
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e9710c237d40ede0800000000000000
+      internalID: -1305958734882571804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_9
+      rect:
+        serializedVersion: 2
+        x: 3465
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7fe389fb5849f9c0800000000000000
+      internalID: -3893000843019686019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_10
+      rect:
+        serializedVersion: 2
+        x: 3850
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63bd618f756623d00800000000000000
+      internalID: 950934999339031350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_11
+      rect:
+        serializedVersion: 2
+        x: 4235
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48223fde43b34a800800000000000000
+      internalID: 622687747000443524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_12
+      rect:
+        serializedVersion: 2
+        x: 4620
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3818e3b4e054ea80800000000000000
+      internalID: -8438530858584369094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_13
+      rect:
+        serializedVersion: 2
+        x: 5005
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01b2fce7779dbf710800000000000000
+      internalID: 1728213989278558992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_14
+      rect:
+        serializedVersion: 2
+        x: 5390
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46240b9af08d8dd30800000000000000
+      internalID: 4456549393066115684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_15
+      rect:
+        serializedVersion: 2
+        x: 5775
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c365a2460c31f370800000000000000
+      internalID: 8354524781334586312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Yesod_16
+      rect:
+        serializedVersion: 2
+        x: 6160
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 916d734998f769c30800000000000000
+      internalID: 4365817117656208921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 79e19b95d0e46e147aa81466891ceecd
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":17.0,"y":1.0},"gridSpriteSize":{"x":385.0,"y":216.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Stage Interface Yesod_0: -1206549929530995125
+      Stage Interface Yesod_1: -8221389703995925297
+      Stage Interface Yesod_10: 950934999339031350
+      Stage Interface Yesod_11: 622687747000443524
+      Stage Interface Yesod_12: -8438530858584369094
+      Stage Interface Yesod_13: 1728213989278558992
+      Stage Interface Yesod_14: 4456549393066115684
+      Stage Interface Yesod_15: 8354524781334586312
+      Stage Interface Yesod_16: 4365817117656208921
+      Stage Interface Yesod_2: -912552352100953769
+      Stage Interface Yesod_3: 188529367979191063
+      Stage Interface Yesod_4: -7118030239288442514
+      Stage Interface Yesod_5: 2355051392500157975
+      Stage Interface Yesod_6: 1000140029245863769
+      Stage Interface Yesod_7: -3605925740781181404
+      Stage Interface Yesod_8: -1305958734882571804
+      Stage Interface Yesod_9: -3893000843019686019
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,681 @@
+fileFormatVersion: 2
+guid: c8726252f0158cb42b4704bd305b5f73
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4931862448170221218
+    second: Stage Interface Malkuth_0
+  - first:
+      213: -5659998489441658131
+    second: Stage Interface Malkuth_1
+  - first:
+      213: -5235587109962172186
+    second: Stage Interface Malkuth_2
+  - first:
+      213: -2329600651602226890
+    second: Stage Interface Malkuth_3
+  - first:
+      213: -2546199393548987882
+    second: Stage Interface Malkuth_4
+  - first:
+      213: -7626771315948939227
+    second: Stage Interface Malkuth_5
+  - first:
+      213: 6752466095480892781
+    second: Stage Interface Malkuth_6
+  - first:
+      213: -6441312168421649342
+    second: Stage Interface Malkuth_7
+  - first:
+      213: 7456396624157107284
+    second: Stage Interface Malkuth_8
+  - first:
+      213: 5873339775897485700
+    second: Stage Interface Malkuth_9
+  - first:
+      213: -4109896866411585215
+    second: Stage Interface Malkuth_10
+  - first:
+      213: -3412567520387711843
+    second: Stage Interface Malkuth_11
+  - first:
+      213: 2357452582555885118
+    second: Stage Interface Malkuth_12
+  - first:
+      213: 8800120331215104836
+    second: Stage Interface Malkuth_13
+  - first:
+      213: -3167740308972277479
+    second: Stage Interface Malkuth_14
+  - first:
+      213: -8761727991513060712
+    second: Stage Interface Malkuth_15
+  - first:
+      213: -6882273030497380235
+    second: Stage Interface Malkuth_16
+  - first:
+      213: 7178273066482869327
+    second: Stage Interface Malkuth_17
+  - first:
+      213: 5254542545448696554
+    second: Stage Interface Malkuth_18
+  - first:
+      213: 2899235920802341725
+    second: Stage Interface Malkuth_19
+  - first:
+      213: 5358022950871950674
+    second: Stage Interface Malkuth_20
+  - first:
+      213: -4172702215781221878
+    second: Stage Interface Malkuth_21
+  - first:
+      213: 8743021431311276451
+    second: Stage Interface Malkuth_22
+  - first:
+      213: -1992791590256593050
+    second: Stage Interface Malkuth_23
+  - first:
+      213: -1605235754237203033
+    second: Stage Interface Malkuth_24
+  - first:
+      213: 2414431439133528080
+    second: Stage Interface Malkuth_25
+  - first:
+      213: -5069030965530626792
+    second: Stage Interface Malkuth_26
+  - first:
+      213: 2522980650667598615
+    second: Stage Interface Malkuth_27
+  - first:
+      213: 1455374995921524286
+    second: Stage Interface Malkuth_28
+  - first:
+      213: -6524142192685723027
+    second: Stage Interface Malkuth_29
+  - first:
+      213: 2098493511466652416
+    second: Stage Interface Malkuth_30
+  - first:
+      213: -6158264011540155171
+    second: Stage Interface Malkuth_31
+  - first:
+      213: 7060985718561420091
+    second: Stage Interface Malkuth_32
+  - first:
+      213: 4825212274548185940
+    second: Stage Interface Malkuth_33
+  - first:
+      213: 5774501346434487493
+    second: Stage Interface Malkuth_34
+  - first:
+      213: 3452363751022940563
+    second: Stage Interface Malkuth_35
+  - first:
+      213: 5680228256724589545
+    second: Stage Interface Malkuth_36
+  - first:
+      213: 2540759703339466849
+    second: Stage Interface Malkuth_37
+  - first:
+      213: -8144149769447045225
+    second: Stage Interface Malkuth_38
+  - first:
+      213: -2379706911062511891
+    second: Stage Interface Malkuth_39
+  - first:
+      213: -6153219804872016994
+    second: Stage Interface Malkuth_40
+  - first:
+      213: 1271640144172452561
+    second: Stage Interface Malkuth_41
+  - first:
+      213: 4946648652670117977
+    second: Stage Interface Malkuth_42
+  - first:
+      213: 3654024672594962046
+    second: Stage Interface Malkuth_43
+  - first:
+      213: 392148780565705884
+    second: Stage Interface Malkuth_44
+  - first:
+      213: 7987504674566491540
+    second: Stage Interface Malkuth_45
+  - first:
+      213: -5498027847158409221
+    second: Stage Interface Malkuth_46
+  - first:
+      213: -64449370232662193
+    second: Stage Interface Malkuth_47
+  - first:
+      213: 2066205226583776032
+    second: Stage Interface Malkuth_48
+  - first:
+      213: 2389252836628313744
+    second: Stage Interface Malkuth_49
+  - first:
+      213: -2092852311209456059
+    second: Stage Interface Malkuth_50
+  - first:
+      213: 2289343562880815105
+    second: Stage Interface Malkuth_51
+  - first:
+      213: -908303649598486020
+    second: Stage Interface Malkuth_52
+  - first:
+      213: 5755138654031980287
+    second: Stage Interface Malkuth_53
+  - first:
+      213: -281268136759972887
+    second: Stage Interface Malkuth_54
+  - first:
+      213: 4884311010795224332
+    second: Stage Interface Malkuth_55
+  - first:
+      213: 7723709798444409494
+    second: Stage Interface Malkuth_56
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e51c9b7cb318e8bb0800000000000000
+      internalID: -4931862448170221218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_1
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dea159f9c55a371b0800000000000000
+      internalID: -5659998489441658131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_2
+      rect:
+        serializedVersion: 2
+        x: 770
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e8371843457757b0800000000000000
+      internalID: -5235587109962172186
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_3
+      rect:
+        serializedVersion: 2
+        x: 1155
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6311bb4dc889bafd0800000000000000
+      internalID: -2329600651602226890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_4
+      rect:
+        serializedVersion: 2
+        x: 1540
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 612923454251aacd0800000000000000
+      internalID: -2546199393548987882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_5
+      rect:
+        serializedVersion: 2
+        x: 1925
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52899b185e3482690800000000000000
+      internalID: -7626771315948939227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_6
+      rect:
+        serializedVersion: 2
+        x: 2310
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6de103432495bd50800000000000000
+      internalID: 6752466095480892781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_7
+      rect:
+        serializedVersion: 2
+        x: 2695
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24493d9d5bcdb96a0800000000000000
+      internalID: -6441312168421649342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_8
+      rect:
+        serializedVersion: 2
+        x: 3080
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4546e4759317a7760800000000000000
+      internalID: 7456396624157107284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_9
+      rect:
+        serializedVersion: 2
+        x: 3465
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 481ca8b686b428150800000000000000
+      internalID: 5873339775897485700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_10
+      rect:
+        serializedVersion: 2
+        x: 3850
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 141eb0e3396b6f6c0800000000000000
+      internalID: -4109896866411585215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_11
+      rect:
+        serializedVersion: 2
+        x: 4235
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9c3147bbef14a0d0800000000000000
+      internalID: -3412567520387711843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_12
+      rect:
+        serializedVersion: 2
+        x: 4620
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3e121e22aa57b020800000000000000
+      internalID: 2357452582555885118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_13
+      rect:
+        serializedVersion: 2
+        x: 5005
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44be4c2f0de402a70800000000000000
+      internalID: 8800120331215104836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_14
+      rect:
+        serializedVersion: 2
+        x: 5390
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 911750fe8fce904d0800000000000000
+      internalID: -3167740308972277479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_15
+      rect:
+        serializedVersion: 2
+        x: 5775
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89a644730d6186680800000000000000
+      internalID: -8761727991513060712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Malkuth_16
+      rect:
+        serializedVersion: 2
+        x: 6160
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 578d3f184214d70a0800000000000000
+      internalID: -6882273030497380235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e793327a5fb7f15409b1b4891dc6b761
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":17.0,"y":1.0},"gridSpriteSize":{"x":385.0,"y":216.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Stage Interface Malkuth_0: -4931862448170221218
+      Stage Interface Malkuth_1: -5659998489441658131
+      Stage Interface Malkuth_10: -4109896866411585215
+      Stage Interface Malkuth_11: -3412567520387711843
+      Stage Interface Malkuth_12: 2357452582555885118
+      Stage Interface Malkuth_13: 8800120331215104836
+      Stage Interface Malkuth_14: -3167740308972277479
+      Stage Interface Malkuth_15: -8761727991513060712
+      Stage Interface Malkuth_16: -6882273030497380235
+      Stage Interface Malkuth_2: -5235587109962172186
+      Stage Interface Malkuth_3: -2329600651602226890
+      Stage Interface Malkuth_4: -2546199393548987882
+      Stage Interface Malkuth_5: -7626771315948939227
+      Stage Interface Malkuth_6: 6752466095480892781
+      Stage Interface Malkuth_7: -6441312168421649342
+      Stage Interface Malkuth_8: 7456396624157107284
+      Stage Interface Malkuth_9: 5873339775897485700
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

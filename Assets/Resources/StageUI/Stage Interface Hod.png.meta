@@ -1,0 +1,654 @@
+fileFormatVersion: 2
+guid: 85ba959406d68ac41a817db039d2c567
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3482628103466011731
+    second: Stage Interface Hod_0
+  - first:
+      213: 7251915948075936337
+    second: Stage Interface Hod_1
+  - first:
+      213: -7175914769882616520
+    second: Stage Interface Hod_2
+  - first:
+      213: -9035253673523859202
+    second: Stage Interface Hod_3
+  - first:
+      213: -311968027185970232
+    second: Stage Interface Hod_4
+  - first:
+      213: -573810765287733985
+    second: Stage Interface Hod_5
+  - first:
+      213: -1265557459191169776
+    second: Stage Interface Hod_6
+  - first:
+      213: -9171720498544403649
+    second: Stage Interface Hod_7
+  - first:
+      213: 2174182322806884746
+    second: Stage Interface Hod_8
+  - first:
+      213: -1184952682154445470
+    second: Stage Interface Hod_9
+  - first:
+      213: 2713515572786904669
+    second: Stage Interface Hod_10
+  - first:
+      213: 4248643225922707602
+    second: Stage Interface Hod_11
+  - first:
+      213: 1284652332489748313
+    second: Stage Interface Hod_12
+  - first:
+      213: 2065992860440419685
+    second: Stage Interface Hod_13
+  - first:
+      213: -7878900665977630914
+    second: Stage Interface Hod_14
+  - first:
+      213: -1503121548159386361
+    second: Stage Interface Hod_15
+  - first:
+      213: -2747427617621661895
+    second: Stage Interface Hod_16
+  - first:
+      213: 1497546494439494375
+    second: Stage Interface Hod_17
+  - first:
+      213: -8980400140845756907
+    second: Stage Interface Hod_18
+  - first:
+      213: -8000419179397439632
+    second: Stage Interface Hod_19
+  - first:
+      213: 8963587390917987332
+    second: Stage Interface Hod_20
+  - first:
+      213: -4231043189629713285
+    second: Stage Interface Hod_21
+  - first:
+      213: 7048183938466719106
+    second: Stage Interface Hod_22
+  - first:
+      213: -6766602126257155450
+    second: Stage Interface Hod_23
+  - first:
+      213: -5281360885871239541
+    second: Stage Interface Hod_24
+  - first:
+      213: -2522448215223509280
+    second: Stage Interface Hod_25
+  - first:
+      213: -8439211860946099420
+    second: Stage Interface Hod_26
+  - first:
+      213: -7791291583746854472
+    second: Stage Interface Hod_27
+  - first:
+      213: 1317240578959035806
+    second: Stage Interface Hod_28
+  - first:
+      213: -5606088001420960369
+    second: Stage Interface Hod_29
+  - first:
+      213: -5523975978228773352
+    second: Stage Interface Hod_30
+  - first:
+      213: -2023817725937443303
+    second: Stage Interface Hod_31
+  - first:
+      213: -5726409862969630416
+    second: Stage Interface Hod_32
+  - first:
+      213: -5022622753904128249
+    second: Stage Interface Hod_33
+  - first:
+      213: 9123060083180018911
+    second: Stage Interface Hod_34
+  - first:
+      213: -3263753912844569140
+    second: Stage Interface Hod_35
+  - first:
+      213: -9157474134628063951
+    second: Stage Interface Hod_36
+  - first:
+      213: -3724593501515561090
+    second: Stage Interface Hod_37
+  - first:
+      213: 8853310201558025694
+    second: Stage Interface Hod_38
+  - first:
+      213: -9194623406825227059
+    second: Stage Interface Hod_39
+  - first:
+      213: 7807168647958822045
+    second: Stage Interface Hod_40
+  - first:
+      213: 7486758574224776515
+    second: Stage Interface Hod_41
+  - first:
+      213: 7985397373790451437
+    second: Stage Interface Hod_42
+  - first:
+      213: -15415181157204701
+    second: Stage Interface Hod_43
+  - first:
+      213: -1168408454768387587
+    second: Stage Interface Hod_44
+  - first:
+      213: 777453825112640689
+    second: Stage Interface Hod_45
+  - first:
+      213: -1545992543317948905
+    second: Stage Interface Hod_46
+  - first:
+      213: -5420910880286653001
+    second: Stage Interface Hod_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Stage Interface Hod_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da3bd1011383bafc0800000000000000
+      internalID: -3482628103466011731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_1
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15a6e0ae12bf3a460800000000000000
+      internalID: 7251915948075936337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_2
+      rect:
+        serializedVersion: 2
+        x: 770
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83deaa259870a6c90800000000000000
+      internalID: -7175914769882616520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_3
+      rect:
+        serializedVersion: 2
+        x: 1155
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef0311e97a45c9280800000000000000
+      internalID: -9035253673523859202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_4
+      rect:
+        serializedVersion: 2
+        x: 1540
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c30d4e6bbaababf0800000000000000
+      internalID: -311968027185970232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_5
+      rect:
+        serializedVersion: 2
+        x: 1925
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f15cabe262a6908f0800000000000000
+      internalID: -573810765287733985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_6
+      rect:
+        serializedVersion: 2
+        x: 2310
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01d70123236df6ee0800000000000000
+      internalID: -1265557459191169776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_7
+      rect:
+        serializedVersion: 2
+        x: 2695
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3b9719ecc087b080800000000000000
+      internalID: -9171720498544403649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_8
+      rect:
+        serializedVersion: 2
+        x: 3080
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8986d3ad4f3c2e10800000000000000
+      internalID: 2174182322806884746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_9
+      rect:
+        serializedVersion: 2
+        x: 3465
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 265b98050d33e8fe0800000000000000
+      internalID: -1184952682154445470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_10
+      rect:
+        serializedVersion: 2
+        x: 3850
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5e3470690858a520800000000000000
+      internalID: 2713515572786904669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_11
+      rect:
+        serializedVersion: 2
+        x: 4235
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2902e72f08636fa30800000000000000
+      internalID: 4248643225922707602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_12
+      rect:
+        serializedVersion: 2
+        x: 4620
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95fade17d7004d110800000000000000
+      internalID: 1284652332489748313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_13
+      rect:
+        serializedVersion: 2
+        x: 5005
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56d5b0b7f81ebac10800000000000000
+      internalID: 2065992860440419685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_14
+      rect:
+        serializedVersion: 2
+        x: 5390
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3f80d7a69588a290800000000000000
+      internalID: -7878900665977630914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_15
+      rect:
+        serializedVersion: 2
+        x: 5775
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70d79b37ae6d32be0800000000000000
+      internalID: -1503121548159386361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Hod_16
+      rect:
+        serializedVersion: 2
+        x: 6160
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9372095632d2fd9d0800000000000000
+      internalID: -2747427617621661895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6749767697e0d1d4daa55e6b1ec5f187
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":17.0,"y":1.0},"gridSpriteSize":{"x":385.0,"y":216.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Stage Interface Hod_0: -3482628103466011731
+      Stage Interface Hod_1: 7251915948075936337
+      Stage Interface Hod_10: 2713515572786904669
+      Stage Interface Hod_11: 4248643225922707602
+      Stage Interface Hod_12: 1284652332489748313
+      Stage Interface Hod_13: 2065992860440419685
+      Stage Interface Hod_14: -7878900665977630914
+      Stage Interface Hod_15: -1503121548159386361
+      Stage Interface Hod_16: -2747427617621661895
+      Stage Interface Hod_2: -7175914769882616520
+      Stage Interface Hod_3: -9035253673523859202
+      Stage Interface Hod_4: -311968027185970232
+      Stage Interface Hod_5: -573810765287733985
+      Stage Interface Hod_6: -1265557459191169776
+      Stage Interface Hod_7: -9171720498544403649
+      Stage Interface Hod_8: 2174182322806884746
+      Stage Interface Hod_9: -1184952682154445470
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

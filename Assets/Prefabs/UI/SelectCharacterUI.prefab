@@ -402,6 +402,7 @@ GameObject:
   - component: {fileID: 849948829713199804}
   - component: {fileID: 7900641555984090570}
   - component: {fileID: 1867152190311831311}
+  - component: {fileID: 913644223721947512}
   m_Layer: 5
   m_Name: SelectCharacterUI
   m_TagString: Untagged
@@ -465,16 +466,57 @@ MonoBehaviour:
   SortKey: 3312551686
   SendPriority: 1
   EnableInterpolation: 1
-  Flags: 131074
+  Flags: 131330
   NestedObjects:
   - {fileID: 3207463562600085696}
   NetworkedBehaviours:
+  - {fileID: 913644223721947512}
   - {fileID: 7900641555984090570}
   - {fileID: 805312868205923635}
   - {fileID: 6330623374061718820}
   - {fileID: 732926315350420090}
   - {fileID: 4613444944837941362}
   ForceRemoteRenderTimeframe: 0
+--- !u!114 &913644223721947512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3133343516958069623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkTransform
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 1
+  _autoAOIOverride: 1
+  ConfigFlags: 0
+  PhysicsSettings:
+    ForecastEnabled: 1
+    DebugPhysics: 0
+    GravityForecast: 2
+    MaxExtrapolationTime: 0.15
+    MinLinearDetectedError: 0.02
+    MinAngularDetectedError: 3
+    MaxLinearError: 0
+    MaxAngularError: 0
+    LowCorrectionProgressThreshold: 0.015
+    HighErrorSimilarityThreshold: 1
+    MaxErrorTotalTime: 0.5
+    MaxRemoteSleepIgnoreTime: 0.5
+    ErrorCorrectionType: 0
+    LinearVelCorrectionMul: 1
+    AngularVelCorrectionMul: 1
+    PositionCorrectionLerp: 0.15
+    RotationCorrectionLerp: 0.15
+    Spring: 75
+    Damper: 2
+    MinImpactfulCollisionAlignment: 0.3
+    ImpactStartCorrectionTime: 0.1
+    ImpactCorrectionTimeComplete: 0.3
 --- !u!1 &3194475934405047667
 GameObject:
   m_ObjectHideFlags: 0

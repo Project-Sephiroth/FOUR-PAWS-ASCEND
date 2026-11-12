@@ -1,0 +1,708 @@
+fileFormatVersion: 2
+guid: 9c0d43a0866a60743906bfc8fbbca526
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4589094758326868480
+    second: Stage Interface Netzach_0
+  - first:
+      213: 7191420144678045200
+    second: Stage Interface Netzach_1
+  - first:
+      213: 5196612576463475261
+    second: Stage Interface Netzach_2
+  - first:
+      213: 5350074588179953643
+    second: Stage Interface Netzach_3
+  - first:
+      213: 5798526755775274222
+    second: Stage Interface Netzach_4
+  - first:
+      213: -1279019002324279776
+    second: Stage Interface Netzach_5
+  - first:
+      213: -4927355161808514219
+    second: Stage Interface Netzach_6
+  - first:
+      213: 1402002267087091747
+    second: Stage Interface Netzach_7
+  - first:
+      213: 4320185441344651967
+    second: Stage Interface Netzach_8
+  - first:
+      213: 530556697738785875
+    second: Stage Interface Netzach_9
+  - first:
+      213: 3733151146806984815
+    second: Stage Interface Netzach_10
+  - first:
+      213: -8268369417437053088
+    second: Stage Interface Netzach_11
+  - first:
+      213: -1855039030408063417
+    second: Stage Interface Netzach_12
+  - first:
+      213: 5479583329221955911
+    second: Stage Interface Netzach_13
+  - first:
+      213: -2036198706517506764
+    second: Stage Interface Netzach_14
+  - first:
+      213: 5102924242945263604
+    second: Stage Interface Netzach_15
+  - first:
+      213: -1181144547298275846
+    second: Stage Interface Netzach_16
+  - first:
+      213: 5061195648193693358
+    second: Stage Interface Netzach_17
+  - first:
+      213: -5066750614947217265
+    second: Stage Interface Netzach_18
+  - first:
+      213: 700597953076471258
+    second: Stage Interface Netzach_19
+  - first:
+      213: -64340876867699248
+    second: Stage Interface Netzach_20
+  - first:
+      213: 4723685686081654949
+    second: Stage Interface Netzach_21
+  - first:
+      213: -6260510879968810098
+    second: Stage Interface Netzach_22
+  - first:
+      213: 3058973808161106283
+    second: Stage Interface Netzach_23
+  - first:
+      213: 157835330113554949
+    second: Stage Interface Netzach_24
+  - first:
+      213: 8926415584733586050
+    second: Stage Interface Netzach_25
+  - first:
+      213: 7755562301099309264
+    second: Stage Interface Netzach_26
+  - first:
+      213: -7740499046595575812
+    second: Stage Interface Netzach_27
+  - first:
+      213: -9211276555020934467
+    second: Stage Interface Netzach_28
+  - first:
+      213: -4583868058779634760
+    second: Stage Interface Netzach_29
+  - first:
+      213: -2465418973503599372
+    second: Stage Interface Netzach_30
+  - first:
+      213: -6625903431383588446
+    second: Stage Interface Netzach_31
+  - first:
+      213: 3609279392005442903
+    second: Stage Interface Netzach_32
+  - first:
+      213: -4580150925267289515
+    second: Stage Interface Netzach_33
+  - first:
+      213: 5154651321293147070
+    second: Stage Interface Netzach_34
+  - first:
+      213: 4114213104856655738
+    second: Stage Interface Netzach_35
+  - first:
+      213: -1686010419211294327
+    second: Stage Interface Netzach_36
+  - first:
+      213: -6799990565847419077
+    second: Stage Interface Netzach_37
+  - first:
+      213: 9063171562083800719
+    second: Stage Interface Netzach_38
+  - first:
+      213: 9072253176936422932
+    second: Stage Interface Netzach_39
+  - first:
+      213: 4221725785453728871
+    second: Stage Interface Netzach_40
+  - first:
+      213: -2066418304352793387
+    second: Stage Interface Netzach_41
+  - first:
+      213: -4987701040987723148
+    second: Stage Interface Netzach_42
+  - first:
+      213: 8906373293773658014
+    second: Stage Interface Netzach_43
+  - first:
+      213: -7341870822753625188
+    second: Stage Interface Netzach_44
+  - first:
+      213: -4282836364247427748
+    second: Stage Interface Netzach_45
+  - first:
+      213: 5021319462347459009
+    second: Stage Interface Netzach_46
+  - first:
+      213: 1209828135569090688
+    second: Stage Interface Netzach_47
+  - first:
+      213: 4996982074490655066
+    second: Stage Interface Netzach_48
+  - first:
+      213: 4703099046352852305
+    second: Stage Interface Netzach_49
+  - first:
+      213: 3617502899403475125
+    second: Stage Interface Netzach_50
+  - first:
+      213: -7846136208854515049
+    second: Stage Interface Netzach_51
+  - first:
+      213: -4738428076794795912
+    second: Stage Interface Netzach_52
+  - first:
+      213: 4971384288147977610
+    second: Stage Interface Netzach_53
+  - first:
+      213: 3286598456828675295
+    second: Stage Interface Netzach_54
+  - first:
+      213: -2619217937341757444
+    second: Stage Interface Netzach_55
+  - first:
+      213: -8779915690790805964
+    second: Stage Interface Netzach_56
+  - first:
+      213: 7392955579038552649
+    second: Stage Interface Netzach_57
+  - first:
+      213: 3089142892462957554
+    second: Stage Interface Netzach_58
+  - first:
+      213: -7598946007885272542
+    second: Stage Interface Netzach_59
+  - first:
+      213: 7700459569807591979
+    second: Stage Interface Netzach_60
+  - first:
+      213: 345873202938763259
+    second: Stage Interface Netzach_61
+  - first:
+      213: 5077855323158279338
+    second: Stage Interface Netzach_62
+  - first:
+      213: 6846469554072744708
+    second: Stage Interface Netzach_63
+  - first:
+      213: 1350061711946820042
+    second: Stage Interface Netzach_64
+  - first:
+      213: 1436894107369891451
+    second: Stage Interface Netzach_65
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Stage Interface Netzach_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 006e151a1a24050c0800000000000000
+      internalID: -4589094758326868480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_1
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0168f12158e0dc360800000000000000
+      internalID: 7191420144678045200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_2
+      rect:
+        serializedVersion: 2
+        x: 770
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d32de6ffa931e1840800000000000000
+      internalID: 5196612576463475261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_3
+      rect:
+        serializedVersion: 2
+        x: 1155
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be77f46fd784f3a40800000000000000
+      internalID: 5350074588179953643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_4
+      rect:
+        serializedVersion: 2
+        x: 1540
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eec559acc51887050800000000000000
+      internalID: 5798526755775274222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_5
+      rect:
+        serializedVersion: 2
+        x: 1925
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02e9c717ef2004ee0800000000000000
+      internalID: -1279019002324279776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_6
+      rect:
+        serializedVersion: 2
+        x: 2310
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 553573a26948e9bb0800000000000000
+      internalID: -4927355161808514219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_7
+      rect:
+        serializedVersion: 2
+        x: 2695
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 328b40042a9e47310800000000000000
+      internalID: 1402002267087091747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_8
+      rect:
+        serializedVersion: 2
+        x: 3080
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb2892305c164fb30800000000000000
+      internalID: 4320185441344651967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_9
+      rect:
+        serializedVersion: 2
+        x: 3465
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 354bced618aec5700800000000000000
+      internalID: 530556697738785875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_10
+      rect:
+        serializedVersion: 2
+        x: 3850
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f60c54e5031dec330800000000000000
+      internalID: 3733151146806984815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_11
+      rect:
+        serializedVersion: 2
+        x: 4235
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06ff5f192d9d04d80800000000000000
+      internalID: -8268369417437053088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_12
+      rect:
+        serializedVersion: 2
+        x: 4620
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 746da0c84d39146e0800000000000000
+      internalID: -1855039030408063417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_13
+      rect:
+        serializedVersion: 2
+        x: 5005
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7415d6f71046b0c40800000000000000
+      internalID: 5479583329221955911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_14
+      rect:
+        serializedVersion: 2
+        x: 5390
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4350aed8018fdb3e0800000000000000
+      internalID: -2036198706517506764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_15
+      rect:
+        serializedVersion: 2
+        x: 5775
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f74b70009a31d640800000000000000
+      internalID: 5102924242945263604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Stage Interface Netzach_16
+      rect:
+        serializedVersion: 2
+        x: 6160
+        y: 0
+        width: 385
+        height: 216
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afd85edca4bbb9fe0800000000000000
+      internalID: -1181144547298275846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: c6ad59ce482d08b40b7614e75586d8c0
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":17.0,"y":1.0},"gridSpriteSize":{"x":385.0,"y":216.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Stage Interface Netzach_0: -4589094758326868480
+      Stage Interface Netzach_1: 7191420144678045200
+      Stage Interface Netzach_10: 3733151146806984815
+      Stage Interface Netzach_11: -8268369417437053088
+      Stage Interface Netzach_12: -1855039030408063417
+      Stage Interface Netzach_13: 5479583329221955911
+      Stage Interface Netzach_14: -2036198706517506764
+      Stage Interface Netzach_15: 5102924242945263604
+      Stage Interface Netzach_16: -1181144547298275846
+      Stage Interface Netzach_2: 5196612576463475261
+      Stage Interface Netzach_3: 5350074588179953643
+      Stage Interface Netzach_4: 5798526755775274222
+      Stage Interface Netzach_5: -1279019002324279776
+      Stage Interface Netzach_6: -4927355161808514219
+      Stage Interface Netzach_7: 1402002267087091747
+      Stage Interface Netzach_8: 4320185441344651967
+      Stage Interface Netzach_9: 530556697738785875
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
