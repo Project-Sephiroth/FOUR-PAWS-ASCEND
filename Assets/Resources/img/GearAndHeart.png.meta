@@ -1,0 +1,303 @@
+fileFormatVersion: 2
+guid: 85b9ddc5ce787e34ab5ef883a1632cfe
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3760578258637149067
+    second: GearAndHeart_0
+  - first:
+      213: -2161775183079070983
+    second: GearAndHeart_1
+  - first:
+      213: 426789551998174516
+    second: GearAndHeart_2
+  - first:
+      213: -6767590453566236947
+    second: GearAndHeart_3
+  - first:
+      213: 1588127122828115086
+    second: GearAndHeart_4
+  - first:
+      213: 3959143274779245225
+    second: GearAndHeart_5
+  - first:
+      213: -8078739189155205106
+    second: GearAndHeart_6
+  - first:
+      213: 5818822106001233987
+    second: GearAndHeart_7
+  - first:
+      213: 5854102005874020686
+    second: GearAndHeart_8
+  - first:
+      213: -2897000013642374044
+    second: GearAndHeart_9
+  - first:
+      213: -4201598029754682014
+    second: GearAndHeart_10
+  - first:
+      213: -3491978607008846425
+    second: GearAndHeart_11
+  - first:
+      213: 3739866721322667045
+    second: GearAndHeart_12
+  - first:
+      213: 6373766352032544974
+    second: GearAndHeart_13
+  - first:
+      213: -390546106610326742
+    second: GearAndHeart_14
+  - first:
+      213: 5430039347693659831
+    second: GearAndHeart_15
+  - first:
+      213: 933166910013502315
+    second: GearAndHeart_16
+  - first:
+      213: 6983619710963023180
+    second: GearAndHeart_17
+  - first:
+      213: -7875899054835670694
+    second: GearAndHeart_18
+  - first:
+      213: -5785744169645478465
+    second: GearAndHeart_19
+  - first:
+      213: 6508690076983314842
+    second: GearAndHeart_20
+  - first:
+      213: 3238535154649615210
+    second: GearAndHeart_21
+  - first:
+      213: 2665841542192333680
+    second: GearAndHeart_22
+  - first:
+      213: 1556258273180826734
+    second: GearAndHeart_23
+  - first:
+      213: 1832466060564370220
+    second: GearAndHeart_24
+  - first:
+      213: 2319214451362932836
+    second: GearAndHeart_25
+  - first:
+      213: 6969992879233570822
+    second: GearAndHeart_26
+  - first:
+      213: 5352220077325136975
+    second: GearAndHeart_27
+  - first:
+      213: -4672226994300812207
+    second: GearAndHeart_28
+  - first:
+      213: 7572894929750514046
+    second: GearAndHeart_29
+  - first:
+      213: 1180476382072987505
+    second: GearAndHeart_30
+  - first:
+      213: 3769979335818688548
+    second: GearAndHeart_31
+  - first:
+      213: -6732057132395982515
+    second: GearAndHeart_32
+  - first:
+      213: 8690690770866293203
+    second: GearAndHeart_33
+  - first:
+      213: 4048873997121231364
+    second: GearAndHeart_34
+  - first:
+      213: -5168282239860078139
+    second: GearAndHeart_35
+  - first:
+      213: 8140877459538204671
+    second: GearAndHeart_36
+  - first:
+      213: 603350770838268000
+    second: GearAndHeart_37
+  - first:
+      213: -2012958179234325599
+    second: GearAndHeart_38
+  - first:
+      213: -7475181844371497569
+    second: GearAndHeart_39
+  - first:
+      213: -2059800792446100048
+    second: GearAndHeart_40
+  - first:
+      213: 1745354496962588759
+    second: GearAndHeart_41
+  - first:
+      213: -3896576503334476342
+    second: GearAndHeart_42
+  - first:
+      213: -5523765428006769886
+    second: GearAndHeart_43
+  - first:
+      213: -224099716993051875
+    second: GearAndHeart_44
+  - first:
+      213: 6065256603840318123
+    second: GearAndHeart_45
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: GearAndHeart_0
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 363
+        width: 378
+        height: 341
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b83df187002403430800000000000000
+      internalID: 3760578258637149067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GearAndHeart_1
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 55
+        width: 323
+        height: 272
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61ba2033429d3884185b7b25202713e5
+      internalID: -2161775183079070983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a0364988796832546a32deeaed152ca7
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":2172.0,"y":724.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      GearAndHeart_0: 3760578258637149067
+      GearAndHeart_1: -2161775183079070983
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

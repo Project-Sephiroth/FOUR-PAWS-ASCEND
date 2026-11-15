@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 6154881667276453139}
   - component: {fileID: 6507309972623953729}
   - component: {fileID: -1108707625085643393}
+  - component: {fileID: 909184001}
   m_Layer: 3
   m_Name: Player_Frog
   m_TagString: Player
@@ -73,6 +74,7 @@ MonoBehaviour:
   - {fileID: 4977600470123195208}
   - {fileID: 6154881667276453139}
   - {fileID: -1108707625085643393}
+  - {fileID: 909184001}
   - {fileID: 4961979422228578352}
   - {fileID: 7946381705657237752}
   - {fileID: 4066162875382254432}
@@ -272,6 +274,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e523aafc74292ad488e544dfbdcb78cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Passenger
+  outlineMat: {fileID: 0}
+  puppetKey: 0
+  _CurrentLifter: {fileID: 0}
+  _CanRide:
+    RawValue: 0
 --- !u!114 &6154881667276453139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -299,8 +306,6 @@ MonoBehaviour:
   _EndPos: {x: 0, y: 0}
   _HoldOffset: {x: 0, y: 0}
   _TongueProgress: 0
-  _IsTongueActive:
-    RawValue: 0
 --- !u!120 &6507309972623953729
 LineRenderer:
   serializedVersion: 3
@@ -423,6 +428,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 566c927ce1df53b4e90f2d47374297cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraTarget
+--- !u!114 &909184001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 505921429212253325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d88c82121c8a4ed8b0478c8f04363393, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 3
+  fallDeathY: -35
+  damageSprite: {fileID: 7969604923066544343}
+  _Health: 0
+  _IsHacking:
+    RawValue: 0
 --- !u!1 &1750155540070545492
 GameObject:
   m_ObjectHideFlags: 0
@@ -530,7 +553,7 @@ Transform:
   m_GameObject: {fileID: 2335199788811293369}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.85, y: 0.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -720,7 +743,7 @@ Transform:
   m_GameObject: {fileID: 5287254661084678659}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.15, y: -0.35, z: 0}
+  m_LocalPosition: {x: 0.4, y: -0.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

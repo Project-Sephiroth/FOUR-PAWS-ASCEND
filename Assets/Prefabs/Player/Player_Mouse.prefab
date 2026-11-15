@@ -142,6 +142,7 @@ GameObject:
   - component: {fileID: 5072982804541711316}
   - component: {fileID: 2744550448471578549}
   - component: {fileID: -596747215276389991}
+  - component: {fileID: 909184001}
   m_Layer: 3
   m_Name: Player_Mouse
   m_TagString: Player
@@ -191,6 +192,7 @@ MonoBehaviour:
   - {fileID: -8556835490579192334}
   - {fileID: 2744550448471578549}
   - {fileID: -596747215276389991}
+  - {fileID: 909184001}
   - {fileID: 368976050365780461}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &9211547091637837329
@@ -373,7 +375,7 @@ MonoBehaviour:
   Animator: {fileID: 3091498247633694084}
   ApplyTiming: 2
   SyncSettings: 79
-  StateHashes: 0000000095fc0c8da64f29bad533b9dce6809ceb964f9bf6a5fcbec1
+  StateHashes: 0000000095fc0c8da64f29ba76b1485e45026d69964f9bf6a5fcbec1
   TriggerHashes: 00000000
   TotalWords: 1
 --- !u!212 &5072982804541711316
@@ -447,6 +449,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e523aafc74292ad488e544dfbdcb78cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Passenger
+  outlineMat: {fileID: 0}
+  puppetKey: 0
+  _CurrentLifter: {fileID: 0}
+  _CanRide:
+    RawValue: 0
 --- !u!114 &-596747215276389991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -459,6 +466,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 566c927ce1df53b4e90f2d47374297cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraTarget
+--- !u!114 &909184001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4353250075812841545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d88c82121c8a4ed8b0478c8f04363393, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 3
+  fallDeathY: -35
+  damageSprite: {fileID: 6730078654515193778}
+  _Health: 0
+  _IsHacking:
+    RawValue: 0
 --- !u!1 &8275741618073531482
 GameObject:
   m_ObjectHideFlags: 0
@@ -470,6 +495,7 @@ GameObject:
   - component: {fileID: 9206740877219596575}
   - component: {fileID: 6730078654515193778}
   - component: {fileID: 5726915882332102983}
+  - component: {fileID: 5595419058320832592}
   m_Layer: 3
   m_Name: model_mouse
   m_TagString: Untagged
@@ -564,3 +590,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableOutline
   spriteRenderer: {fileID: 6730078654515193778}
+--- !u!210 &5595419058320832592
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8275741618073531482}
+  m_Enabled: 1
+  m_SortingLayerID: 558289701
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0

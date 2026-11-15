@@ -208,8 +208,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ed0c0e0aa55be6469df983a0021cc27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovingFloor
-  dest_L: -7
-  dest_R: -4
+  curDir: 2
+  startPos: {x: -4, y: -0.5}
+  nextPos: {x: -7, y: -0.5}
   speed: 1
 --- !u!1 &180250698
 GameObject:

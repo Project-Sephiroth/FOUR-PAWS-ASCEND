@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: -46958172760977952}
   - component: {fileID: 5667559860964636251}
   - component: {fileID: -4394223172999840241}
+  - component: {fileID: 909184001}
   m_Layer: 3
   m_Name: Player_Rabbit
   m_TagString: Player
@@ -181,6 +182,7 @@ MonoBehaviour:
   - {fileID: -46958172760977952}
   - {fileID: 5667559860964636251}
   - {fileID: -4394223172999840241}
+  - {fileID: 909184001}
   - {fileID: 4630356534473329264}
   - {fileID: 8927662265328794544}
   ForceRemoteRenderTimeframe: 0
@@ -399,6 +401,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 566c927ce1df53b4e90f2d47374297cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraTarget
+--- !u!114 &909184001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2817390880039839120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d88c82121c8a4ed8b0478c8f04363393, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 3
+  fallDeathY: -35
+  damageSprite: {fileID: 926748019128133554}
+  _Health: 0
+  _IsHacking:
+    RawValue: 0
 --- !u!1 &7128324174896953473
 GameObject:
   m_ObjectHideFlags: 0
@@ -500,6 +520,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3710282602390799806}
   - component: {fileID: 926748019128133554}
+  - component: {fileID: 8935335442351748557}
   m_Layer: 3
   m_Name: model_rabbit
   m_TagString: Untagged
@@ -581,3 +602,16 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!210 &8935335442351748557
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8804722460379092911}
+  m_Enabled: 1
+  m_SortingLayerID: 558289701
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0

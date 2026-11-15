@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 3072476099927549860}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.05, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -58,7 +58,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 727786777484483319}
@@ -212,6 +212,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4043050016199447679}
+  - component: {fileID: 909184101}
   m_Layer: 3
   m_Name: HoldPoint
   m_TagString: Untagged
@@ -228,12 +229,24 @@ Transform:
   m_GameObject: {fileID: 7175622280952666374}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.4, y: 1.8, z: 0}
+  m_LocalPosition: {x: 1, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 727786777484483319}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &909184101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7175622280952666374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22b46e60ef1a48b889e232e2a8b74104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThrowHoldAnchor
 --- !u!1 &7809413871449971425
 GameObject:
   m_ObjectHideFlags: 0
@@ -254,6 +267,7 @@ GameObject:
   - component: {fileID: 3535203046045987326}
   - component: {fileID: 1180311791982922275}
   - component: {fileID: 6504094990509860313}
+  - component: {fileID: 909184001}
   m_Layer: 3
   m_Name: Player_Bear
   m_TagString: Player
@@ -307,8 +321,10 @@ MonoBehaviour:
   - {fileID: 3535203046045987326}
   - {fileID: 1180311791982922275}
   - {fileID: 6504094990509860313}
+  - {fileID: 909184001}
   - {fileID: 3904849516239620281}
   - {fileID: 2758368488505099682}
+  - {fileID: 909184101}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &943017836470292750
 MonoBehaviour:
@@ -508,19 +524,21 @@ MonoBehaviour:
   interactRange: {fileID: 3904849516239620281}
   detectLayer:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 520
   holdPoint: {fileID: 4043050016199447679}
   _CurInteractObject: {fileID: 0}
   mover: {fileID: -4307343292715752888}
   model: {fileID: 7250350725784135061}
   minDistance: 3
   maxDistance: 8
-  minAngle: 0
-  maxAngle: 60
-  throwSpeed: 5
-  cycleTime: 2
+  minAngle: 15
+  maxAngle: 55
+  throwSpeed: 7
+  cycleTime: 3
   throwArrow: {fileID: 6698800869872373626}
   arrowBaseLength: 1
+  rockMaker: {fileID: 0}
+  _CarriedKey: {fileID: 0}
   anim: {fileID: 4196723348654146878}
 --- !u!114 &1180311791982922275
 MonoBehaviour:
@@ -551,6 +569,26 @@ MonoBehaviour:
     m_Bits: 64
   rockPrefab: {fileID: 4412533703204020972, guid: 220f2cb61b766474eb6c49df55423b5c, type: 3}
   thrower: {fileID: 3535203046045987326}
+  animator: {fileID: 4196723348654146878}
+  makeRockClip: {fileID: 7400000, guid: f905c9d70dda4d04fb40fff6f9187292, type: 2}
+--- !u!114 &909184001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7809413871449971425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d88c82121c8a4ed8b0478c8f04363393, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 3
+  fallDeathY: -35
+  damageSprite: {fileID: 7250350725784135061}
+  _Health: 0
+  _IsHacking:
+    RawValue: 0
 --- !u!1 &8080396380600934420
 GameObject:
   m_ObjectHideFlags: 0
@@ -561,6 +599,7 @@ GameObject:
   m_Component:
   - component: {fileID: 698649924270174506}
   - component: {fileID: 7250350725784135061}
+  - component: {fileID: 127693544021844743}
   m_Layer: 3
   m_Name: model_bear
   m_TagString: Untagged
@@ -642,6 +681,19 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!210 &127693544021844743
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8080396380600934420}
+  m_Enabled: 1
+  m_SortingLayerID: 558289701
+  m_SortingLayer: 2
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
+  m_Sort3DAs2D: 0
 --- !u!1 &8698706091481343837
 GameObject:
   m_ObjectHideFlags: 0
