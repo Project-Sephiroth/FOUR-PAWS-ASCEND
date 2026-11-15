@@ -2,6 +2,7 @@ using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -9,13 +10,13 @@ using static NetworkGameManager;
 
 public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 {
-    [SerializeField] private NetworkRunner runnerPrefab; //³×Æ®¿öÅ©¿¡ Á¢¼Ó ÇÒ ´ë»ó(³ª) ÇÁ¸®ÆÕ
-    [SerializeField] private NetworkGameManager networkGMPrefab; //³×Æ®¿öÅ© °ÔÀÓ ¸Å´ÏÀú ÇÁ¸®ÆÕ
+    [SerializeField] private NetworkRunner runnerPrefab; //ë„¤íŠ¸ì›Œí¬ì— ì ‘ì† í•  ëŒ€ìƒ(ë‚˜) í”„ë¦¬íŒ¹
+    [SerializeField] private NetworkGameManager networkGMPrefab; //ë„¤íŠ¸ì›Œí¬ ê²Œì„ ë§¤ë‹ˆì € í”„ë¦¬íŒ¹
     [SerializeField] NetworkObject selectCharUI;
     [SerializeField] Transform UICanvas;
 
-    private NetworkGameManager networkGM; //³×Æ®¿öÅ© °ÔÀÓ ¸Å´ÏÀú ³»ºÎ ÂüÁ¶
-    private NetworkRunner runner; //³×Æ®¿öÅ© Á¢¼Ó ´ë»ó ³»ºÎ ÂüÁ¶
+    private NetworkGameManager networkGM; //ë„¤íŠ¸ì›Œí¬ ê²Œì„ ë§¤ë‹ˆì € ë‚´ë¶€ ì°¸ì¡°
+    private NetworkRunner runner; //ë„¤íŠ¸ì›Œí¬ ì ‘ì† ëŒ€ìƒ ë‚´ë¶€ ì°¸ì¡°
 
     public UnityAction OnLobbyJoined;
 
@@ -33,7 +34,7 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
     #region Lobby
 
     /// <summary>
-    /// ·Îºñ·Î µé¾î°©´Ï´Ù
+    /// ë¡œë¹„ë¡œ ë“¤ì–´ê°‘ë‹ˆë‹¤
     /// </summary>
     public async void JoinLobby()
     {
@@ -43,7 +44,7 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         var result = await runner.JoinSessionLobby(SessionLobby.Shared);
 
-        Debug.Log($"·Îºñ Á¢¼Ó: {result.Ok}");
+        Debug.Log($"ë¡œë¹„ ì ‘ì†: {result.Ok}");
 
         if (result.Ok)
         {
@@ -52,7 +53,7 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
     }
 
     /// <summary>
-    /// ¼¼¼ÇÀÌ »õ·Î ¸¸µé¾îÁö¸é È£Ãâ ¹Ş½À´Ï´Ù
+    /// ì„¸ì…˜ì´ ìƒˆë¡œ ë§Œë“¤ì–´ì§€ë©´ í˜¸ì¶œ ë°›ìŠµë‹ˆë‹¤
     /// </summary>
     /// <param name="runner"></param>
     /// <param name="sessionList"></param>
@@ -60,9 +61,9 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
     {
         foreach (SessionInfo session in sessionList)
         {
-            Debug.Log($"¹æ ÀÌ¸§: {session.Name}");
-            Debug.Log($"ÀÎ¿ø: {session.PlayerCount}/{session.MaxPlayers}");
-            Debug.Log($"ÀÔÀå °¡´É: {session.IsOpen}");
+            Debug.Log($"ë°© ì´ë¦„: {session.Name}");
+            Debug.Log($"ì¸ì›: {session.PlayerCount}/{session.MaxPlayers}");
+            Debug.Log($"ì…ì¥ ê°€ëŠ¥: {session.IsOpen}");
         }
 
         sessions = sessionList;
@@ -74,7 +75,7 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public async void TryAccessSession(string sessionName)
     {
-        //ÇöÀç Á¢¼Ó ½ÃµµÇÏ·Á´Â ¹æ ÀÌ¸§ÀÌ ¾ø´Ù¸é ¸®ÅÏ
+        //í˜„ì¬ ì ‘ì† ì‹œë„í•˜ë ¤ëŠ” ë°© ì´ë¦„ì´ ì—†ë‹¤ë©´ ë¦¬í„´
         if (string.IsNullOrWhiteSpace(sessionName))
             return;
             
@@ -82,37 +83,47 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         var result = await runner.StartGame(new StartGameArgs()
         {
-            GameMode = GameMode.Shared, //Æ÷Åæ ¼¨¾î ¸ğµå »ç¿ë
+            GameMode = GameMode.Shared, //í¬í†¤ ì„€ì–´ ëª¨ë“œ ì‚¬ìš©
             SessionName = sessionName,
             SceneManager = sceneManager,
-            PlayerCount = 4 //4¸íÀ¸·Î ¹æ ÀÎ¿ø Á¦ÇÑ
+            PlayerCount = 4 //4ëª…ìœ¼ë¡œ ë°© ì¸ì› ì œí•œ
         });
 
         if (result.Ok)
         {
-            Debug.Log("¹æ Á¢¼Ó ¼º°ø");
+            Debug.Log("ë°© ì ‘ì† ì„±ê³µ");
 
             if (runner.IsSharedModeMasterClient)
             {
                 networkGM = runner.Spawn(networkGMPrefab, Vector3.zero, Quaternion.identity);
-                var temp = runner.Spawn(selectCharUI, Vector3.zero, Quaternion.identity);
-                temp.transform.SetParent(UICanvas, false); //selectCharUI ¸¦ UICanvas ÀÇ ÀÚ½ÄÀ¸·Î
+                runner.Spawn(selectCharUI, Vector3.zero, Quaternion.identity); 
             }
             
         }
         else
         {
-            Debug.LogError($"¹æ Á¢¼Ó ½ÇÆĞ: {result.ShutdownReason}");
+            Debug.LogError($"ë°© ì ‘ì† ì‹¤íŒ¨: {result.ShutdownReason}");
         }
     }
 
+    // ì”¬ ë¡œë“œê°€ ëë‚˜ë©´ ê²Œì„ ë§¤ë‹ˆì €ì— ì•Œë¦¬ê³ , ì”¬ì— ìˆëŠ” Spawn íƒœê·¸ì—ì„œ ë¡œì»¬ ìºë¦­í„°ë¥¼ ë§Œë“­ë‹ˆë‹¤. ë¡œë¹„ì—ì„œëŠ” ìºë¦­í„° ì„ íƒ UIê°€ ë³„ë„ë¡œ ì²˜ë¦¬í•©ë‹ˆë‹¤.
     public void OnSceneLoadDone(NetworkRunner runner)
     {
-        Debug.Log("¾À ·Îµå ¿Ï·á");
+        Debug.Log("ì”¬ ë¡œë“œ ì™„ë£Œ");
 
-        //¾À ÀüÈ¯ ÈÄ ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ® ½ºÆù
-        if (SceneManager.GetActiveScene().name != SceneName.Lobby.ToString())
-            GameObject.FindWithTag("Spawn").GetComponent<PlayerSpawner>().SpawnCharacter(runner);
+        //ì”¬ ì „í™˜ í›„ í”Œë ˆì´ì–´ ì˜¤ë¸Œì íŠ¸ ìŠ¤í°
+        if (NetworkGameManager.Instance == null)
+        {
+            ScenePresentation.Reveal();
+            return;
+        }
+
+        NetworkGameManager.Instance.OnSceneLoaded();
+        if (SceneManager.GetActiveScene().name == nameof(SceneName.Lobby))
+            return;
+        var spawnPoint = GameObject.FindWithTag("Spawn");
+        if (spawnPoint != null && spawnPoint.TryGetComponent(out PlayerSpawner spawner))
+            spawner.SpawnCharacter(runner);
     }
 
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
@@ -140,14 +151,31 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
             return;
 
         isLeaving = true;
-
-        if (runner != null && runner.IsRunning)
+        try
         {
-            await runner.Shutdown();
-            Destroy(runner.gameObject);
+            await ScenePresentation.LoadLocalAsync(nameof(SceneName.Lobby), () => ShutdownSession(runner));
         }
+        catch (Exception error)
+        {
+            isLeaving = false;
+            Debug.LogException(error);
+        }
+    }
 
-        SceneManager.LoadScene(SceneName.Lobby.ToString());
+    public Task LeaveForTitle()
+    {
+        isLeaving = true;
+        return ShutdownSession(runner);
+    }
+
+    // ë¨¼ì € Fusion ì—°ê²°ì„ ì •ë¦¬í•œ ë’¤ ëŸ¬ë„ˆì™€ ëŸ°ì²˜ ì˜¤ë¸Œì íŠ¸ë¥¼ ì œê±°í•©ë‹ˆë‹¤. ì”¬ë§Œ ë°”ê¿¨ì„ ë•Œ ì´ì „ ì—°ê²°ì´ ë‚¨ëŠ” ì¼ì„ ë§‰ìŠµë‹ˆë‹¤.
+    private async Task ShutdownSession(NetworkRunner session)
+    {
+        if (session != null && session.IsRunning)
+            await session.Shutdown();
+        if (session != null)
+            Destroy(session.gameObject);
+        Destroy(gameObject);
     }
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
@@ -197,6 +225,10 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnSceneLoadStart(NetworkRunner runner)
     {
+        ScenePresentation.Cover(immediate: true);
+        if (runner.TryGetPlayerObject(runner.LocalPlayer, out var player) &&
+            player != null && player.IsValid && player.HasStateAuthority)
+            runner.Despawn(player);
     }
     #endregion
 }
