@@ -1,85 +1,137 @@
+using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class Switch : NetworkBehaviour, IInteractable
 {
-    [Header("½ºÀ§Ä¡¿¡ ´ê°í ÀÖÀ» ¶§¸¸ ÀÛµ¿µÇ´Â°¡?")]
-    [SerializeField] bool isWait = true;
+    [Header("í”Œë ˆì´ì–´ê°€ ë°Ÿê³  ìˆëŠ” ë™ì•ˆë§Œ ì‘ë™")]
+    [SerializeField] private bool isWait = true;
+    [SerializeField] private InteractableOutline outline;
+    [SerializeField] private bool rockOnly;
+    [SerializeField] private bool tongueOnly;
+    [SerializeField] private bool repeatRockAction;
+    [SerializeField] private bool ignoreRocks;
     public UnityEvent<bool> switchAction;
+
+    [Networked] public bool isOn { get; set; }
+    [Networked] private NetworkBool StaysOn { get; set; }
+
+    private readonly HashSet<Collider2D> playersOnSwitch = new();
     private Animator anim;
-
-    private GameObject curOperator = null;
-    bool isOn = false;
-
-    [SerializeField] InteractableOutline outline;
 
     private void Awake()
     {
         anim = GetComponent<Animator>();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (Object == null || !Object.IsValid)
-            return;
+    private bool CanProcessTrigger => Object != null && Object.IsValid && HasStateAuthority;
 
-        if (!collision.CompareTag("Player"))
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (rockOnly || tongueOnly || !CanProcessTrigger || !IsPlayer(other) || !playersOnSwitch.Add(other))
             return;
 
         if (isWait)
-        {
-            if (curOperator != null) //ÀÌ¹Ì Á¶ÀÛÇÏ°í ÀÖ´Â ÇÃ·¹ÀÌ¾î°¡ ÀÖ´Ù¸é ¸®ÅÏ
-                return;
-
-            curOperator = collision.gameObject; //½ºÀ§Ä¡ Á¶ÀÛ ÇÃ·¹ÀÌ¾î µî·Ï
-
-            RPC_Switch(true);
-        }
-        else
-        {
-            RPC_Switch(!isOn);
-        }
+            SetState(true);
+        else if (playersOnSwitch.Count == 1 && !StaysOn)
+            SetState(!isOn);
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnTriggerExit2D(Collider2D other)
     {
-        if (Object == null || !Object.IsValid || !HasStateAuthority)
-            return;
-
-        if (!collision.CompareTag("Player"))
-            return;
-
-        if (isWait)
-        {
-            if (curOperator != collision.gameObject) //Á¶ÀÛÇÑ ÇÃ·¹ÀÌ¾î¿Í ´Ù¸¦ °æ¿ì Exit ÇØµµ ½ºÀ§Ä¡ ²ô±â ¾È µÊ
-                return;
-
-            curOperator = null;
-
-            RPC_Switch(false);
-        }
+        if (CanProcessTrigger && playersOnSwitch.Remove(other))
+            RefreshPressureState();
     }
 
-    [Rpc(RpcSources.All, RpcTargets.All)]
+    public override void FixedUpdateNetwork()
+    {
+        if (HasStateAuthority && playersOnSwitch.RemoveWhere(c =>
+                c == null || !c.enabled || !c.gameObject.activeInHierarchy ||
+                (c.attachedRigidbody != null && !c.attachedRigidbody.simulated)) > 0)
+            RefreshPressureState();
+    }
+
+    private static bool IsPlayer(Collider2D collider)
+    {
+        return collider.CompareTag("Player") ||
+               (collider.attachedRigidbody != null && collider.attachedRigidbody.CompareTag("Player"));
+    }
+
+    private void RefreshPressureState()
+    {
+        if (isWait && !StaysOn && playersOnSwitch.Count == 0)
+            SetState(false);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_Switch(bool doOn)
     {
-        anim.SetBool("IsOn", doOn);
-        switchAction?.Invoke(doOn);
-        isOn = doOn;
+        StaysOn = doOn;
+        SetState(doOn || (isWait && playersOnSwitch.Count > 0));
     }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_Toggle()
+    {
+        if (!StaysOn)
+            SetState(!isOn);
+    }
+
+    // ì¼œì§ ê°’ì´ ì‹¤ì œë¡œ ë‹¬ë¼ì¡Œì„ ë•Œë§Œ ì—°ê²°ëœ ë™ì‘ì„ í•œ ë²ˆ í˜¸ì¶œí•©ë‹ˆë‹¤. ë°œíŒì— ê³„ì† ì„œ ìˆì–´ë„ ê°™ì€ ë™ì‘ì´ ë§¤ë²ˆ ë°˜ë³µë˜ì§€ ì•Šê²Œ í•©ë‹ˆë‹¤.
+    private void SetState(bool value)
+    {
+        if (isOn == value)
+            return;
+
+        isOn = value;
+        switchAction?.Invoke(value);
+    }
+
+    public override void Render()
+    {
+        if (anim != null)
+            anim.SetBool("IsOn", isOn);
+    }
+
+    public void OnRockHit()
+    {
+        if (!ignoreRocks && Object != null && Object.IsValid)
+        {
+            if (repeatRockAction)
+                RPC_RepeatRockAction();
+            else
+                RPC_Switch(true);
+        }
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RepeatRockAction()
+    {
+        if (repeatRockAction)
+            switchAction?.Invoke(true);
+    }
+
+    // ì§ì ‘ ëˆŒëŸ¬ë„ ë˜ëŠ”ì§€ í‘œì‹œí•˜ê¸° ì „ì— ëŒ ì „ìš©ê³¼ í˜€ ì „ìš© ìŠ¤ìœ„ì¹˜ë¥¼ êµ¬ë¶„í•©ë‹ˆë‹¤.
+    public bool CanInteractWith(Interactor interactor) => Object != null && Object.IsValid &&
+        !rockOnly && (!tongueOnly || interactor is Tongue);
 
     public void OnInteract(Interactor interactor)
     {
-        if (Object == null || !Object.IsValid || !HasStateAuthority)
+        if (rockOnly || (tongueOnly && interactor is not Tongue) || Object == null || !Object.IsValid)
             return;
 
-        RPC_Switch(!isOn);
+        if (interactor == null || interactor is Tongue)
+            RPC_Switch(true);
+        else
+            RPC_Toggle();
+
         SetOutlineMat(false);
     }
 
     public void SetOutlineMat(bool isOn)
     {
-        outline.SetOutline(isOn);
+        if (outline != null)
+            outline.SetOutline(isOn);
     }
 }

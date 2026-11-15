@@ -1,94 +1,89 @@
 using Fusion;
 using UnityEngine;
 
-/// <summary>
-/// 움직이는 발판입니다.
-/// </summary>
 public class MovingFloor : NetworkBehaviour
 {
-    public enum MoveDirection
-    {
-        Up,
-        Down,
-        Left,
-        Right
-    }
+    public enum MoveDirection { Up, Down, Left, Right }
 
-    [Header("이동 설정")]
-    [SerializeField] private MoveDirection startDirection;
-    [SerializeField] private float dest_A;
-    [SerializeField] private float dest_B;
+    [SerializeField] private MoveDirection curDir;
+    [SerializeField] private Vector2 startPos;
+    [SerializeField] private Vector2 nextPos;
     [SerializeField] private float speed = 2f;
-    [SerializeField] private bool keepMove = false;
-
-    [Networked] private NetworkBool isA { get; set; }
-    [Networked] public NetworkBool isMoving { get; set; }
-
-    private bool IsHorizontal => startDirection == MoveDirection.Left || startDirection == MoveDirection.Right;
+    [SerializeField] private bool keepMove;
+    [SerializeField] private bool useRelativeTravel;
+    [SerializeField, Min(0.01f)] private float travelDistance = 2f;
 
     public override void Spawned()
     {
-        if (!HasStateAuthority)
+        if (!useRelativeTravel)
             return;
-
-        //시작 방향에 따라 목적지 결정
-        isA = startDirection == MoveDirection.Left || startDirection == MoveDirection.Down;
-
-        isMoving = false;
+        startPos = transform.localPosition;
+        Vector2 direction = curDir switch
+        {
+            MoveDirection.Up => Vector2.up,
+            MoveDirection.Down => Vector2.down,
+            MoveDirection.Left => Vector2.left,
+            _ => Vector2.right
+        };
+        nextPos = startPos + direction * travelDistance;
     }
 
-    private void Update()
+    public bool HasReachedDestination => Returning && !isMoving;
+
+    private bool MovesHorizontally => curDir == MoveDirection.Left || curDir == MoveDirection.Right;
+
+    private void OnValidate()
+    {
+        if (MovesHorizontally)
+            nextPos.y = startPos.y;
+        else
+            nextPos.x = startPos.x;
+    }
+
+    [Networked] public NetworkBool isMoving { get; set; }
+    [Networked] private NetworkBool Returning { get; set; }
+
+    public void StartMove(bool isMove)
+    {
+        if (Object != null && Object.IsValid)
+            RPC_StartMove(isMove);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_StartMove(bool isMove)
+    {
+        if (keepMove)
+            isMoving = isMove;
+        else if (isMove)
+        {
+            if (isMoving && useRelativeTravel)
+                Returning = !Returning;
+            isMoving = true;
+        }
+    }
+
+    public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority || !isMoving)
             return;
 
-        float current = IsHorizontal  ? transform.position.x : transform.position.y;
+        Vector2 target = Returning ? startPos : nextPos;
+        Vector3 position = transform.localPosition;
+        int axis = MovesHorizontally ? 0 : 1;
+        position[axis] = Mathf.MoveTowards(position[axis], target[axis], Mathf.Max(0f, speed) * Runner.DeltaTime);
+        transform.localPosition = position;
 
-        float target = isA ? dest_A : dest_B;
-
-        float next = Mathf.MoveTowards( current, target, speed * Time.deltaTime);
-
-        Vector3 pos = transform.position;
-
-        if (IsHorizontal)
-            pos.x = next;
-        else
-            pos.y = next;
-
-        transform.position = pos;
-
-        if (Mathf.Approximately(next, target))
+        if (position[axis] == target[axis])
         {
-            if (keepMove)
-                isA = !isA;
-            else
+            MoveNext();
+            if (!keepMove)
                 isMoving = false;
         }
     }
 
-    /// <summary>
-    /// true면 A로, false면 B로 이동합니다.
-    /// </summary>
-    public void SwitchMove(bool moveToA)
+    public void MoveNext()
     {
-        if (!HasStateAuthority)
-            return;
-
-        isA = moveToA;
-        isMoving = true;
-    }
-
-    /// <summary>
-    /// Inspector에 지정한 시작 방향으로 이동합니다.
-    /// </summary>
-    public void StartMove()
-    {
-        Debug.Log($"MovingFloor {gameObject.name}: 움직임 시작");
-        if (!HasStateAuthority)
-            return;
-
-        isA = startDirection == MoveDirection.Left || startDirection == MoveDirection.Down;
-
-        isMoving = true;
+        if (HasStateAuthority)
+            Returning = !Returning;
     }
 }
