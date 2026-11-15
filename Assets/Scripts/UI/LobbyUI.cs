@@ -39,6 +39,7 @@ public class LobbyUI : MonoBehaviour
         {
             elementPool[i] = Instantiate(elementPrefab, poolParent).GetComponent<LobbyUIElement>();
             elementPool[i].gameObject.SetActive(false);
+            elementPool[i].transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
         }
     }
 

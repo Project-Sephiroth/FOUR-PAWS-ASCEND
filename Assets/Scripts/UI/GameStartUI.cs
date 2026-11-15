@@ -6,43 +6,28 @@ public class GameStartUI : NetworkBehaviour
     [SerializeField] GameObject startButton;
     [SerializeField] SelectCharacterUI selectCharUI;
 
-    public override void Spawned()
+    public override void FixedUpdateNetwork()
     {
-        base.Spawned();
-
-        selectCharUI.OnSelect += CheckAllCharactersSelected;
+        if (startButton != null)
+            startButton.SetActive(HasStateAuthority && CanStart());
     }
 
-    public override void Despawned(NetworkRunner runner, bool hasState)
+    // ì”¬ì„ ì—´ ê¶Œí•œì´ ìˆëŠ” ë°©ì¥ê³¼ ë„¤ ìºë¦­í„°ì˜ ì„ íƒ ìƒíƒœë¥¼ í™•ì¸í•©ë‹ˆë‹¤. í•œ ëª…ì´ë¼ë„ ì„ íƒí•˜ì§€ ì•Šì•˜ìœ¼ë©´ ì‹œì‘ ë²„íŠ¼ì´ ëˆŒë¦¬ì§€ ì•ŠìŠµë‹ˆë‹¤.
+    private bool CanStart()
     {
-        base.Despawned(runner, hasState);
-
-        selectCharUI.OnSelect -= CheckAllCharactersSelected;
-    }
-
-    void CheckAllCharactersSelected()
-    {
-        for (int i = 0; i <= GameManager.MaxPlayerCount; i++)
-        {
-            //ÇÑ ¸íÀÌ¶óµµ ¼³Á¤ÀÌ ¾È µÆ´Ù¸é
-            if (NetworkGameManager.Instance.PlayerCharacterType[i] == (int)(MyEnum.CharacterType.None)) 
-                return; //¸®ÅÏ
-        }
-
-        //´Ù ¼³Á¤ÀÌ µÇ¾ú´Ù¸é ½ºÅ¸Æ® ¹öÆ° È°¼ºÈ­
-        //if (HasStateAuthority)
-            startButton.SetActive(true);
+        var manager = NetworkGameManager.Instance;
+        return manager != null && manager.Object != null && manager.Object.IsValid &&
+               manager.Runner.IsSharedModeMasterClient && manager.Runner.IsSceneAuthority &&
+               manager.IsCharacterTaken(MyEnum.CharacterType.Rabbit) &&
+               manager.IsCharacterTaken(MyEnum.CharacterType.Frog) &&
+               manager.IsCharacterTaken(MyEnum.CharacterType.Bear) &&
+               manager.IsCharacterTaken(MyEnum.CharacterType.Mouse);
     }
 
     public void StartGame()
     {
-        if (!HasStateAuthority)
-            return;
-
-        if (GameManager.Instance.MyCharacterType == MyEnum.CharacterType.None)
-            return;
-
-        NetworkGameManager.Instance.LoadScene(NetworkGameManager.SceneName.Malkuth.ToString());
+        if (HasStateAuthority && CanStart())
+            NetworkGameManager.Instance.LoadScene(NetworkGameManager.SceneName.Map.ToString());
     }
 
     public async void QuitGame()

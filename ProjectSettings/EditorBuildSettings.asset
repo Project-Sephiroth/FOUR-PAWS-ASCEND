@@ -14,6 +14,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Malkuth.unity
     guid: afe416e659d26b7449ad11a3da266205
+  - enabled: 1
+    path: Assets/Scenes/Map.unity
+    guid: d2df96439d4458446a3672dbe404c5d6
+  - enabled: 1
+    path: Assets/Scenes/Yesod.unity
+    guid: c4404331c338fd947be4b5a5acd975f9
+  - enabled: 1
+    path: Assets/Scenes/Hod.unity
+    guid: 6b48bde0af67f6647a9cfbc75afafda8
+  - enabled: 1
+    path: Assets/Scenes/Netzach.unity
+    guid: aab84646ca75be444845dc81a1ddf640
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

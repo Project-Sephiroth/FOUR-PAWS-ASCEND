@@ -4,43 +4,28 @@ using UnityEngine.Events;
 
 public class SelectCharacterButton : NetworkBehaviour
 {
-    [SerializeField] MyEnum.CharacterType myType;
-    [SerializeField] GameObject blocker;
+    [SerializeField] private MyEnum.CharacterType myType;
+    [SerializeField] private GameObject blocker;
     public UnityAction<MyEnum.CharacterType> OnClick;
 
-    [Networked, OnChangedRender(nameof(OnActiveChanged))]
-    public NetworkBool IsBlocked { get; set; }
-
-
-    public override void Spawned()
-    {
-        ApplyActive();
-    }
+    public bool IsBlocked { get; private set; }
 
     public void Blocked(bool locked)
     {
-        if (!HasStateAuthority)
-            return;
-
         IsBlocked = locked;
+        if (blocker != null && blocker.activeSelf != locked)
+            blocker.SetActive(locked);
     }
 
     public void OnButtonClicked()
     {
-        if (IsBlocked)
+        var manager = NetworkGameManager.Instance;
+        if (manager == null)
             return;
 
-        OnClick?.Invoke(myType);
-    }
-
-    private void OnActiveChanged()
-    {
-        ApplyActive();
-    }
-
-    private void ApplyActive()
-    {
-        if (blocker != null)
-            blocker.SetActive(IsBlocked);
+        if (manager.GetCharacter(Runner.LocalPlayer) == myType)
+            OnClick?.Invoke(MyEnum.CharacterType.None);
+        else if (!manager.IsCharacterTaken(myType))
+            OnClick?.Invoke(myType);
     }
 }

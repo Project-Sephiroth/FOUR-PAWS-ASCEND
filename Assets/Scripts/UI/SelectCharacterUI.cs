@@ -1,73 +1,20 @@
 using Fusion;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class SelectCharacterUI : NetworkBehaviour
 {
-    [SerializeField] SelectCharacterButton rabbit;
-    [SerializeField] SelectCharacterButton bear;
-    [SerializeField] SelectCharacterButton mouse;
-    [SerializeField] SelectCharacterButton frog;
+    [SerializeField] public SelectCharacterButton rabbit;
+    [SerializeField] public SelectCharacterButton bear;
+    [SerializeField] public SelectCharacterButton mouse;
+    [SerializeField] public SelectCharacterButton frog;
     public event UnityAction OnSelect;
+    // lobbyPlayer는 로비에서 지금 고른 캐릭터의 오브젝트입니다. 선택을 바꾸면 이전 캐릭터를 치우고 바뀐 캐릭터를 표시합니다.
+    private NetworkObject lobbyPlayer;
+    private MyEnum.CharacterType spawnedType;
 
     public override void Spawned()
-    {
-        base.Spawned();
-
-        RegisterButtonEvents();
-    }
-    
-    public override void Despawned(NetworkRunner runner, bool hasState)
-    {
-        base.Despawned(runner, hasState);
-
-        UnRegisterButtonEvents();
-    }
-
-    void OnButtonSelected(MyEnum.CharacterType type)
-    {
-        Debug.Log($"ĳ���� ���� ��ư: {type}");
-
-        if (GameManager.Instance.MyCharacterType == MyEnum.CharacterType.None)
-            RPC_OnSelectCharacter(type);
-        else
-            RPC_OnSelectCharacter(type, GameManager.Instance.MyCharacterType);
-        
-        GameManager.Instance.SetMyCharacter(type);
-        NetworkGameManager.Instance.SetCharacter(GameManager.Instance.MyPlayerId, type);
-
-        OnSelect?.Invoke();
-    }
-
-    [Rpc(RpcSources.All, RpcTargets.All)]
-    public void RPC_OnSelectCharacter(MyEnum.CharacterType newType, MyEnum.CharacterType prevType = MyEnum.CharacterType.None)
-    {
-        if (prevType != MyEnum.CharacterType.None)
-            BlockCharacterButton(prevType, false);
-
-        BlockCharacterButton(newType, true);
-    }
-
-    void BlockCharacterButton(MyEnum.CharacterType type, bool isBlock)
-    {
-        switch (type)
-        {
-            case MyEnum.CharacterType.Rabbit:
-                rabbit.Blocked(isBlock);
-                break;
-            case MyEnum.CharacterType.Bear:
-                bear.Blocked(isBlock);
-                break;
-            case MyEnum.CharacterType.Mouse:
-                mouse.Blocked(isBlock);
-                break;
-            case MyEnum.CharacterType.Frog:
-                frog.Blocked(isBlock);
-                break;
-        }
-    }
-
-    private void RegisterButtonEvents()
     {
         rabbit.OnClick += OnButtonSelected;
         bear.OnClick += OnButtonSelected;
@@ -75,11 +22,59 @@ public class SelectCharacterUI : NetworkBehaviour
         frog.OnClick += OnButtonSelected;
     }
 
-    private void UnRegisterButtonEvents()
+    public override void Despawned(NetworkRunner runner, bool hasState)
     {
         rabbit.OnClick -= OnButtonSelected;
         bear.OnClick -= OnButtonSelected;
         mouse.OnClick -= OnButtonSelected;
         frog.OnClick -= OnButtonSelected;
+    }
+
+    private void OnButtonSelected(MyEnum.CharacterType type)
+    {
+        var manager = NetworkGameManager.Instance;
+        if (manager != null)
+            manager.RPC_SelectCharacter(type);
+    }
+
+    private void UpdateLobbyPlayer(MyEnum.CharacterType type)
+    {
+        if (type == spawnedType || SceneManager.GetActiveScene().name != NetworkGameManager.SceneName.Lobby.ToString())
+            return;
+
+        spawnedType = type;
+        if (lobbyPlayer != null && lobbyPlayer.IsValid && lobbyPlayer.HasStateAuthority)
+        {
+            Runner.Despawn(lobbyPlayer);
+            lobbyPlayer = null;
+        }
+
+        if (type == MyEnum.CharacterType.None)
+            return;
+
+        var root = GameObject.FindWithTag("Spawn");
+        if (root != null && root.TryGetComponent(out PlayerSpawner spawner))
+            lobbyPlayer = spawner.SpawnCharacter(Runner);
+    }
+
+    public override void Render()
+    {
+        var manager = NetworkGameManager.Instance;
+        var game = GameManager.Instance;
+        if (manager == null || game == null)
+            return;
+
+        var selected = manager.GetCharacter(Runner.LocalPlayer);
+        if (game.MyCharacterType != selected)
+        {
+            game.SetMyCharacter(selected);
+            OnSelect?.Invoke();
+        }
+        UpdateLobbyPlayer(selected);
+
+        rabbit.Blocked(manager.IsCharacterTaken(MyEnum.CharacterType.Rabbit));
+        bear.Blocked(manager.IsCharacterTaken(MyEnum.CharacterType.Bear));
+        mouse.Blocked(manager.IsCharacterTaken(MyEnum.CharacterType.Mouse));
+        frog.Blocked(manager.IsCharacterTaken(MyEnum.CharacterType.Frog));
     }
 }

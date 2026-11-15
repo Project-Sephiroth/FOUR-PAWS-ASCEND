@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.Events;
 public class GameManager : MonoBehaviour
 {
@@ -15,15 +15,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public int MyPlayerId { get; set; }
-
     public MyEnum.CharacterType MyCharacterType { get; private set; }
     public UnityAction OnCharacterChanged;
     public void SetMyCharacter(MyEnum.CharacterType type)
     {
         MyCharacterType = type;
         OnCharacterChanged?.Invoke();
-        Debug.Log($"GameManager ¿¡¼­ ³ªÀÇ Ä³¸¯ÅÍ¸¦ {type} À¸·Î º¯°æÇß½À´Ï´Ù");
+        Debug.Log($"GameManager ì—ì„œ ë‚˜ì˜ ìºë¦­í„°ë¥¼ {MyCharacterType} ìœ¼ë¡œ ë³€ê²½í–ˆìŠµë‹ˆë‹¤");
+
     }
 
     public const int MaxPlayerCount = 4;
