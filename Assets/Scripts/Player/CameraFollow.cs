@@ -21,6 +21,12 @@ public class CameraFollow : MonoBehaviour
         Instance = this;
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
+
     private void LateUpdate()
     {
         if (target == null)

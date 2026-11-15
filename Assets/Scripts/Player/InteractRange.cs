@@ -1,48 +1,38 @@
-using Fusion;
 using System.Collections.Generic;
+using Fusion;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class InteractRange : NetworkBehaviour
 {
-    public event UnityAction<GameObject> OnDetect;
+    private readonly Dictionary<Collider2D, GameObject> contacts = new();
 
-    private readonly HashSet<GameObject> targets = new();
     public bool Contains(GameObject target)
     {
-        return target != null && targets.Contains(target);
+        foreach (var contact in contacts)
+            if (contact.Value == target && IsInRange(contact.Key, target))
+                return true;
+        return false;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void CopyTargetsTo(HashSet<GameObject> targets)
+    {
+        foreach (var contact in contacts)
+            if (IsInRange(contact.Key, contact.Value))
+                targets.Add(contact.Value);
+    }
+
+    private static bool IsInRange(Collider2D collider, GameObject target) =>
+        collider != null && collider.isActiveAndEnabled && target != null && target.activeInHierarchy;
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (Object == null || !Object.IsValid || !HasStateAuthority)
             return;
-
-        //Interactable 이 있을 경우 해당 개체를 반환
-        IInteractable interactable = collision.GetComponent<IInteractable>();
-
-        if (interactable == null)
-            return;
-
-        GameObject target = collision.gameObject;
-
-        if (!targets.Add(target))
-            return;
-
-        Debug.Log($"InteractRange 가 {collision.gameObject} 를 감지");
-        OnDetect?.Invoke(collision.gameObject);
+        if (other.GetComponentInParent<IInteractable>() is Component target)
+            contacts[other] = target.gameObject;
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (Object == null || !Object.IsValid || !HasStateAuthority)
-            return;
+    private void OnTriggerExit2D(Collider2D other) => contacts.Remove(other);
 
-        targets.Remove(collision.gameObject);
-    }
-
-    public override void Despawned(NetworkRunner runner, bool hasState)
-    {
-        targets.Clear();
-    }
+    public override void Despawned(NetworkRunner runner, bool hasState) => contacts.Clear();
 }

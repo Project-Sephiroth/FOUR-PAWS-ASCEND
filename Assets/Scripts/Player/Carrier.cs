@@ -1,109 +1,57 @@
 using Fusion;
-using System.Security.Cryptography;
 using UnityEngine;
 
-/// <summary>
-/// Carriable 을 머리 위에 갖습니다. Carrier 의 local 에서만 발현 됩니다.
-/// </summary>
 public class Carrier : Interactor
 {
-    [SerializeField] private Head head; //나의 머리
-    public Head Head => head; //다른 객체에서 나의 머리 확인 가능
+    [SerializeField] private Head head;
+    public Head Head => head;
 
-    [Networked, OnChangedRender(nameof(ApplyPassenger))]
-    public Passenger CurPassenger { get; set; }
-    Passenger appliedPassenger;
+    protected override bool CanShowInteractionOutline => CurPassenger == null;
 
-    public override void Spawned()
-    {
-        base.Spawned();
-
-        ApplyPassenger();
-    }
-
-    public override void Despawned(NetworkRunner runner, bool hasState)
-    {
-        base.Despawned(runner, hasState);
-    }
+    [Networked] public Passenger CurPassenger { get; private set; }
 
     protected override void TryIntetact()
     {
-        base.TryIntetact();
+        if (CurPassenger != null)
+        {
+            OnPassengerDrop();
+            return;
+        }
 
-        TryCarry();
+        base.TryIntetact();
     }
 
     public void TryCarry()
     {
-        if (!HasStateAuthority)
-            return;
-
-        //탈 수 있음 속성이 없거나 이미 타고 있다면 return
-        if (curClick == null)
-            return; 
-
-        var newPassenger = curClick.GetComponent<Passenger>();
-
-        if (newPassenger == null || newPassenger == CurPassenger)
-            return;
-
-        Carry(newPassenger);
+        if (curClick != null)
+            TryCarry(curClick.GetComponentInParent<Passenger>());
     }
 
-    /// <summary>
-    /// Passenger 를 설정합니다
-    /// </summary>
-    /// <param name="rider"></param>
-    private void Carry(Passenger passenger)
+    public void TryCarry(Passenger passenger)
     {
-        if (!HasStateAuthority || passenger == null)
+        if (!HasStateAuthority || CurPassenger != null || passenger == null || Head == null)
             return;
 
-        //현재 탑승하고 있는 rider 가 있으면 내립니다
-        if (CurPassenger != null)
-            OnPassengerDrop();
+        if (passenger.Object == null || !passenger.Object.IsValid || !passenger.CanBeCarried || passenger.IsCarried)
+            return;
 
         CurPassenger = passenger;
-
-        ApplyPassenger();
+        passenger.RPC_RequestCarry(this);
     }
 
     public void OnPassengerDrop()
     {
-        if (!HasStateAuthority)
+        if (!HasStateAuthority || CurPassenger == null)
             return;
 
-        if (CurPassenger == null)
-            return;
-
-        CurPassenger = null;
-        ApplyPassenger();
+        CurPassenger.RPC_RequestDrop(this);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RequestPassengerDrop(Passenger passenger, RpcInfo info = default)
     {
-        if (passenger == null)
-            return;
-
-        if (CurPassenger != passenger)
-            return;
-
-        //실제 탑승자만 하차 요청 가능
-        if (info.Source != passenger.Object.StateAuthority)
-            return;
-
-        OnPassengerDrop();
-    }
-
-    /// <summary>
-    /// 동기화된 탑승 상태를 각 Runner에서 적용합니다.
-    /// </summary>
-    private void ApplyPassenger()
-    {
-        if (appliedPassenger == CurPassenger)
-            return;
-
-        appliedPassenger = CurPassenger;
+        if (passenger == CurPassenger && passenger != null &&
+            (Runner.IsSinglePlayer || info.Source == passenger.Object.StateAuthority))
+            CurPassenger = null;
     }
 }

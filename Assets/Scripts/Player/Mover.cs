@@ -2,7 +2,7 @@ using Fusion;
 using UnityEngine;
 
 /// <summary>
-/// ÇÃ·¹ÀÌ¾î¸¦ ¿òÁ÷ÀÔ´Ï´Ù.
+/// í”Œë ˆì´ì–´ë¥¼ ì›€ì§ì…ë‹ˆë‹¤.
 /// </summary>
 public class Mover : NetworkBehaviour
 {
@@ -11,13 +11,20 @@ public class Mover : NetworkBehaviour
     private PlayerInput input;
     private Rigidbody2D rb;
     private Animator anim;
+    private Passenger passenger;
 
-    [Header("ÀÌµ¿")]
+    [Networked] private NetworkBool FacesLeft { get; set; }
+    [Networked] private NetworkBool IsWalking { get; set; }
+    [Networked] private NetworkBool IsJumping { get; set; }
+    public bool FacesLeftNow => FacesLeft;
+    public void SetDoubleJump(bool enabled) => canDoubleJump = enabled;
+
+    [Header("ì´ë™")]
     [SerializeField] private float speed = 2f;
 
     public bool CanMove = true;
 
-    [Header("Á¡ÇÁ")]
+    [Header("ì í”„")]
     [SerializeField] private float jumpForce = 5f;
 
     public bool CanJump = true;
@@ -25,12 +32,12 @@ public class Mover : NetworkBehaviour
     [SerializeField] private bool canDoubleJump = false;
     private bool doubleJumped = false;
 
-    [Header("¶¥ Ã¼Å©")]
+    [Header("ë•… ì²´í¬")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius = 0.15f;
     [SerializeField] private LayerMask groundLayer;
 
-    [Header("¾Ö´Ï¸ŞÀÌ¼Ç")]
+    [Header("ì• ë‹ˆë©”ì´ì…˜")]
     [SerializeField] private SpriteRenderer model;
 
     #endregion
@@ -41,23 +48,53 @@ public class Mover : NetworkBehaviour
         rb = GetComponent<Rigidbody2D>();
         input = GetComponent<PlayerInput>();
         anim = GetComponent<Animator>();
+        passenger = GetComponent<Passenger>();
+        tongue = GetComponentInChildren<Tongue>(true);
+        thrower = GetComponentInChildren<Thrower>(true);
     }
+
+    private Tongue tongue;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void ConfigurePlayerContacts()
+    {
+        int bodyLayer = LayerMask.NameToLayer("Player");
+        int headLayer = LayerMask.NameToLayer("Head");
+        if (bodyLayer < 0 || headLayer < 0)
+            return;
+
+        Physics2D.IgnoreLayerCollision(bodyLayer, bodyLayer);
+        Physics2D.IgnoreLayerCollision(bodyLayer, headLayer);
+        Physics2D.IgnoreLayerCollision(headLayer, headLayer);
+    }
+    private Thrower thrower;
 
     public override void Spawned()
     {
-        input.enabled = HasStateAuthority;
+        if (input != null)
+            input.enabled = HasStateAuthority;
     }
 
     public override void FixedUpdateNetwork()
     {
-        //¾ÆÁ÷ ³×Æ®¿öÅ© Spawn ÀüÀÌ¸é ½ÇÇàÇÏÁö ¾ÊÀ½
-        if (Object == null || !HasStateAuthority || input == null)
+        //ì•„ì§ ë„¤íŠ¸ì›Œí¬ Spawn ì „ì´ë©´ ì‹¤í–‰í•˜ì§€ ì•ŠìŒ
+        if (Object == null || !HasStateAuthority || input == null || rb == null)
             return;
 
-        if (CanMove)
-            Move(input.MoveInput);
-        if (CanJump)
+        if (passenger != null && (passenger.IsCarried || passenger.IsFlying))
+        {
+            IsWalking = false;
+            IsJumping = false;
+            return;
+        }
+
+        bool actionLocksMovement = (tongue != null && tongue.IsTongueActive) ||
+            (thrower != null && thrower.LocksMovement);
+        Move(CanMove && !actionLocksMovement ? input.MoveInput : Vector2.zero);
+        if (CanJump && !actionLocksMovement)
             Jump(input.JumpInput);
+        else
+            input.JumpInput = false;
     }
 
     #endregion
@@ -66,71 +103,65 @@ public class Mover : NetworkBehaviour
 
     private void Move(Vector2 moveInput)
     {
-        if (moveInput.magnitude > 0)
-        {
-            anim.SetBool("IsWalk", true);
-            RPC_FlipModel(moveInput.x < 0);
-        }
-        else
-            anim.SetBool("IsWalk", false);
+        IsWalking = Mathf.Abs(moveInput.x) > 0.01f;
+        if (IsWalking)
+            FacesLeft = moveInput.x < 0f;
 
         rb.linearVelocity = new Vector2(moveInput.x * speed, rb.linearVelocity.y);
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_FlipModel(bool doFlip)
+    public override void Render()
     {
-        model.flipX = doFlip;
+        if (model != null)
+            model.flipX = FacesLeft;
+        if (anim != null)
+        {
+            anim.SetBool("IsWalk", IsWalking);
+            anim.SetBool("IsJump", IsJumping);
+        }
     }
 
     private void Jump(bool jumpInput)
     {
         bool isGrounded = IsGrounded();
 
-        //ÂøÁöÇß´Ù¸é ´õºíÁ¡ÇÁ ÃÊ±âÈ­
+        IsJumping = !isGrounded;
         if (isGrounded)
-        {
-            anim.SetBool("IsJump", false);
             doubleJumped = false;
-        }
-        else
-            anim.SetBool("IsJump", true);
 
         if (!jumpInput)
             return;
 
         input.JumpInput = false;
 
-        if (!CanJump)
-            return;
-
-        // °øÁß¿¡ ÀÖ´Â °æ¿ì
         if (!isGrounded)
         {
-            //´õºí Á¡ÇÁ¸¦ ÇÒ ¼ö ¾ø°Å³ª ÀÌ¹Ì ´õºí Á¡ÇÁ ÁßÀÌ¶ó¸é ¸®ÅÏ
+            //ë”ë¸” ì í”„ë¥¼ í•  ìˆ˜ ì—†ê±°ë‚˜ ì´ë¯¸ ë”ë¸” ì í”„ ì¤‘ì´ë¼ë©´ ë¦¬í„´
             if (!canDoubleJump || doubleJumped)
                 return;
 
             doubleJumped = true;
         }
 
-        //Á¡ÇÁ
+        IsJumping = true;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
     }
 
     /// <summary>
-    /// ¶¥¿¡ ÂøÁöÇß´ÂÁö¸¦ ÆÇ°¡¸§ÇÏ±â À§ÇØ ¹ßÂÊ¿¡ groundCheck ¸¦ µÎ°í ÇØ´ç ±âÁØÀ¸·Î ·¹ÀÌ¾î¸¦ °¨ÁöÇÏ´Â µ¿±×¶õ ·¹ÀÌÀú¸¦ ½õ´Ï´Ù
+    /// ë•…ì— ì°©ì§€í–ˆëŠ”ì§€ë¥¼ íŒê°€ë¦„í•˜ê¸° ìœ„í•´ ë°œìª½ì— groundCheck ë¥¼ ë‘ê³  í•´ë‹¹ ê¸°ì¤€ìœ¼ë¡œ ë ˆì´ì–´ë¥¼ ê°ì§€í•˜ëŠ” ë™ê·¸ë€ ë ˆì´ì €ë¥¼ ì©ë‹ˆë‹¤
     /// </summary>
     /// <returns></returns>
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer) != null;
+        int walkableLayers = groundLayer.value & ~LayerMask.GetMask("Head", "Player");
+        return groundCheck != null && rb.linearVelocity.y <= 0.01f &&
+            Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, walkableLayers) != null;
     }
 
 #if UNITY_EDITOR_WIN
 
     /// <summary>
-    /// ¶¥ Ã¼Å©¸¦ À§ÇÑ ·¹ÀÌÀú¸¦ ½Ã°¢È­
+    /// ë•… ì²´í¬ë¥¼ ìœ„í•œ ë ˆì´ì €ë¥¼ ì‹œê°í™”
     /// </summary>
     private void OnDrawGizmosSelected()
     {

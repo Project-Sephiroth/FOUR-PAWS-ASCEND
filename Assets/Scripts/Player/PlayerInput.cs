@@ -1,7 +1,7 @@
-using Fusion;
+ï»¿using Fusion;
 using UnityEngine;
 
-//°¢ ·ÎÄÃ¿¡¼­ Å°º¸µå ÀÔ·ÂÀ» °¨ÁöÇÕ´Ï´Ù
+//ê° ë¡œì»¬ì—ì„œ í‚¤ë³´ë“œ ì…ë ¥ì„ ê°ì§€í•©ë‹ˆë‹¤
 public class PlayerInput : NetworkBehaviour
 {
     public Vector2 MoveInput;
@@ -12,14 +12,24 @@ public class PlayerInput : NetworkBehaviour
 
     private void Update()
     {
-        if (!HasStateAuthority)
+        if (Object == null || !Object.IsValid || !HasStateAuthority)
             return;
 
+        if (!LocalMultiplayerDebug.AllowsInput(Object))
+        {
+            MoveInput = Vector2.zero;
+            JumpInput = false;
+            return;
+        }
         if (CanMoveInput)
             GetMoveInput();
+        else
+            MoveInput = Vector2.zero;
 
         if (CanJumpInput)
             GetJumpInput();
+        else
+            JumpInput = false;
     }
 
     void GetMoveInput()

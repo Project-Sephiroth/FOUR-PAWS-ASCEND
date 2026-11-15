@@ -1,107 +1,225 @@
 using Fusion;
 using UnityEngine;
 
-/// <summary>
-/// Liftable 에 탈 수 있습니다.
-/// </summary>
 public class Passenger : NetworkBehaviour, ICarriable, IInteractable
 {
-    private PlayerInput input; //input 을 받는 Player 객체
-    private Carrier curCarrier; //현재 타고 있는 태울 수 있는 객체
-    
+    [SerializeField] private InteractableOutline outlineMat;
+
+    [Networked] private Carrier CurrentCarrier { get; set; }
+    [SerializeField] private bool puppetKey;
+    [Networked] public Thrower CurrentLifter { get; private set; }
+    public Carrier RabbitCarrier => CurrentCarrier;
+    public bool CanBeCarried => CanRide || puppetKey;
+    public bool IsCarried => CurrentCarrier != null || CurrentLifter != null;
+    [Networked] public NetworkBool CanRide { get; private set; }
+
+    private PlayerInput input;
     private Rigidbody2D rb;
-    private Collider2D col;
+    private bool physicsSuppressed;
+    private bool wasSimulated;
+    private bool attached;
+    private Transform originalParent;
+    [Networked] private TickTimer Flight { get; set; }
+    public bool IsFlying => Flight.IsRunning;
+    private float originalGravity;
 
-    private InteractableOutline outlineMat;
-
-    public bool IsCarried => curCarrier != null;
-
-    public void OnEnable()
+    private void Awake()
     {
         input = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody2D>();
-        col = GetComponent<Collider2D>();
+        originalParent = transform.parent;
     }
 
-    private void Update()
+    public MyEnum.CharacterType CharacterType { get; private set; }
+
+    public void SetCharacterType(MyEnum.CharacterType type)
     {
-        if (!HasStateAuthority || curCarrier == null)
-            return;
-
-        if (input != null && input.JumpInput) //인풋을 받을 수 있고 점프했다면
-            RequestDrop(); //내리기
+        CharacterType = type;
+        CanRide = type == MyEnum.CharacterType.Mouse || type == MyEnum.CharacterType.Frog;
     }
 
-    public void OnInteract(Interactor interactor)
-    {
-        if (interactor == null)
-            return;
-
-        Carrier carrier = interactor.GetComponent<Carrier>();
-
-        if (carrier == null)
-            return;
-
-        OnCarry(carrier);
-    }
-
-    /// <summary>
-    /// 태울 수 있는 객체에 탑승합니다
-    /// </summary>
-    public void OnCarry(Carrier carrier)
-    {
-        if (curCarrier != null || carrier == null)
-            return;
-
-        Debug.Log($"{carrier.gameObject.name} 에 {gameObject.name} 이 탑승");
-
-        curCarrier = carrier;
-        if (input != null)
-            input.CanMoveInput = false;
-
-        transform.SetParent(curCarrier.Head.transform);
-        transform.position = curCarrier.Head.transform.position;
-
-        col.isTrigger = true;
-        rb.simulated = false;
-    }
-
-    /// <summary>
-    /// 현재 탑승한 개체에서 내립니다
-    /// </summary>
-    public void OnDrop()
-    {
-        if (curCarrier == null)
-            return;
-
-        transform.SetParent(null, true);
-        transform.position = curCarrier.transform.position;
-
-        if (input != null)
-            input.CanMoveInput = true;
-        curCarrier = null;
-
-        col.isTrigger = false;
-        rb.simulated = true;
-    }
-
-    private void RequestDrop()
+    public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority)
             return;
 
-        if (curCarrier == null)
+        if (Flight.Expired(Runner))
+        {
+            Flight = default;
+            rb.gravityScale = originalGravity;
+        }
+
+        if (IsFlying)
             return;
 
-        curCarrier.RPC_RequestPassengerDrop(this);
+        if (!IsCarried)
+        {
+            if (attached)
+                Detach();
+            return;
+        }
+
+        if (input != null && input.JumpInput)
+        {
+            input.JumpInput = false;
+            OnDrop();
+            return;
+        }
+
+
     }
 
+    public override void Render()
+    {
+        ApplyPhysics();
+    }
+
+    public void OnInteract(Interactor interactor)
+    {
+        if (interactor is Carrier carrier)
+            OnCarry(carrier);
+        else if (interactor is Thrower thrower)
+            thrower.TryLift(this);
+    }
+
+    public void OnCarry(Carrier carrier)
+    {
+        if (carrier != null && carrier.HasStateAuthority)
+            carrier.TryCarry(this);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RequestCarry(Carrier carrier, RpcInfo info = default)
+    {
+        if (carrier == null || (!Runner.IsSinglePlayer && info.Source != carrier.Object.StateAuthority))
+            return;
+
+        if (!CanBeCarried || rb == null || IsFlying || carrier.Head == null || IsCarried)
+        {
+            if (CurrentCarrier != carrier)
+                carrier.RPC_RequestPassengerDrop(this);
+            return;
+        }
+
+        if (input != null)
+            input.JumpInput = false;
+
+        CurrentCarrier = carrier;
+        attached = true;
+        ApplyPhysics();
+        transform.SetParent(carrier.Head.transform, true);
+        transform.localPosition = Vector3.zero;
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RequestDrop(Carrier carrier, RpcInfo info = default)
+    {
+        if (carrier != null && CurrentCarrier == carrier &&
+            (Runner.IsSinglePlayer || info.Source == carrier.Object.StateAuthority))
+            OnDrop();
+    }
+
+    public void OnDrop()
+    {
+        if (!HasStateAuthority || !IsCarried)
+            return;
+
+        Carrier carrier = CurrentCarrier;
+        Thrower lifter = CurrentLifter;
+        CurrentCarrier = null;
+        CurrentLifter = null;
+        Detach();
+        if (carrier != null)
+            carrier.RPC_RequestPassengerDrop(this);
+        if (lifter != null)
+            lifter.RPC_ClearLift(this);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_Lift(Thrower lifter, RpcInfo info = default)
+    {
+        if (lifter == null || (!Runner.IsSinglePlayer && info.Source != lifter.Object.StateAuthority))
+            return;
+
+        if (!CanBeCarried || rb == null || IsFlying || IsCarried || lifter.HoldPoint == null)
+        {
+            if (CurrentLifter != lifter)
+                lifter.RPC_ClearLift(this);
+            return;
+        }
+
+        if (input != null)
+            input.JumpInput = false;
+        CurrentLifter = lifter;
+        attached = true;
+        ApplyPhysics();
+        transform.SetParent(lifter.HoldPoint, true);
+        transform.localPosition = Vector3.zero;
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_DropLift(Thrower lifter, RpcInfo info = default)
+    {
+        if (lifter != null && CurrentLifter == lifter && (Runner.IsSinglePlayer || info.Source == lifter.Object.StateAuthority))
+            OnDrop();
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_Throw(Thrower lifter, Vector2 destination, float speed, float height, RpcInfo info = default)
+    {
+        if (lifter == null || CurrentLifter != lifter || (!Runner.IsSinglePlayer && info.Source != lifter.Object.StateAuthority))
+            return;
+
+        Vector2 start = lifter.HoldPoint.position;
+        OnDrop();
+        rb.position = start;
+
+        Vector2 delta = destination - start;
+        float duration = Mathf.Max(Runner.DeltaTime, delta.magnitude / Mathf.Max(0.1f, speed));
+        height = Mathf.Max(0.12f, height);
+        originalGravity = rb.gravityScale;
+        rb.gravityScale = 8f * height / (duration * duration * Mathf.Max(0.01f, -Physics2D.gravity.y));
+        rb.linearVelocity = (delta + Vector2.up * (4f * height)) / duration;
+        Flight = TickTimer.CreateFromSeconds(Runner, duration);
+    }
+
+    private void Detach()
+    {
+        attached = false;
+        if (transform.parent != originalParent)
+            transform.SetParent(originalParent, true);
+
+        if (input != null)
+            input.JumpInput = false;
+
+        ApplyPhysics();
+    }
+
+    private void ApplyPhysics()
+    {
+        if (rb == null || physicsSuppressed == IsCarried)
+            return;
+
+        physicsSuppressed = IsCarried;
+        if (physicsSuppressed)
+        {
+            wasSimulated = rb.simulated;
+            if (HasStateAuthority && rb.bodyType == RigidbodyType2D.Dynamic)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+            }
+            rb.simulated = false;
+        }
+        else
+        {
+            rb.simulated = wasSimulated;
+        }
+    }
 
     public void SetOutlineMat(bool isOn)
     {
-        if (outlineMat == null)
-            return;
-
-        outlineMat.SetOutline(isOn);
+        if (outlineMat != null)
+            outlineMat.SetOutline(isOn);
     }
 }

@@ -5,9 +5,9 @@ using static IMoveable;
 public class Thrower : Interactor
 {
     [SerializeField] private Mover mover;
-    [SerializeField] private SpriteRenderer model; //¸ğµ¨ÀÌ ¹Ù¶óº¸´Â ¹æÇâ¿¡ µû¶ó ´øÁö±â ¶§¹®¿¡ ÂüÁ¶
+    [SerializeField] private SpriteRenderer model; //ëª¨ë¸ì´ ë°”ë¼ë³´ëŠ” ë°©í–¥ì— ë”°ë¼ ë˜ì§€ê¸° ë•Œë¬¸ì— ì°¸ì¡°
 
-    [Header("´øÁö±â ¼³Á¤")]
+    [Header("ë˜ì§€ê¸° ì„¤ì •")]
     [SerializeField] private float minDistance = 1f;
     [SerializeField] private float maxDistance = 3f;
     [SerializeField] private float minAngle = 0f;
@@ -15,18 +15,24 @@ public class Thrower : Interactor
     [SerializeField] private float throwSpeed = 5f;
     [SerializeField] private float cycleTime = 2f;
 
-    [Header("¹Ì¸®º¸±â")]
+    [Header("ë¯¸ë¦¬ë³´ê¸°")]
     [SerializeField] private Transform throwArrow;
     [SerializeField] private float arrowBaseLength = 1f;
 
     private Vector3 arrowOriginalScale;
-    private Vector3 originalHoldPosition; //¾Ö´Ï¸ŞÀÌ¼Ç ÇÃ¸³¿¡ ´ëºñ
+    private Vector3 originalHoldPosition; //ì• ë‹ˆë©”ì´ì…˜ í”Œë¦½ì— ëŒ€ë¹„
 
     private float throwDistance;
     private float throwAngle;
     private float aimDirection;
 
     private float aimTimer;
+    [SerializeField] private RockMaker rockMaker;
+    private bool waitingForHold;
+    [Networked] private TickTimer ThrowRecovery { get; set; }
+    public bool LocksMovement => waitingForHold || aimState != AimState.None || LiftedAlly != null ||
+        !ThrowRecovery.ExpiredOrNotRunning(Runner) || (rockMaker != null && rockMaker.IsPreparing);
+    [Networked] private NetworkBool IsAiming { get; set; }
     private enum AimState
     {
         None,
@@ -36,12 +42,54 @@ public class Thrower : Interactor
 
     private AimState aimState = AimState.None;
     private MovingObject curMovingObject;
+    [Networked] public MovingObject CarriedKey { get; private set; }
+    [Networked] private Passenger LiftedAlly { get; set; }
+    private float keyHoldDeadline;
 
+    public void TryCarryKey(MovingObject key)
+    {
+        if (!HasStateAuthority || CarriedKey != null || LiftedAlly != null ||
+            curMovingObject != null || key == null || holdPoint == null)
+            return;
+
+        CarriedKey = key;
+        keyHoldDeadline = Time.time + 3f;
+        key.RPC_RequestHold(this);
+    }
+
+    public void TryLift(Passenger passenger)
+    {
+        if (!HasStateAuthority || CarriedKey != null || LiftedAlly != null ||
+            curMovingObject != null || passenger == null || passenger.IsCarried ||
+            !passenger.CanBeCarried || holdPoint == null)
+            return;
+
+        LiftedAlly = passenger;
+        passenger.RPC_Lift(this);
+        BeginAim();
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_ClearLift(Passenger passenger, RpcInfo info = default)
+    {
+        if (passenger != null && LiftedAlly == passenger && (Runner.IsSinglePlayer || info.Source == passenger.Object.StateAuthority))
+            LiftedAlly = null;
+    }
+
+    private float throwRecoverySeconds = 0.45f;
     [SerializeField] private Animator anim; 
 
     #region Cycle
     private void Awake()
     {
+        if (anim != null && anim.runtimeAnimatorController != null)
+        {
+            foreach (var clip in anim.runtimeAnimatorController.animationClips)
+                if (clip.name == "Bear_Throw")
+                    throwRecoverySeconds = clip.length;
+        }
+        if (rockMaker == null)
+            rockMaker = GetComponentInChildren<RockMaker>(true);
         if (holdPoint != null)
             originalHoldPosition = holdPoint.localPosition;
 
@@ -50,6 +98,9 @@ public class Thrower : Interactor
             arrowOriginalScale = throwArrow.localScale;
             throwArrow.gameObject.SetActive(false);
         }
+
+        interactWithClick = true;
+        interactWithRange = true;
     }
 
     public override void Update()
@@ -57,14 +108,25 @@ public class Thrower : Interactor
         if (Object == null || !Object.IsValid || !HasStateAuthority)
             return;
 
-        //Á¶ÁØ ÁßÀÌ¶ó¸é µÎ ¹øÂ° Å¬¸¯¿¡ ´øÁö±â
+        if (CarriedKey != null && (CarriedKey.GetComponent<Key>().IsConsumed ||
+            (CarriedKey.Holder != this && Time.time >= keyHoldDeadline)))
+            CarriedKey = null;
+
+        if ((rockMaker != null && rockMaker.IsPreparing) || !ThrowRecovery.ExpiredOrNotRunning(Runner))
+            return;
+
+        //ì¡°ì¤€ ì¤‘ì´ë¼ë©´ ë‘ ë²ˆì§¸ í´ë¦­ì— ë˜ì§€ê¸°
         if (aimState == AimState.None)
         {
-            base.Update();
+            if (waitingForHold && curMovingObject == null)
+                CancelAim();
+
+            if (!waitingForHold)
+                base.Update();
             return;
         }
 
-        if (curMovingObject == null)
+        if (curMovingObject == null && LiftedAlly == null)
         {
             CancelAim();
             return;
@@ -83,33 +145,53 @@ public class Thrower : Interactor
                 break;
         }
 
-        //Å¬¸¯ ½Ã ÇöÀç ´Ü°è È®Á¤
-        if (Input.GetMouseButtonDown(0))
+        //í´ë¦­ ì‹œ í˜„ì¬ ë‹¨ê³„ í™•ì •
+        if (WorldClickPressed())
             ConfirmAim();
     }
 
     protected override void TryIntetact()
     {
+        if (CarriedKey != null)
+            return;
+
+        if (curClick == null && Camera.main != null && rockMaker != null && rockMaker.TryMakeRock(mousePos))
+            return;
+
         base.TryIntetact();
     }
 
-    private void LateUpdate()
+    // ì œì‘ê³¼ ì¡°ì¤€ ì¤‘ì—ëŠ” ìƒˆë¡œ ì§‘ì„ ë¬¼ì²´ë¥¼ í‘œì‹œí•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
+    protected override bool CanShowInteractionOutline => !waitingForHold && aimState == AimState.None &&
+        CarriedKey == null && LiftedAlly == null && (rockMaker == null || !rockMaker.IsPreparing);
+
+    protected override void LateUpdate()
     {
-        if (holdPoint != null && model != null)
-        {
-            Vector3 pos = originalHoldPosition;
+        base.LateUpdate();
+        if (Object == null || !Object.IsValid)
+            return;
 
-            if (model.flipX)
-                pos.x = -pos.x;
-
-            holdPoint.localPosition = pos;
-        }
+        UpdateHoldPoint();
+        if (aimState != AimState.None)
+            aimDirection = FacesLeft() ? -1f : 1f;
 
         if (Object == null || !Object.IsValid || !HasStateAuthority)
             return;
 
         if (aimState != AimState.None)
             UpdateArrow();
+    }
+
+    private bool FacesLeft() => mover != null ? mover.FacesLeftNow : model != null && model.flipX;
+
+    private void UpdateHoldPoint()
+    {
+        if (holdPoint == null)
+            return;
+
+        Vector3 pos = originalHoldPosition;
+        pos.x = Mathf.Abs(pos.x) * (FacesLeft() ? -1f : 1f);
+        holdPoint.localPosition = pos;
     }
 
     private void OnDisable()
@@ -121,54 +203,78 @@ public class Thrower : Interactor
     #region Throw
     public void TryThrow(MovingObject movingObject)
     {
-        //±ÇÇÑÀÌ ¾ø°Å³ª ´øÁú ¿ÀºêÁ§Æ®°¡ ¾øÀ¸¸é ¸®ÅÏ
-        if (movingObject == null)
+        if (!HasStateAuthority || movingObject == null || holdPoint == null ||
+            CarriedKey != null || LiftedAlly != null || waitingForHold || aimState != AimState.None)
             return;
-
-        //Á¶ÁØ ÁßÀÌ¸é ´øÁö±â ½Ãµµ X
-        if (aimState != AimState.None)
-            return;
-
-        if (mover != null) //µé°í ÀÖÀ» ¶§ ÀÌµ¿ Á¦ÇÑ
-        {
-            mover.CanMove = false;
-            mover.CanJump = false;
-        }
 
         curMovingObject = movingObject;
+        waitingForHold = true;
+        movingObject.RPC_RequestHold(this);
+    }
 
-        aimDirection = model.flipX ? -1f : 1f;
+    // ë¬¼ì²´ê°€ ì†ì— ë“¤ì–´ì™”ë‹¤ëŠ” ì‘ë‹µì„ ë°›ê³  ë‚˜ì„œì•¼ ì¡°ì¤€ì„ ì‹œì‘í•©ë‹ˆë‹¤. ë‹¤ë¥¸ ë¬¼ì²´ì˜ ì‘ë‹µì´ë‚˜ ê±°ì ˆëœ ìš”ì²­ì€ ì¡°ì¤€ ìƒíƒœë¡œ ë„˜ì–´ê°€ì§€ ì•ŠìŠµë‹ˆë‹¤.
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_HoldResult(MovingObject movingObject, bool accepted, RpcInfo info = default)
+    {
+        if (movingObject == null || (!Runner.IsSinglePlayer && info.Source != movingObject.Object.StateAuthority))
+            return;
 
+        if (movingObject == CarriedKey)
+        {
+            if (!accepted)
+                CarriedKey = null;
+            return;
+        }
+
+        if (!waitingForHold || curMovingObject != movingObject)
+            return;
+
+        waitingForHold = false;
+        if (!accepted)
+        {
+            curMovingObject = null;
+            return;
+        }
+
+        BeginAim();
+    }
+
+    private void BeginAim()
+    {
+        bool facesLeft = mover != null ? mover.FacesLeftNow : model != null && model.flipX;
+        aimDirection = facesLeft ? -1f : 1f;
         throwDistance = minDistance;
         throwAngle = minAngle;
-
         aimTimer = 0f;
         aimState = AimState.Distance;
-
-        // ¹°Ã¼¸¦ °õÀÇ ¼Õ¿¡ µéµµ·Ï ¿äÃ»
-        TryHold(movingObject.GetComponent<NetworkObject>());
-
-        if (anim != null)
-            anim.SetBool("IsGrab", true);
-
+        IsAiming = true;
         UpdateArrow();
     }
 
     private void Throw()
     {
-        curMovingObject.RPC_RequestMove(MoveType.Parabola, GetDestination(), throwSpeed, GetArcHeight());
-        curMovingObject.RPC_RequestRelease();
-
+        aimDirection = FacesLeft() ? -1f : 1f;
+        UpdateHoldPoint();
+        if (LiftedAlly != null)
+            LiftedAlly.RPC_Throw(this, GetDestination(), throwSpeed, GetArcHeight());
+        else if (curMovingObject != null)
+            curMovingObject.RPC_RequestMove(this, MoveType.Parabola, GetDestination(), throwSpeed, GetArcHeight());
         CancelAim();
+        ThrowRecovery = TickTimer.CreateFromSeconds(Runner, throwRecoverySeconds);
+        RPC_PlayThrow();
+    }
 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_PlayThrow()
+    {
         if (anim != null)
             anim.SetTrigger("Throw");
+    }
 
-        if (mover != null) //ÀÌµ¿ Àç¼³Á¤
-        {
-            mover.CanMove = true;
-            mover.CanJump = true;
-        }
+    public override void Render()
+    {
+        if (anim != null)
+            anim.SetBool("IsGrab", IsAiming || CarriedKey != null || LiftedAlly != null);
     }
 
     private void UpdateDistance()
@@ -190,7 +296,7 @@ public class Thrower : Interactor
     }
 
     /// <summary>
-    /// Àâ°í ÀÖ´Â ¿ÀºêÁ§Æ®°¡ ´øÁ®Áú À§Ä¡¸¦ °è»ê
+    /// ì¡ê³  ìˆëŠ” ì˜¤ë¸Œì íŠ¸ê°€ ë˜ì ¸ì§ˆ ìœ„ì¹˜ë¥¼ ê³„ì‚°
     /// </summary>
     /// <returns></returns>
     private Vector2 GetDestination()
@@ -201,12 +307,12 @@ public class Thrower : Interactor
     }
 
     /// <summary>
-    /// ´øÁö´Â °¢µµ¿¡ µû¸¥ Æ÷¹°¼± ³ôÀÌ °è»ê
+    /// ë˜ì§€ëŠ” ê°ë„ì— ë”°ë¥¸ í¬ë¬¼ì„  ë†’ì´ ê³„ì‚°
     /// </summary>
     /// <returns></returns>
     private float GetArcHeight()
     {
-        float rad = throwAngle * Mathf.Deg2Rad;
+        float rad = Mathf.Clamp(throwAngle, 0f, 89f) * Mathf.Deg2Rad;
 
         return throwDistance * Mathf.Tan(rad) / 4f;
     }
@@ -215,41 +321,35 @@ public class Thrower : Interactor
 
     #region Aim
     /// <summary>
-    /// Å¬¸¯ÇÒ ¶§¸¶´Ù Á¶ÁØ ´Ü°è ÀüÈ¯
+    /// í´ë¦­í•  ë•Œë§ˆë‹¤ ì¡°ì¤€ ë‹¨ê³„ ì „í™˜
     /// </summary>
     private void ConfirmAim()
     {
         switch (aimState)
         {
-            case AimState.Distance: //ÇöÀç °Å¸® È®Á¤ ÈÄ °¢µµ Á¶Àı ½ÃÀÛ
+            case AimState.Distance: //í˜„ì¬ ê±°ë¦¬ í™•ì • í›„ ê°ë„ ì¡°ì ˆ ì‹œì‘
                 aimState = AimState.Angle;
                 aimTimer = 0f;
                 throwAngle = minAngle;
                 break;
 
-            case AimState.Angle: //ÇöÀç °¢µµ È®Á¤ ÈÄ ´øÁö±â
+            case AimState.Angle: //í˜„ì¬ ê°ë„ í™•ì • í›„ ë˜ì§€ê¸°
                 Throw();
                 break;
         }
     }
     
     /// <summary>
-    /// Á¶ÁØ ´Ü°è ÇØÁ¦
+    /// ì¡°ì¤€ ë‹¨ê³„ í•´ì œ
     /// </summary>
-    /// <param name="releaseObject"></param>
-    private void CancelAim(bool releaseObject = true)
+    private void CancelAim()
     {
-        if (releaseObject && curMovingObject != null && Object != null && Object.IsValid)
-            curMovingObject.RPC_RequestRelease();
-
         curMovingObject = null;
+        waitingForHold = false;
         aimState = AimState.None;
+        IsAiming = false;
         aimTimer = 0f;
-
         HideArrow();
-
-        if (anim != null)
-            anim.SetBool("IsGrab", false);
     }
 
     private void UpdateArrow()
@@ -260,15 +360,15 @@ public class Thrower : Interactor
         if (!throwArrow.gameObject.activeSelf)
             throwArrow.gameObject.SetActive(true);
 
-        //È­»ìÇ¥ ²¿¸®¸¦ ¼Õ À§Ä¡¿¡ °íÁ¤
+        //í™”ì‚´í‘œ ê¼¬ë¦¬ë¥¼ ì† ìœ„ì¹˜ì— ê³ ì •
         throwArrow.position = holdPoint.position;
 
-        //°¢µµ Á¶Àı
+        //ê°ë„ ì¡°ì ˆ
         float angle = aimDirection > 0f ? throwAngle : 180f - throwAngle;
 
         throwArrow.rotation = Quaternion.Euler(0f, 0f, angle);
 
-        //XÃà ½ºÄÉÀÏ·Î ±æÀÌ Á¶Àı
+        //Xì¶• ìŠ¤ì¼€ì¼ë¡œ ê¸¸ì´ ì¡°ì ˆ
         float scaleX = throwDistance / Mathf.Max(0.01f, arrowBaseLength);
 
         throwArrow.localScale = new Vector3(arrowOriginalScale.x * scaleX, arrowOriginalScale.y, arrowOriginalScale.z);

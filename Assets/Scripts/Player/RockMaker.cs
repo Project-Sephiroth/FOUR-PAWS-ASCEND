@@ -3,46 +3,55 @@ using UnityEngine;
 
 public class RockMaker : NetworkBehaviour
 {
-    [SerializeField] LayerMask groundLayer;
-    [SerializeField] MovingObject rockPrefab;
-    [SerializeField] Thrower thrower;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private MovingObject rockPrefab;
+    [SerializeField] private Thrower thrower;
+    [SerializeField] private Animator animator;
+    [SerializeField] private AnimationClip makeRockClip;
 
-    Vector2 mousePos;
-    GameObject curClick;
-    MovingObject curRock;
+    private MovingObject curRock;
+    [Networked] private TickTimer MakeTimer { get; set; }
+    public bool IsPreparing => MakeTimer.IsRunning;
 
-    private void Update()
+    public bool TryMakeRock(Vector2 mousePosition)
     {
-        if (!Input.GetMouseButtonDown(0))
-            return;
+        if (!HasStateAuthority || IsPreparing || (curRock != null && curRock.Object != null && curRock.Object.IsValid) ||
+            rockPrefab == null || thrower == null || thrower.HoldPoint == null ||
+            Physics2D.OverlapPoint(mousePosition, groundLayer) == null)
+            return false;
 
-        mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        Collider2D hit = Physics2D.OverlapPoint(mousePos, groundLayer);
-
-        if (hit == null)
-            return;
-
-        Debug.Log($"RockMaker: ground {hit.gameObject.name} �� Ŭ��");
-
-        curClick = hit.gameObject;
-
-        if (curClick != null && curRock == null)
-            MakeRock();
+        MakeTimer = TickTimer.CreateFromSeconds(Runner, makeRockClip != null ? makeRockClip.length : 0f);
+        if (animator != null && makeRockClip != null)
+            RPC_PlayMakeRock();
+        else
+            SpawnPreparedRock();
+        return true;
     }
 
-    void MakeRock()
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_PlayMakeRock()
     {
-        if (!HasStateAuthority)
+        if (animator != null)
+            animator.SetTrigger("MakeRock");
+    }
+
+    // 화면이 꺼져 애니메이션 이벤트를 놓친 경우에도 네트워크 시간이 끝나면 돌을 완성합니다.
+    public override void FixedUpdateNetwork()
+    {
+        if (HasStateAuthority && MakeTimer.Expired(Runner))
+            SpawnPreparedRock();
+    }
+
+    public void SpawnPreparedRock()
+    {
+        if (Object == null || !Object.IsValid || !HasStateAuthority || !IsPreparing)
+            return;
+        MakeTimer = default;
+        if (!rockPrefab.TryGetComponent(out NetworkObject prefab))
             return;
 
-        if (curRock != null)
-            return;
-
-        NetworkObject obj = Runner.Spawn(rockPrefab.GetComponent<NetworkObject>(), transform.position, transform.rotation);
-        curRock = obj.GetComponent<MovingObject>();
-
-        //������Ʈ Ǯ���� rock �޾ƿ� Ȱ��ȭ 
-        thrower.TryThrow(curRock);
+        var spawned = Runner.Spawn(prefab, thrower.HoldPoint.position, Quaternion.identity);
+        if (spawned != null && spawned.TryGetComponent(out curRock))
+            thrower.TryThrow(curRock);
     }
 }
