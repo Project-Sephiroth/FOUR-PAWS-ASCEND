@@ -13,9 +13,11 @@ namespace FourPaws.PCS.CircuitHack
         public CircuitHackManager manager;public Button launch;public Text result;
         public Button[] singleLaunches; public Button reloadLayout; public bool defaultSingle;
         public EventSystem eventSystem;public InputSystemUIInputModule uiModule;
+        [SerializeField] private bool terminalOnly;
         private InputActionAsset uiActions;private InputActionReference point,click;private AudioClip clip;
         private int completed,cancelled;private bool subscribed;
         private readonly System.Collections.Generic.List<UnityEngine.Events.UnityAction> stageActions=new System.Collections.Generic.List<UnityEngine.Events.UnityAction>();
+        // 1. 화면과 입력 참조를 확인합니다. 2. 퍼즐 전용 클릭 입력을 연결합니다. 3. 본편에서는 데모 시작 창을 숨기고 단말에서 실행할 때만 퍼즐을 표시합니다.
         private void Awake()
         {
             if(!manager||!manager.input||!manager.view||!manager.view.ReferencesValid||!manager.overlay||manager.transform.IsChildOf(manager.overlay.transform)||!launch||!result||!eventSystem||!uiModule||!manager.failureAudio){Debug.LogError("P4 설정 오류: 데모 연결 참조를 검사하세요.",this);enabled=false;return;}
@@ -30,16 +32,40 @@ namespace FourPaws.PCS.CircuitHack
             clip=AudioClip.Create("PCS 회로 충돌음",4410,1,44100,false);var samples=new float[4410];
             for(int i=0;i<samples.Length;i++)samples[i]=Mathf.Sin(i*2*Mathf.PI*180/44100)*.2f*(1f-(float)i/samples.Length);
             clip.SetData(samples,0);manager.failureAudio.clip=clip;
-            manager.overlay.SetActive(false);Subscribe();ShowResult("대기");
+            manager.overlay.SetActive(false);
+            terminalOnly |= HackingConsole.IsGameplayScene(gameObject.scene);
+            if (terminalOnly)
+            {
+                launch.interactable = false;
+                var launcher = transform.Find("PCS_CircuitLauncher");
+                if (launcher != null && !manager.overlay.transform.IsChildOf(launcher))
+                    launcher.gameObject.SetActive(false);
+                else
+                    launch.gameObject.SetActive(false);
+                if (singleLaunches != null)
+                    foreach (var button in singleLaunches)
+                        if (button != null) button.gameObject.SetActive(false);
+                if (reloadLayout != null) reloadLayout.gameObject.SetActive(false);
+            }
+            if (terminalOnly)
+            {
+                manager.view.close.onClick.AddListener(manager.CloseHack);
+                manager.view.restart.onClick.AddListener(manager.RestartStage);
+                manager.view.newHack.gameObject.SetActive(false);
+                return;
+            }
+
+            Subscribe();
+            ShowResult("대기");
         }
         private void Subscribe()
         {
             if(subscribed)return;subscribed=true;launch.onClick.AddListener(Begin);manager.view.close.onClick.AddListener(manager.CloseHack);manager.view.restart.onClick.AddListener(manager.RestartStage);manager.view.newHack.onClick.AddListener(Begin);if(singleLaunches!=null)for(int i=0;i<singleLaunches.Length;i++){int index=i;UnityEngine.Events.UnityAction action=()=>BeginSingle(index);stageActions.Add(action);if(singleLaunches[i])singleLaunches[i].onClick.AddListener(action);}
             if(reloadLayout)reloadLayout.onClick.AddListener(manager.ReloadLayoutAndStart);manager.OnHackCompleted+=Completed;manager.OnHackCancelled+=Cancelled;
         }
-        public void Begin(){if(!isActiveAndEnabled)return;if(defaultSingle&&manager.layouts!=null&&manager.layouts.Length==1)manager.StartSingleStage(manager.layouts[0]);else manager.StartHack();ShowResult(manager.Error==null?"진행 중":manager.Error);}
-        public void BeginSingle(int index){if(!isActiveAndEnabled||manager.layouts==null||index<0||index>=manager.layouts.Length)return;manager.StartSingleStage(manager.layouts[index]);ShowResult(manager.Error==null?"단독 진행 중":manager.Error);}
-        private void Update(){bool ready=manager&&(manager.State==CircuitHackManager.HackState.Closed||manager.State==CircuitHackManager.HackState.Completed);if(launch)launch.interactable=ready;if(singleLaunches!=null)foreach(var button in singleLaunches)if(button)button.interactable=ready;}
+        public void Begin(){if(terminalOnly||!isActiveAndEnabled)return;if(defaultSingle&&manager.layouts!=null&&manager.layouts.Length==1)manager.StartSingleStage(manager.layouts[0]);else manager.StartHack();ShowResult(manager.Error==null?"진행 중":manager.Error);}
+        public void BeginSingle(int index){if(terminalOnly||!isActiveAndEnabled||manager.layouts==null||index<0||index>=manager.layouts.Length)return;manager.StartSingleStage(manager.layouts[index]);ShowResult(manager.Error==null?"단독 진행 중":manager.Error);}
+        private void Update(){if(terminalOnly)return;bool ready=manager&&(manager.State==CircuitHackManager.HackState.Closed||manager.State==CircuitHackManager.HackState.Completed);if(launch)launch.interactable=ready;if(singleLaunches!=null)foreach(var button in singleLaunches)if(button)button.interactable=ready;}
         private void Completed(int run){completed++;ShowResult("성공 / 해킹 "+run);}
         private void Cancelled(int run){cancelled++;ShowResult("취소 / 해킹 "+run);}
         private void ShowResult(string state){result.text="회로 결과: "+state+" · 성공 전달 "+completed+"회 · 취소 전달 "+cancelled+"회";launch.interactable=manager.State==CircuitHackManager.HackState.Closed||manager.State==CircuitHackManager.HackState.Completed;}
@@ -47,6 +73,11 @@ namespace FourPaws.PCS.CircuitHack
         private void OnDisable(){if(manager)manager.EndHost();if(uiModule)uiModule.enabled=false;if(uiActions)uiActions.Disable();}
         private void OnDestroy()
         {
+            if (terminalOnly && manager && manager.view)
+            {
+                manager.view.close.onClick.RemoveListener(manager.CloseHack);
+                manager.view.restart.onClick.RemoveListener(manager.RestartStage);
+            }
             if(manager&&subscribed){launch.onClick.RemoveListener(Begin);if(manager.view){manager.view.close.onClick.RemoveListener(manager.CloseHack);manager.view.restart.onClick.RemoveListener(manager.RestartStage);manager.view.newHack.onClick.RemoveListener(Begin);}manager.OnHackCompleted-=Completed;manager.OnHackCancelled-=Cancelled;}
             if(singleLaunches!=null)for(int i=0;i<singleLaunches.Length&&i<stageActions.Count;i++)if(singleLaunches[i])singleLaunches[i].onClick.RemoveListener(stageActions[i]);
             if(reloadLayout&&manager)reloadLayout.onClick.RemoveListener(manager.ReloadLayoutAndStart);

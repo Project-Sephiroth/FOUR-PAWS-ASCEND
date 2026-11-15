@@ -18,6 +18,7 @@ public class PCS_CubeClickLauncher : MonoBehaviour
     [Header("퍼즐 취소 시 실행")]
     [SerializeField] private UnityEvent onPuzzleCancelled;
 
+    // activeSessionId는 이 단말이 열었던 퍼즐 번호입니다. 다른 단말이 끝낸 퍼즐의 성공 신호가 이쪽 장치를 작동시키지 않게 합니다.
     private long activeSessionId = -1;
     private bool waitingForResult = false;
 
@@ -46,6 +47,9 @@ public class PCS_CubeClickLauncher : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (!HackingConsole.CanLocalPlayerHack || GameMenu.BlocksWorldClick || LocalMultiplayerDebug.BlocksWorldClick)
+            return;
+
         Debug.Log("[PCS] Cube 클릭 감지!");
 
         // 이미 퍼즐 진행 중이면 중복 실행 방지

@@ -135,7 +135,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1616147045514746923}
   m_Layer: 0
-  m_Name: PCS_HodCrusher_N02
+  m_Name: PCS_Crusher_N02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

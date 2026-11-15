@@ -9,17 +9,28 @@ namespace FourPaws.PCS.Hacking
         public Button restart,close,cancel,next,newConfiguration;
         [Header("데모에만 사용하는 모의 경보")]public bool useDemoAlarm=true;public float firstAlarmDelay=5,alarmInterval=5;
         public int AlarmCount{get;private set;}long shownAttempt=-1;PCS_HackingSession.SessionState shownState;float elapsed;bool released;int commandFrame=-1;int shownAlarm=-1;bool rotationDirty;long shownRotationRevision=-1;
+        private bool ownsHackingFlag;
         void Awake(){if(panel)panel.SetActive(false);}
+
+        // 이 화면이 직접 켰던 해킹 표시만 끕니다. 다른 퍼즐의 상태를 매 프레임 덮어쓰지 않습니다.
+        private void UpdateHackingFlag(bool open)
+        {
+            if (ownsHackingFlag == open || !HackingConsole.IsGameplayScene(gameObject.scene))
+                return;
+            ownsHackingFlag = open;
+            PlayerHealth.SetLocalHacking(open);
+        }
         void OnEnable(){if(restart)restart.onClick.AddListener(Restart);if(close)close.onClick.AddListener(Close);if(cancel)cancel.onClick.AddListener(Close);if(next)next.onClick.AddListener(Next);if(newConfiguration)newConfiguration.onClick.AddListener(NewConfiguration);}
-        void OnDisable(){if(restart)restart.onClick.RemoveListener(Restart);if(close)close.onClick.RemoveListener(Close);if(cancel)cancel.onClick.RemoveListener(Close);if(next)next.onClick.RemoveListener(Next);if(newConfiguration)newConfiguration.onClick.RemoveListener(NewConfiguration);if(panel)panel.SetActive(false);if(session)session.Cancel("표시 호스트 비활성화");}
+        void OnDisable(){UpdateHackingFlag(false);if(restart)restart.onClick.RemoveListener(Restart);if(close)close.onClick.RemoveListener(Close);if(cancel)cancel.onClick.RemoveListener(Close);if(next)next.onClick.RemoveListener(Next);if(newConfiguration)newConfiguration.onClick.RemoveListener(NewConfiguration);if(panel)panel.SetActive(false);if(session)session.Cancel("표시 호스트 비활성화");}
         public void Restart(){if(!session)return;if(session.State==PCS_HackingSession.SessionState.Completed)session.RestartSession();else session.RetryCurrentStage();Command();}
         public void Close(){if(session)session.CloseHack();Command();}
         public void Next(){if(session)session.NextStage();Command();}
         public void NewConfiguration(){if(session)session.NewRotationConfiguration();Command();}
         void Command(){commandFrame=Time.frameCount;released=false;Refresh();}
+        // 세션이 열리고 이 화면을 볼 수 있을 때만 패널을 켭니다. 새 시도가 시작되면 판을 다시 연결하고, 그 뒤에는 달라진 상태만 화면에 반영합니다.
         public void Refresh()
         {
-            if(!session||!view||!panel)return;bool open=session.State!=PCS_HackingSession.SessionState.Closed;panel.SetActive(open);if(!open)return;
+            if(!session||!view||!panel)return;bool open=HackingConsole.CanDisplayIn(gameObject)&&session.State!=PCS_HackingSession.SessionState.Closed;panel.SetActive(open);if(!open)return;
             if(session.Error.Length>0){view.ShowConfigurationError(session.Error);return;}
             if(shownAttempt!=session.AttemptId){shownAttempt=session.AttemptId;rotationDirty=true;elapsed=0;AlarmCount=0;released=false;commandFrame=Time.frameCount;
                 if(session.IsRotation){long attempt=session.AttemptId;view.BindRotation(session.rotation,i=>RotateTile(i,attempt));}else view.Bind(session.timing);
@@ -56,7 +67,11 @@ namespace FourPaws.PCS.Hacking
         }
         void LateUpdate()
         {
-            if(!session)return;Refresh();if(session.State==PCS_HackingSession.SessionState.Closed||commandFrame==Time.frameCount)return;
+            if(!session)return;
+            if (!HackingConsole.CanDisplayIn(gameObject) && session.State != PCS_HackingSession.SessionState.Closed)
+                session.CloseHack();
+            UpdateHackingFlag(session.State != PCS_HackingSession.SessionState.Closed);
+            Refresh();if(session.State==PCS_HackingSession.SessionState.Closed||commandFrame==Time.frameCount)return;
             if(Input.GetKeyDown(KeyCode.Escape)){Close();return;}if(Input.GetKeyDown(KeyCode.R)){Restart();return;}
             if(!released)released=!PCS_HackingDemoActor.AnyDemoKeyHeld()&&!Input.GetMouseButton(0);
             if(session.State!=PCS_HackingSession.SessionState.Running)return;

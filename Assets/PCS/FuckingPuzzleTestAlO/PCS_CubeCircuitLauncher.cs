@@ -24,6 +24,7 @@ public class PCS_CubeCircuitLauncher : MonoBehaviour
     [Header("완료 후 UI 자동 닫기")]
     [SerializeField] private bool autoCloseOnComplete = true;
 
+    // activeRunId는 이 단말이 연 회로 퍼즐의 번호입니다. 클릭을 받아 화면을 켠 다음 시작이 성공했을 때 이 값을 저장합니다.
     private int activeRunId = -1;
     private bool waitingForResult;
 
@@ -65,6 +66,9 @@ public class PCS_CubeCircuitLauncher : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (!HackingConsole.CanLocalPlayerHack || GameMenu.BlocksWorldClick || LocalMultiplayerDebug.BlocksWorldClick)
+            return;
+
         if (waitingForResult) return;
 
         if (manager == null || stage == null ||

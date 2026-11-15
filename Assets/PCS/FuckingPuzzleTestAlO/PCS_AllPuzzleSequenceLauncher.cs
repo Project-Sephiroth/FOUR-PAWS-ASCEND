@@ -144,8 +144,12 @@ public class PCS_AllPuzzleSequenceLauncher : MonoBehaviour
     }
 
     // 외부 스크립트 / UnityEvent 호출 가능
+    // 1. 로컬 쥐가 눌렀고 메뉴가 클릭을 막고 있지 않은지 확인합니다. 2. 이미 실행 중이면 멈춥니다. 3. 설정에서 고른 첫 퍼즐부터 시작합니다.
     public void StartPuzzles()
     {
+        if (!HackingConsole.CanLocalPlayerHack || GameMenu.BlocksWorldClick || LocalMultiplayerDebug.BlocksWorldClick)
+            return;
+
         if (isRunning)
         {
             Debug.LogWarning("[PCS] 이미 퍼즐 진행 중!");

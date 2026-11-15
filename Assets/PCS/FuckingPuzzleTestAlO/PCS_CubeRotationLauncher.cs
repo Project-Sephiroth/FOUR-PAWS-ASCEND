@@ -21,6 +21,7 @@ public class PCS_CubeRotationLauncher : MonoBehaviour
     [Header("퍼즐 취소 시 실행")]
     [SerializeField] private UnityEvent onPuzzleCancelled;
 
+    // activeSessionId는 이 단말에서 시작한 회전 퍼즐 번호입니다. 완료가 돌아오면 이 번호를 확인한 뒤 연결된 장치를 움직입니다.
     private long activeSessionId = -1;
     private bool waitingForResult;
 
@@ -45,6 +46,9 @@ public class PCS_CubeRotationLauncher : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (!HackingConsole.CanLocalPlayerHack || GameMenu.BlocksWorldClick || LocalMultiplayerDebug.BlocksWorldClick)
+            return;
+
         if (waitingForResult) return;
 
         if (session == null || rotationStage == null)

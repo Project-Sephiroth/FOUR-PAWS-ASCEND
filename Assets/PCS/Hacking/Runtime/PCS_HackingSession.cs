@@ -16,12 +16,12 @@ namespace FourPaws.PCS.Hacking
         public event Action<long> OnHackCompleted,OnHackCancelled;
         public event Action<long,long,string> OnStageCompleted,OnStageFailed;
         PCS_TimingStageData.Snapshot[] timingStages;PCS_RotationStageData.Snapshot[] rotationStages;int seed,variant;bool closing,dispatchingFinalStage;
-        bool CanStart=>isActiveAndEnabled&&!closing&&!dispatchingFinalStage&&(State==SessionState.Closed||State==SessionState.Completed);
+        bool CanStart=>HackingConsole.CanDisplayIn(gameObject)&&isActiveAndEnabled&&!closing&&!dispatchingFinalStage&&(State==SessionState.Closed||State==SessionState.Completed);
         bool Reject(string error){Error="설정 오류: "+error;return false;}
         public bool StartSingleStage(PCS_TimingStageData stage)=>StartTiming(stage?new[]{stage.Capture()}:null,true);
-        public bool StartSequence(PCS_TimingStageData[] stages)=>StartTiming(stages==null?null:Array.ConvertAll(stages,s=>s?s.Capture():null),false);
+        public bool StartSequence(PCS_TimingStageData[] stages)=>HackingConsole.IsGameplayScene(gameObject.scene)&&stages!=null&&stages.Length>0?StartSingleStage(stages[0]):StartTiming(stages==null?null:Array.ConvertAll(stages,s=>s?s.Capture():null),false);
         public bool StartSingleStage(PCS_RotationStageData stage,int seed=2026)=>StartRotation(stage?new[]{stage.Capture()}:null,seed,true);
-        public bool StartSequence(PCS_RotationStageData[] stages,int seed=2026)=>StartRotation(stages==null?null:Array.ConvertAll(stages,s=>s?s.Capture():null),seed,false);
+        public bool StartSequence(PCS_RotationStageData[] stages,int seed=2026)=>HackingConsole.IsGameplayScene(gameObject.scene)&&stages!=null&&stages.Length>0?StartSingleStage(stages[0],seed):StartRotation(stages==null?null:Array.ConvertAll(stages,s=>s?s.Capture():null),seed,false);
         public bool StartLegacyTiming()=>StartTiming(new[]{new PCS_TimingStageData.Snapshot{stageId="timing-legacy",displayNumber=1,count=timing.targetCount,speed=timing.degreesPerSecond,tolerance=timing.toleranceDegrees,limit=timing.missLimit}},true);
         public bool StartLegacyRotation(int initialSeed)=>StartRotation(new[]{PCS_RotationPuzzle.Legacy()},initialSeed,true);
         bool StartTiming(PCS_TimingStageData.Snapshot[] selected,bool single)
@@ -36,6 +36,7 @@ namespace FourPaws.PCS.Hacking
             foreach(var item in selected){string e=item?.Validate()??(item==null?"단계 참조가 없습니다.":null);if(e!=null)return Reject(e);}
             rotationStages=selected;timingStages=null;IsRotation=true;seed=initialSeed;variant=0;return BeginSession(single);
         }
+        // SessionId는 한 번의 시작, AttemptId는 그 안에서 다시 도전할 때마다 바뀌는 번호입니다. 이전 화면에서 늦게 온 클릭을 구분합니다.
         bool BeginSession(bool single){timing.Cancel();rotation.Cancel();SessionId++;StageIndex=Deliveries=0;IsSingle=single;Error="";LastCancelReason="";return EnterStage();}
         bool EnterStage(){if(IsRotation){variant=0;return BeginAttempt(true);}if(!timingStages[StageIndex].Apply(timing,out string error))return Reject(error);return BeginAttempt(false);}
         bool BeginAttempt(bool shuffle)

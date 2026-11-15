@@ -40,10 +40,17 @@ namespace FourPaws.PCS.CircuitHack
         }
         public void StartHack(){if(layouts!=null&&layouts.Length>0)StartSequence(layouts);else StartSequence(stages);}
         public bool StartSingleStage(CircuitStageLayout stage)=>StartLayouts(new[]{stage},true);
-        public bool StartSequence(CircuitStageLayout[] selected)=>StartLayouts(selected,false);
+        public bool StartSequence(CircuitStageLayout[] selected)=>HackingConsole.IsGameplayScene(gameObject.scene) && selected != null && selected.Length > 0 ? StartSingleStage(selected[0]) : StartLayouts(selected,false);
         public bool StartSingleStage(CircuitMazeData stage)=>StartLegacy(new[]{stage},true);
-        public bool StartSequence(CircuitMazeData[] selected)=>StartLegacy(selected,false);
-        private bool CanStart()=>!closing&&!dispatchingFinalStage&&isActiveAndEnabled&&(State==HackState.Closed||State==HackState.Completed);
+        public bool StartSequence(CircuitMazeData[] selected)=>HackingConsole.IsGameplayScene(gameObject.scene) && selected != null && selected.Length > 0 ? StartSingleStage(selected[0]) : StartLegacy(selected,false);
+        // 씬을 열 때 화면은 숨기고, 단말을 조작한 로컬 쥐만 세션을 시작하게 합니다.
+        private void Awake()
+        {
+            if (overlay != null && overlay != gameObject && !transform.IsChildOf(overlay.transform))
+                overlay.SetActive(false);
+        }
+
+        private bool CanStart()=>HackingConsole.CanDisplayIn(gameObject)&&!closing&&!dispatchingFinalStage&&isActiveAndEnabled&&(State==HackState.Closed||State==HackState.Completed);
         private bool Reject(string error){Error="설정 오류: "+error;if(overlay)overlay.SetActive(true);if(view)view.Show(this);return false;}
         private bool StartLayouts(CircuitStageLayout[] selected,bool single)
         {
@@ -61,6 +68,7 @@ namespace FourPaws.PCS.CircuitHack
             legacy=snapshots;sources=null;return BeginSession(single);
         }
         private static int NumberInName(string n,int fallback){for(int i=1;i<=99;i++)if(n.EndsWith(i.ToString("00"),StringComparison.Ordinal))return i;return fallback;}
+        // single은 회로를 한 단계만 풀지 정합니다. 실행 번호와 단계 번호를 초기화하고 화면을 켠 뒤 첫 도전에 들어갑니다.
         private bool BeginSession(bool single){IsSingle=single;RunId++;StageIndex=0;Failures=0;Error=null;LastCancelReason=null;focusPaused=focusReleaseWait=false;if(overlay)overlay.SetActive(true);return EnterStage();}
         private bool EnterStage()
         {
@@ -84,6 +92,12 @@ namespace FourPaws.PCS.CircuitHack
         }
         private void Update()
         {
+            if (!HackingConsole.CanDisplayIn(gameObject))
+            {
+                if (State != HackState.Closed || (overlay != null && overlay.activeSelf))
+                    CloseHack();
+                return;
+            }
             if(input&&input.ClosePressed){CloseHack();return;}if(State==HackState.Closed)return;
             if(overlay&&!overlay.activeInHierarchy){EndHost();return;}if(State==HackState.Completed)return;
             bool visible=Application.isFocused&&Screen.width>0&&Screen.height>0&&(!view||(view.board&&view.board.rect.width>0&&view.board.rect.height>0));
