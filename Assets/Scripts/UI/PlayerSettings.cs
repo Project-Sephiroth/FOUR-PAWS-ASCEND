@@ -22,14 +22,15 @@ internal sealed class PlayerSettings
     private readonly Dropdown display;
     private readonly Dropdown resolution;
 
-    public PlayerSettings(GameObject menu, Action saved)
+    public PlayerSettings(Slider master, Slider music, Slider effects, Dropdown display,
+        Dropdown resolution, Button saveButton, Action saved)
     {
-        master = GameMenu.FindControl<Slider>(menu, "MasterVolumeSlider");
-        music = GameMenu.FindControl<Slider>(menu, "BGMVolumeSlider");
-        effects = GameMenu.FindControl<Slider>(menu, "SFXVolumeSlider");
-        display = GameMenu.FindControl<Dropdown>(menu, "DisplayModeDropdown");
-        resolution = GameMenu.FindControl<Dropdown>(menu, "ResolutionDropdown");
-        GameMenu.FindControl<Button>(menu, "Save").onClick.AddListener(() =>
+        this.master = master;
+        this.music = music;
+        this.effects = effects;
+        this.display = display;
+        this.resolution = resolution;
+        saveButton.onClick.AddListener(() =>
         {
             Save();
             saved();

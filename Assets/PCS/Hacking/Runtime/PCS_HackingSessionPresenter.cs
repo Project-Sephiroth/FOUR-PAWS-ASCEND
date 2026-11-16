@@ -10,7 +10,7 @@ namespace FourPaws.PCS.Hacking
         [Header("데모에만 사용하는 모의 경보")]public bool useDemoAlarm=true;public float firstAlarmDelay=5,alarmInterval=5;
         public int AlarmCount{get;private set;}long shownAttempt=-1;PCS_HackingSession.SessionState shownState;float elapsed;bool released;int commandFrame=-1;int shownAlarm=-1;bool rotationDirty;long shownRotationRevision=-1;
         private bool ownsHackingFlag;
-        void Awake(){if(panel)panel.SetActive(false);}
+        void Awake(){UIManager.RegisterHackPanel(panel);if(panel)panel.SetActive(false);}
 
         // 이 화면이 직접 켰던 해킹 표시만 끕니다. 다른 퍼즐의 상태를 매 프레임 덮어쓰지 않습니다.
         private void UpdateHackingFlag(bool open)

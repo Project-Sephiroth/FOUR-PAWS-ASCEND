@@ -11,9 +11,18 @@ public class BranchPuzzle : NetworkBehaviour
 
     [Networked] private NetworkBool InnerHackDone { get; set; }
     [Networked] private NetworkBool ExitHackDone { get; set; }
+    // 퍼센트의 0~1 범위에서 초당 얼마나 빠지는지 정합니다. 0.055면 1초에 5.5%p입니다.
+    [SerializeField, Min(0f)] private float generatorDecayPerSecond = 0.055f;
+    private const float GeneratorIdleSeconds = 0.5f;
+    [Networked] private TickTimer GeneratorIdleWait { get; set; }
     [Networked] private float Power { get; set; }
     [Networked] private NetworkBool DefenseStarted { get; set; }
     [Networked] private TickTimer CrusherActive { get; set; }
+    public bool FirstTerminalDone => InnerHackDone;
+    public bool FinalTerminalDone => ExitHackDone;
+    public float GeneratorProgress => Power;
+    private bool GeneratorCharged => Power >= 1f;
+    private bool PuzzleReady => UsesPressurePads ? ExitHackDone : GeneratorCharged;
     private Vector3 crusherStart;
     private bool transitionSent;
 
@@ -31,7 +40,7 @@ public class BranchPuzzle : NetworkBehaviour
             return false;
         if (UsesPressurePads)
             return director.CanHack(terminal, InnerHackDone, ExitHackDone, Runner);
-        return terminal == 2 && DefenseStarted && Power >= director.RequiredPower && !ExitHackDone;
+        return terminal == 2 && DefenseStarted && Power >= director.RequiredPower && !GeneratorCharged && !ExitHackDone;
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -39,7 +48,7 @@ public class BranchPuzzle : NetworkBehaviour
     {
         if (NetworkGameManager.Instance == null ||
             NetworkGameManager.Instance.GetGameplayCharacter(Runner.IsSinglePlayer ? Runner.LocalPlayer : info.Source) != MyEnum.CharacterType.Mouse ||
-            director == null || (UsesPressurePads ? !CanHack(terminal) : terminal != 2 || !DefenseStarted || ExitHackDone))
+            director == null || (UsesPressurePads ? !CanHack(terminal) : terminal != 2 || !DefenseStarted || GeneratorCharged || ExitHackDone))
             return;
 
         if (UsesPressurePads && terminal == 0)
@@ -55,7 +64,11 @@ public class BranchPuzzle : NetworkBehaviour
         if (UsesPressurePads && terminal == 0)
             InnerHackDone = true;
         else
+        {
             ExitHackDone = true;
+            if (!UsesPressurePads)
+                Power = 1f;
+        }
         ApplyStage();
     }
 
@@ -63,7 +76,7 @@ public class BranchPuzzle : NetworkBehaviour
     public void RPC_Operate(int control, RpcInfo info = default)
     {
         var manager = NetworkGameManager.Instance;
-        if (director == null || UsesPressurePads || ExitHackDone || manager == null || !manager.TryGetGameplayPlayer(Runner.IsSinglePlayer ? Runner.LocalPlayer : info.Source, out var player))
+        if (director == null || UsesPressurePads || PuzzleReady || manager == null || !manager.TryGetGameplayPlayer(Runner.IsSinglePlayer ? Runner.LocalPlayer : info.Source, out var player))
             return;
 
         var type = manager.GetGameplayCharacter(Runner.IsSinglePlayer ? Runner.LocalPlayer : info.Source);
@@ -75,6 +88,8 @@ public class BranchPuzzle : NetworkBehaviour
         {
             DefenseStarted = true;
             Power = Mathf.Min(1f, Power + 0.22f);
+            // 누를 때마다 기다리는 시간을 다시 셉니다. 연타를 멈추면 그때부터 서서히 내려갑니다.
+            GeneratorIdleWait = TickTimer.CreateFromSeconds(Runner, GeneratorIdleSeconds);
         }
         else if (control == 1 && CrusherActive.ExpiredOrNotRunning(Runner))
         {
@@ -88,11 +103,11 @@ public class BranchPuzzle : NetworkBehaviour
         if (!HasStateAuthority)
             return;
 
-        if (!UsesPressurePads && DefenseStarted && !ExitHackDone)
-            Power = Mathf.Max(0f, Power - Runner.DeltaTime * 0.055f);
+        if (!UsesPressurePads && DefenseStarted && !GeneratorCharged && GeneratorIdleWait.ExpiredOrNotRunning(Runner))
+            Power = Mathf.MoveTowards(Power, 0f, Runner.DeltaTime * generatorDecayPerSecond);
 
         ApplyStage();
-        if (director == null || transitionSent || !ExitHackDone)
+        if (director == null || transitionSent || !PuzzleReady)
             return;
 
         transitionSent = director.TryExitByElevator(Runner);
@@ -125,7 +140,7 @@ public class BranchPuzzle : NetworkBehaviour
 
     public bool EnemyEnabled()
     {
-        if (ExitHackDone)
+        if (PuzzleReady)
             return false;
 
         if (UsesPressurePads)

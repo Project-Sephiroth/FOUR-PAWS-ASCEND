@@ -307,9 +307,9 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
             return;
         }
 
-        if (rock != null)
+        if (rock != null || key != null)
         {
-            rock.TrackFlightStep(rb.position, next, Runner.DeltaTime);
+            rock?.TrackFlightStep(rb.position, next, Runner.DeltaTime);
             rb.position = next;
             transform.position = new Vector3(next.x, next.y, transform.position.z);
         }

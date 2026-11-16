@@ -5,5 +5,8 @@ public sealed class GamePresentationAssets : ScriptableObject
 {
     public GameObject pauseMenu;
     public GameObject settingsMenu;
+    public SettingsShortcutView settingsShortcut;
+    public PlayerHealthHud healthHud;
+    public PuzzleProgressHud puzzleProgressHud;
     public SceneTransitionView sceneTransition;
 }

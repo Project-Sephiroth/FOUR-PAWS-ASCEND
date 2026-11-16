@@ -8,6 +8,7 @@ public class StageBattery : NetworkBehaviour
     private LaserHazard lowerLaser;
     [Networked] private NetworkBool IsAvailable { get; set; }
     [Networked] private NetworkBool Returned { get; set; }
+    [Networked] public NetworkBool HasBeenPickedUp { get; private set; }
 
     private StagePuzzleDirector director;
 
@@ -60,7 +61,10 @@ public class StageBattery : NetworkBehaviour
 
         var body = other.attachedRigidbody;
         if (body != null && body.CompareTag("Player") && body.TryGetComponent(out NetworkObject player))
+        {
             Carrier = player;
+            HasBeenPickedUp = true;
+        }
     }
 
     public override void FixedUpdateNetwork()

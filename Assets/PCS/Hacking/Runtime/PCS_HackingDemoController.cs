@@ -33,8 +33,7 @@ namespace FourPaws.PCS.Hacking
         public bool IsOpen=>session&&session.State!=PCS_HackingSession.SessionState.Closed;public bool IsRotation=>session&&session.IsRotation;
         long shownAttempt=-1;PCS_HackingSession.SessionState shownState;bool released;bool ending;int commandFrame=-1;
         readonly System.Collections.Generic.List<UnityEngine.Events.UnityAction> actions=new System.Collections.Generic.List<UnityEngine.Events.UnityAction>();
-        void Awake()
-        {
+        void Awake(){UIManager.RegisterHackPanel(panel);
             if(!session||!presenter){Debug.LogError("PCS 설정 오류: 세션과 표시 어댑터 연결을 확인하세요.",this);enabled=false;return;}
             session.timing=timing;session.rotation=rotation;presenter.session=session;presenter.view=view;presenter.panel=panel;presenter.firstAlarmDelay=firstAlarmDelay;presenter.alarmInterval=alarmInterval;
             if(panel)panel.SetActive(false);if(actor)actor.SetLocked(false);if(result)result.text="타이밍 결과: 대기";if(rotationResult)rotationResult.text="회전 연결 결과: 대기";

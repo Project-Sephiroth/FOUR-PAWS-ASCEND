@@ -42,6 +42,7 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
             return;
         instance = Instantiate(prefab);
         DontDestroyOnLoad(instance.gameObject);
+        UIManager.SetCanvasOrder(instance.gameObject, UIManager.Layer.Debug);
         instance.BindMenu();
     }
 
@@ -78,7 +79,7 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
         else
         {
             promptVisible = true;
-            GameMenu.EnsureLocalEventSystem();
+            UIManager.EnsureLocalEventSystem();
             view.prompt.SetActive(true);
             view.FocusCode();
         }
@@ -97,7 +98,7 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
         if (!string.Equals(view.accessInput.text, AccessCode, StringComparison.Ordinal))
         {
             invalidCode = true;
-            GameMenu.EnsureLocalEventSystem();
+            UIManager.EnsureLocalEventSystem();
             view.prompt.SetActive(true);
             view.FocusCode();
             return;
@@ -160,6 +161,10 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
             view.clearConsoles.onClick.AddListener(ClearSceneConsoles);
         if (view.forceClearStage != null)
             view.forceClearStage.onClick.AddListener(() => NetworkGameManager.Instance?.DebugForceClear());
+        if (view.exitStage != null)
+            view.exitStage.onClick.AddListener(() => NetworkGameManager.Instance?.DebugExitStage());
+        if (view.toggleStageAccess != null)
+            view.toggleStageAccess.onClick.AddListener(() => NetworkGameManager.Instance?.ToggleDebugStageAccess());
         RefreshMenu();
     }
 
@@ -196,8 +201,20 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
         bool inSession = runner != null;
         bool online = !inSession && NetworkGameManager.Instance != null &&
             NetworkGameManager.Instance.Object != null && NetworkGameManager.Instance.Object.IsValid;
+        var stageManager = NetworkGameManager.Instance;
+        bool inStage = NetworkGameManager.CanUseStageDebug;
+        bool canUnlock = stageManager != null && stageManager.CanManageDebugStageAccess;
         if (view.sessionTools != null)
-            view.sessionTools.SetActive(NetworkGameManager.CanUseStageDebug);
+            view.sessionTools.SetActive(true);
+        if (view.clearConsoles != null) view.clearConsoles.interactable = inStage && !busy;
+        if (view.forceClearStage != null) view.forceClearStage.interactable = inStage && !busy;
+        if (view.exitStage != null) view.exitStage.interactable = inStage && !busy;
+        if (view.toggleStageAccess != null)
+        {
+            view.toggleStageAccess.interactable = canUnlock && !busy;
+            view.toggleStageAccess.GetComponentInChildren<UnityEngine.UI.Text>().text = canUnlock && stageManager.DebugStageAccess
+                ? "Restore stage locks" : "Unlock every stage";
+        }
         view.setup.SetActive(!inSession && !online);
         view.playing.SetActive(inSession);
         view.stage.SetValueWithoutNotify(stageIndex);

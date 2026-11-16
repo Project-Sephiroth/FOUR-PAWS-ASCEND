@@ -69,6 +69,7 @@ public sealed class StagePuzzleDirector : MonoBehaviour
     [SerializeField] private NetzachPuzzle netzach = new();
 
     [SerializeField] private Elevator exitElevator;
+    private MovingFloor mouseDoor;
 
     // 퍼즐이 모두 끝나고 참가한 플레이어가 발판 위에 모이면 출발합니다. 승강이 끝난 시점에 기존 맵 전환을 호출합니다.
     public bool TryExitByElevator(NetworkRunner runner)
@@ -81,6 +82,38 @@ public sealed class StagePuzzleDirector : MonoBehaviour
             exitElevator.BeginExit();
         return false;
     }
+
+    // 완료할 때만 올라가는 씬과, 세기와 함께 오르내리는 발전기를 같은 0~1 값으로 표시합니다.
+    public float ReadProgress()
+    {
+        switch (stage)
+        {
+            case NetworkGameManager.SceneName.Malkuth:
+                // 동물마다 한 칸입니다. 쥐는 해킹 성공 직후가 아니라 연결된 문이 열리는 위치에 도착했을 때 채웁니다.
+                int opened = Ready(mouseDoor) && mouseDoor.HasReachedDestination ? 1 : 0;
+                if (malkuth.keyDoors != null)
+                    foreach (var door in malkuth.keyDoors)
+                        if (Ready(door) && door.IsOpened)
+                            opened++;
+                return Mathf.Clamp01(opened / 4f);
+            case NetworkGameManager.SceneName.Yesod:
+                return ((Ready(yesod.upperLaser) && yesod.upperLaser.IsOff ? 1f : 0f) +
+                    (Ready(yesod.lowerLaser) && yesod.lowerLaser.IsOff ? 1f : 0f) +
+                    (Ready(yesod.battery) && yesod.battery.HasBeenPickedUp ? 1f : 0f)) / 3f;
+            case NetworkGameManager.SceneName.Hod:
+                var hodBranch = GetComponent<BranchPuzzle>();
+                return Ready(hodBranch) ? ((hodBranch.FirstTerminalDone ? 1f : 0f) +
+                    (hodBranch.FinalTerminalDone ? 1f : 0f)) / 2f : 0f;
+            case NetworkGameManager.SceneName.Netzach:
+                var netzachBranch = GetComponent<BranchPuzzle>();
+                return Ready(netzachBranch) ? netzachBranch.GeneratorProgress : 0f;
+            default:
+                return 0f;
+        }
+    }
+
+    private static bool Ready(NetworkBehaviour item) =>
+        item != null && item.Object != null && item.Object.IsValid;
 
     public bool UsesPressurePads => stage == NetworkGameManager.SceneName.Hod;
     public Transform Crusher => netzach.crusher;
@@ -103,6 +136,7 @@ public sealed class StagePuzzleDirector : MonoBehaviour
         {
             case NetworkGameManager.SceneName.Malkuth:
                 malkuth.exit?.SetDirector(this);
+                mouseDoor = FindMouseDoor();
                 break;
             case NetworkGameManager.SceneName.Yesod:
                 yesod.upperTerminal?.AddCompletionAction(CompleteUpperHack);
@@ -140,6 +174,19 @@ public sealed class StagePuzzleDirector : MonoBehaviour
                 netzach.terminal?.SetBranch(netzachBranch, 2);
                 break;
         }
+    }
+
+    // 쥐 콘솔이 원래 열던 문을 읽습니다. 진행도와 실제로 움직이는 문이 다른 대상을 가리키지 않게 합니다.
+    private MovingFloor FindMouseDoor()
+    {
+        var actions = malkuth.terminal != null ? malkuth.terminal.completeAction : null;
+        if (actions == null)
+            return null;
+        for (int i = 0; i < actions.GetPersistentEventCount(); i++)
+            if (actions.GetPersistentMethodName(i) == nameof(MovingFloor.StartMove) &&
+                actions.GetPersistentTarget(i) is MovingFloor door)
+                return door;
+        return null;
     }
 
     private GameObject FindSceneObject(string objectName)

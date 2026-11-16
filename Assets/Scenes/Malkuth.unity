@@ -2141,7 +2141,7 @@ Transform:
   m_GameObject: {fileID: 505545864}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.47, z: 0}
+  m_LocalPosition: {x: 8.17, y: 0.47, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4163,10 +4163,8 @@ MonoBehaviour:
     battery: {fileID: 0}
   hod:
     leftPad:
-      character: 0
       center: {x: 0, y: 0}
     rightPad:
-      character: 0
       center: {x: 0, y: 0}
     padRadius: 1.45
     innerTerminal: {fileID: 0}
@@ -4183,9 +4181,11 @@ MonoBehaviour:
     crusherLeverCenter: {x: 0, y: 0}
     crusher: {fileID: 0}
     crusherPlate: {fileID: 0}
+    crusherMotion: {fileID: 0}
     crusherTravel: 2.4
     requiredPower: 0.25
     terminal: {fileID: 0}
+  exitElevator: {fileID: 0}
 --- !u!1001 &997714001
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8040,6 +8040,7 @@ MonoBehaviour:
   maxX: 22.9
   minY: -4.5
   maxY: 11.26
+  holdThreshold: 0.3
 --- !u!114 &1840982833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9062,7 +9063,7 @@ Transform:
   m_GameObject: {fileID: 2074153820}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 16.99, y: 1.14, z: 0}
+  m_LocalPosition: {x: 16.99, y: -1.91, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

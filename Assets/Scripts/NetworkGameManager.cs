@@ -17,6 +17,7 @@ public class NetworkGameManager : NetworkBehaviour
     [Networked] public NetworkBool MalkuthCleared { get; private set; }
     [Networked] public NetworkBool YesodCleared { get; private set; }
     [Networked] public NetworkBool BranchCleared { get; private set; }
+    [Networked] public NetworkBool DebugStageAccess { get; private set; }
     // loadingScene은 실제 씬을 로드 중인지, observedTransition은 이 화면에서 이미 닫기 연출을 시작했는지 나타냅니다. 타이머로 클라이언트들이 같은 씬 변경을 준비합니다.
     private bool loadingScene;
     private bool observedTransition;
@@ -58,14 +59,16 @@ public class NetworkGameManager : NetworkBehaviour
 
         if (stage == SceneName.Malkuth)
             MalkuthCleared = true;
-        else if (stage == SceneName.Yesod && (MalkuthCleared || Runner.IsSinglePlayer))
+        else if (stage == SceneName.Yesod && (MalkuthCleared || Runner.IsSinglePlayer || DebugStageAccess))
         {
-            MalkuthCleared = true;
+            if (Runner.IsSinglePlayer)
+                MalkuthCleared = true;
             YesodCleared = true;
         }
-        else if ((YesodCleared || Runner.IsSinglePlayer) && (stage == SceneName.Hod || stage == SceneName.Netzach))
+        else if ((YesodCleared || Runner.IsSinglePlayer || DebugStageAccess) && (stage == SceneName.Hod || stage == SceneName.Netzach))
         {
-            MalkuthCleared = true;
+            if (Runner.IsSinglePlayer)
+                MalkuthCleared = true;
             YesodCleared = true;
             BranchCleared = true;
         }
@@ -91,6 +94,34 @@ public class NetworkGameManager : NetworkBehaviour
         }
     }
 
+    // 입장 권한은 방에 공유하되, 실제 씬 이동은 기존 Fusion 씬 권한자가 처리합니다.
+    public bool CanManageDebugStageAccess
+    {
+        get
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            return Object != null && Object.IsValid && HasStateAuthority && Runner.IsSceneAuthority &&
+                (HackingConsole.IsGameplayScene(SceneManager.GetActiveScene()) ||
+                 SceneManager.GetActiveScene().name == nameof(SceneName.Map) ||
+                 SceneManager.GetActiveScene().name == nameof(SceneName.Lobby));
+#else
+            return false;
+#endif
+        }
+    }
+
+    public void ToggleDebugStageAccess()
+    {
+        if (CanManageDebugStageAccess)
+            DebugStageAccess = !DebugStageAccess;
+    }
+
+    public void DebugExitStage()
+    {
+        if (this == Instance && CanUseStageDebug)
+            LoadScene(nameof(SceneName.Map));
+    }
+
     public void DebugForceClear()
     {
         if (this != Instance || !CanUseStageDebug)
@@ -112,13 +143,16 @@ public class NetworkGameManager : NetworkBehaviour
         (Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer) && Runner.IsSceneAuthority && !loadingScene && !SceneTransitionTimer.IsRunning &&
         SceneManager.GetActiveScene().name == nameof(SceneName.Map);
 
-    public bool IsStageSelectable(SceneName stage) => stage switch
+    public bool IsStageSelectable(SceneName stage) => (DebugStageAccess && IsPlayableStage(stage)) || (stage switch
     {
         SceneName.Malkuth => !MalkuthCleared,
         SceneName.Yesod => MalkuthCleared && !YesodCleared,
-        SceneName.Hod or SceneName.Netzach => YesodCleared,
+        SceneName.Hod or SceneName.Netzach => (bool)YesodCleared,
         _ => false
-    };
+    });
+
+    private static bool IsPlayableStage(SceneName stage) => stage is
+        SceneName.Malkuth or SceneName.Yesod or SceneName.Hod or SceneName.Netzach;
 
     public void SelectStage(SceneName stage)
     {

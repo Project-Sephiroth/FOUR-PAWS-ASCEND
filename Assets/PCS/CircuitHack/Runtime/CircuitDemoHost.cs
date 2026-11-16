@@ -35,6 +35,8 @@ namespace FourPaws.PCS.CircuitHack
             manager.overlay.SetActive(false);
             terminalOnly |= HackingConsole.IsGameplayScene(gameObject.scene);
             if (terminalOnly)
+                eventSystem.gameObject.SetActive(false);
+            if (terminalOnly)
             {
                 launch.interactable = false;
                 var launcher = transform.Find("PCS_CircuitLauncher");

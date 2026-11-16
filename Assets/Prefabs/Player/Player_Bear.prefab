@@ -229,7 +229,7 @@ Transform:
   m_GameObject: {fileID: 7175622280952666374}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 1.5, z: 0}
+  m_LocalPosition: {x: -1, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -534,7 +534,7 @@ MonoBehaviour:
   minAngle: 15
   maxAngle: 55
   throwSpeed: 7
-  cycleTime: 3
+  cycleTime: 1.5
   throwArrow: {fileID: 6698800869872373626}
   arrowBaseLength: 1
   rockMaker: {fileID: 0}

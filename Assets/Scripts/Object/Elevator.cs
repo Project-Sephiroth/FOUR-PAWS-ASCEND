@@ -19,6 +19,8 @@ public class Elevator : NetworkBehaviour
     private Collider2D deck;
     private float initialY;
     public bool ExitFinished => ExitStarted && !isMoving;
+    public float ExitProgress => !ExitStarted ? 0f : ExitFinished ? 1f :
+        Mathf.Clamp01((FloorY - initialY) / Mathf.Max(0.01f, exitRise));
     private float lastRenderedY;
     private bool wasMoving;
     private Vector2 initialColumnSize;

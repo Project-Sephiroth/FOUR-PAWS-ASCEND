@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using UnityEngine;
 
 /// <summary>
@@ -21,7 +21,7 @@ public class LaserHazard : NetworkBehaviour
     {
         //현재 레이저 비활성화는 쥐만 가능(해킹이 가능해서)
         if (NetworkGameManager.Instance != null &&
-            NetworkGameManager.Instance.GetGameplayCharacter(info.Source) == MyEnum.CharacterType.Mouse)
+            NetworkGameManager.Instance.GetGameplayCharacter(Runner.IsSinglePlayer ? Runner.LocalPlayer : info.Source) == MyEnum.CharacterType.Mouse)
             IsOff = true;
     }
 

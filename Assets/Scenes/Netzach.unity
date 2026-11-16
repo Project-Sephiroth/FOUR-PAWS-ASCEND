@@ -624,6 +624,74 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 41085aef0f2b7a7429cfe58946d797d7, type: 3}
+--- !u!1001 &500191927
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1443110871262560844, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1443110871262560844, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1443110871262560844, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1443110871262560844, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1443110871262560844, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1443110871262560844, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1443110871262560844, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1443110871262560844, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1443110871262560844, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1443110871262560844, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4930531605755395426, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+      propertyPath: m_Name
+      value: PCS_HackingSession
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+--- !u!114 &500191928 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2841895113116651757, guid: b09e068a747611046b086c2ab8b6e254, type: 3}
+  m_PrefabInstance: {fileID: 500191927}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd5e4d94de6642a8b3d7e1d0396b6bf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FourPaws.PCS.Hacking.PCS_HackingSession
 --- !u!1 &539142886
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,6 +1035,7 @@ MonoBehaviour:
   maxX: 30
   minY: -9
   maxY: 8
+  holdThreshold: 0.3
 --- !u!114 &625423045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1894,7 +1963,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5719579560457068174, guid: 1c8b215caee76614384c6296c7db6eb7, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1958,6 +2027,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cdada0b619b4c9587fb47d453386664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BranchPuzzle
+  generatorDecayPerSecond: 0.055
 --- !u!114 &909187013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2011,7 +2081,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e59d944de874a31bf326c6453a2e174, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageCircuitTerminal
+  hackType: 0
   manager: {fileID: 909187002}
+  session: {fileID: 500191928}
+  timingStage: {fileID: 11400000, guid: 95b74fd5e3e50df4db7da4fb753950be, type: 2}
+  rotationStage: {fileID: 11400000, guid: 45f0bfb3034f17c47bd964fc9c96fc61, type: 2}
   branch: {fileID: 0}
   requiredArrival: {fileID: 0}
   terminal: 0
@@ -3812,3 +3886,4 @@ SceneRoots:
   - {fileID: 395005873}
   - {fileID: 1125876801}
   - {fileID: 1569481396}
+  - {fileID: 500191927}

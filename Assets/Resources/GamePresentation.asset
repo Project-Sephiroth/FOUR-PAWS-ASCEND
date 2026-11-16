@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GamePresentationAssets
   pauseMenu: {fileID: 6318953202546466334, guid: e7593d147dbbf2f4997a515ce4b41b1e, type: 3}
   settingsMenu: {fileID: 6863123926400370376, guid: 5e99975686e6b1f43a7e63ab3520e21e, type: 3}
+  settingsShortcut: {fileID: 4357087390534088134, guid: f3774f3eea569b9488aeb0379aea96b3, type: 3}
+  healthHud: {fileID: 2396029167886396841, guid: 6aac207c6cd23fa40851d6c893df33dc, type: 3}
+  puzzleProgressHud: {fileID: 3848158811948059097, guid: 11302354c7273b247ad0ec5794682909, type: 3}
   sceneTransition: {fileID: 4452954055648919839, guid: 7b17b469ee9493043a160bf77f5ecde7, type: 3}

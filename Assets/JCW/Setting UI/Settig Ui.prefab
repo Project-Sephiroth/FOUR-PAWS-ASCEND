@@ -4586,6 +4586,7 @@ GameObject:
   - component: {fileID: 7662918291305324115}
   - component: {fileID: 3023687413732168711}
   - component: {fileID: 1449227709278850682}
+  - component: {fileID: 8494225930740396980}
   m_Layer: 5
   m_Name: Settig Ui
   m_TagString: Untagged
@@ -4678,6 +4679,25 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8494225930740396980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6863123926400370376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 132d23e6e2901b9478a798ff8ce1263b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SettingsMenuView
+  master: {fileID: 9063545159774654683}
+  music: {fileID: 971355775979277346}
+  effects: {fileID: 384810392596506855}
+  display: {fileID: 6649819816959545919}
+  resolution: {fileID: 8399080379311013648}
+  saveButton: {fileID: 4783239009458349524}
+  closeButton: {fileID: 6752832974946372973}
 --- !u!1 &7112084240567628983
 GameObject:
   m_ObjectHideFlags: 0

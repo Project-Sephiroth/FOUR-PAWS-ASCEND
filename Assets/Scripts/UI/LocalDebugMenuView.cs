@@ -23,6 +23,8 @@ public sealed class LocalDebugMenuView : MonoBehaviour
     public GameObject sessionTools;
     public Button clearConsoles;
     public Button forceClearStage;
+    public Button exitStage;
+    public Button toggleStageAccess;
 
     public void Bind(string[] stageNames, Action confirmCode, Action cancelCode, Action startTest,
         Action stopTest, Action closeMenu, Action<int> selectStage, Action<int, bool> changeRoster,

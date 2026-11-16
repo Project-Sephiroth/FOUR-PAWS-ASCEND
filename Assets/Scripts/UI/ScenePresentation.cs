@@ -28,7 +28,8 @@ public sealed class ScenePresentation : MonoBehaviour
         DontDestroyOnLoad(root);
         instance = root.AddComponent<ScenePresentation>();
         instance.Initialize(assets);
-        root.AddComponent<GameMenu>().Initialize(assets);
+        var ui = root.AddComponent<UIManager>();
+        ui.Initialize(assets);
     }
 
     private void Initialize(GamePresentationAssets assets)
@@ -37,20 +38,12 @@ public sealed class ScenePresentation : MonoBehaviour
             return;
 
         view = Instantiate(assets.sceneTransition, transform);
+        UIManager.SetCanvasOrder(view.gameObject, UIManager.Layer.Transition);
         if (!view.Begin())
         {
             Destroy(view.gameObject);
             view = null;
         }
-    }
-
-    internal static Canvas CreateOverlay(Transform parent, string name, int order)
-    {
-        var canvas = new GameObject(name, typeof(RectTransform), typeof(Canvas)).GetComponent<Canvas>();
-        canvas.transform.SetParent(parent, false);
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = order;
-        return canvas;
     }
 
     public static Character LocalCharacter()

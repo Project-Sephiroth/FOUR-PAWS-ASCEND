@@ -16,12 +16,13 @@ public class ChamberVisibility : MonoBehaviour
         if (network == null || network.Object == null || !network.Object.IsValid || !network.TryGetGameplayPlayer(network.Runner.LocalPlayer, out var local) || local == null)
             return;
 
-        bool localInside = Contains(local.transform.position);
+        var viewpoint = CameraFollow.ViewedPlayer ?? local;
+        bool localInside = Contains(viewpoint.transform.position);
         if (opaqueGlass != null && opaqueGlass.activeSelf == localInside)
             opaqueGlass.SetActive(!localInside);
         foreach (var other in NetworkGameManager.GetPlayerObjects(network.Runner))
         {
-            bool hide = other != local && !localInside && Contains(other.transform.position);
+            bool hide = other != viewpoint && !localInside && Contains(other.transform.position);
             foreach (var sprite in other.GetComponentsInChildren<SpriteRenderer>())
             {
                 if (hide && !sprite.forceRenderingOff)

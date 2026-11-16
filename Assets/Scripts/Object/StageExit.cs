@@ -14,6 +14,7 @@ public class StageExit : NetworkBehaviour
 
     [Networked] private int PlayersReady { get; set; }
     [Networked] private float LiftProgress { get; set; }
+    public float ExitProgress => LiftProgress;
 
     private Vector3 leftStart;
     private Vector3 rightStart;

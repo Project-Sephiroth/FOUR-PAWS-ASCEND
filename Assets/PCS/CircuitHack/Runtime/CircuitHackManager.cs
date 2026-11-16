@@ -46,6 +46,7 @@ namespace FourPaws.PCS.CircuitHack
         // 씬을 열 때 화면은 숨기고, 단말을 조작한 로컬 쥐만 세션을 시작하게 합니다.
         private void Awake()
         {
+            UIManager.RegisterHackPanel(overlay);
             if (overlay != null && overlay != gameObject && !transform.IsChildOf(overlay.transform))
                 overlay.SetActive(false);
         }
