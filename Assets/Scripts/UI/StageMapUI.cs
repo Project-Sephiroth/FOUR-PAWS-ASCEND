@@ -24,7 +24,6 @@ public class StageMapUI : MonoBehaviour
             SceneName stage = node.stage;
             node.button.onClick.AddListener(() =>
             {
-                SoundManager.Play(SoundEffect.UIClick);
                 Instance?.SelectStage(stage);
             });
         }
@@ -36,9 +35,10 @@ public class StageMapUI : MonoBehaviour
         var manager = Instance;
         bool connected = manager != null && manager.Object != null && manager.Object.IsValid;
         bool canChoose = connected && manager.CanSelectStage;
-        status.text = !connected ? "Connecting to the room..." :
-            canChoose ? "���������� �����ϼ���" :
-            manager.Runner.IsSharedModeMasterClient ? "�������� �ε� ��..." : "������ ���������� ������ �־��";
+        status.text = !connected ? "방에 연결하는 중입니다" :
+            canChoose ? "이동할 맵을 선택하세요" :
+            manager.Runner.IsSharedModeMasterClient || manager.Runner.IsSinglePlayer ? "맵을 불러오는 중입니다" :
+            "방장이 맵을 선택하고 있습니다";
 
         float glowAlpha = 0.62f + 0.17f * Mathf.Sin(Time.unscaledTime * 3f);
         foreach (StageNode node in nodes)

@@ -1,55 +1,102 @@
 using Fusion;
 using UnityEngine;
 
-public class RollingDrum : NetworkBehaviour
+public sealed class RollingDrum : NetworkBehaviour, IInteractable
 {
-    [SerializeField] private BranchPuzzle encounter;
-    [SerializeField] private Vector2 track;
+    [SerializeField] private Transform rollingBody;
+    [SerializeField] private Collider2D hitbox;
+    [SerializeField] private SpriteRenderer sprite;
+    [SerializeField, Min(0.1f)] private float rollRadius = 0.5f;
+    [SerializeField] private AnimationClip rollMotion;
+
+    [Networked] private NetworkObject Encounter { get; set; }
+    [Networked] private float TravelLimit { get; set; }
+    [Networked] private int LaunchSequence { get; set; }
+    [Networked] private float Distance { get; set; }
     [Networked] private float Speed { get; set; }
     [Networked] private TickTimer Blink { get; set; }
-    [Networked] private TickTimer Refill { get; set; }
-    private Collider2D hitbox;
-    private SpriteRenderer sprite;
-    private bool IsRolling => encounter != null && encounter.EnemyEnabled() && !Blink.IsRunning && !Refill.IsRunning;
+    [Networked] private Tongue Holder { get; set; }
 
-    private void Awake()
+    private bool IsRolling => Speed > 0f;
+    internal bool IsAvailable => !IsRolling && !Blink.IsRunning;
+    internal bool IsActiveTarget => Object != null && Object.IsValid && IsRolling;
+    internal bool CanBeHeld => IsActiveTarget && Holder == null;
+    internal Vector2 TongueGripPosition => rollingBody.position;
+
+    public void OnInteract(Interactor interactor)
     {
-        hitbox = GetComponent<Collider2D>();
-        sprite = GetComponentInChildren<SpriteRenderer>(true);
+        if (interactor is Tongue tongue && CanBeHeld)
+            tongue.TryTongue(this);
+    }
+
+    public void SetOutlineMat(bool isOn) => InteractableOutline.SetTarget(rollingBody.gameObject, isOn);
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    internal void RPC_RequestHold(Tongue tongue, RpcInfo info = default)
+    {
+        if (tongue == null || (!Runner.IsSinglePlayer && info.Source != tongue.Object.StateAuthority))
+            return;
+
+        bool accepted = CanBeHeld;
+        if (accepted)
+            Holder = tongue;
+        tongue.RPC_HoldResult(this, accepted);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    internal void RPC_RequestRelease(Tongue tongue, RpcInfo info = default)
+    {
+        if (tongue != null && Holder == tongue &&
+            (Runner.IsSinglePlayer || info.Source == tongue.Object.StateAuthority))
+            Holder = null;
+    }
+
+    public override void Spawned() => ApplyVisibility();
+
+    internal void Launch(NetworkObject encounter, float speed, float travelLimit)
+    {
+        // 네트워크 루트는 출발 지점에 고정합니다. 그 아래의 본체만 이동 거리에 맞춰 움직입니다.
+        Encounter = encounter;
+        TravelLimit = travelLimit;
+        LaunchSequence++;
+        Distance = 0f;
+        ApplyDistance(0f);
+        Speed = speed;
+        ApplyVisibility();
+    }
+
+    internal void Deactivate()
+    {
+        if (IsAvailable)
+            return;
+
+        Speed = 0f;
+        Holder = null;
+        Blink = default;
+        ApplyVisibility();
     }
 
     public override void FixedUpdateNetwork()
     {
-        if (!HasStateAuthority || encounter == null)
+        if (!HasStateAuthority)
             return;
 
         if (Blink.Expired(Runner))
         {
             Blink = default;
-            Refill = TickTimer.CreateFromSeconds(Runner, 3f);
+            ApplyVisibility();
         }
-
-        if (Refill.Expired(Runner))
-        {
-            Refill = default;
-            Vector3 restart = transform.position;
-            restart.x = track.y;
-            if (TryGetComponent(out NetworkTransform networkTransform))
-                networkTransform.Teleport(restart);
-            transform.position = restart;
-        }
-
-        ApplyVisibility();
 
         if (!IsRolling)
             return;
 
-        if (Speed <= 0f)
-            Speed = Random.Range(1.8f, 3.4f);
-
-        Vector3 next = transform.position + Vector3.left * (Speed * Runner.DeltaTime);
-        transform.position = next;
-        if (next.x <= track.x || encounter.CrusherHits(next))
+        if (Holder == null)
+        {
+            Distance = Mathf.Min(TravelLimit, Distance + Speed * Runner.DeltaTime);
+            ApplyDistance(Distance);
+        }
+        if (Distance >= TravelLimit || (Encounter != null &&
+            Encounter.TryGetComponent(out BranchPuzzle puzzle) && puzzle.CrusherHits(rollingBody.position)))
             BeginRemoval();
     }
 
@@ -70,32 +117,59 @@ public class RollingDrum : NetworkBehaviour
     {
         if (!IsRolling)
             return;
+
         Speed = 0f;
+        Holder = null;
         Blink = TickTimer.CreateFromSeconds(Runner, 0.7f);
         ApplyVisibility();
     }
 
-    public override void Render() => ApplyVisibility();
+    public override void Render()
+    {
+        float renderedDistance = Distance;
+        if (!HasStateAuthority && TryGetSnapshotsBuffers(out var from, out var to, out float alpha))
+        {
+            // 같은 출발에 속한 위치끼리만 보간합니다. 슬롯을 재사용할 때 이전 위치는 건너뜁니다.
+            var sequence = GetPropertyReader<int>(nameof(LaunchSequence));
+            if (sequence.Read(from) == LaunchSequence && sequence.Read(to) == LaunchSequence)
+            {
+                var distance = GetPropertyReader<float>(nameof(Distance));
+                renderedDistance = Mathf.Lerp(distance.Read(from), distance.Read(to), alpha);
+            }
+        }
+
+        ApplyDistance(renderedDistance);
+        ApplyVisibility();
+        if (rollMotion != null)
+        {
+            float circumference = 2f * Mathf.PI * rollRadius;
+            float phase = Mathf.Repeat(renderedDistance, circumference) / circumference;
+            rollMotion.SampleAnimation(sprite.gameObject, phase * rollMotion.length);
+        }
+    }
+
+    private void ApplyDistance(float distance) => rollingBody.position = transform.position + Vector3.left * distance;
 
     private void ApplyVisibility()
     {
-        if (hitbox != null)
-            hitbox.enabled = IsRolling;
-        if (sprite != null)
-            sprite.enabled = IsRolling || (Blink.IsRunning &&
-                Mathf.FloorToInt((Blink.RemainingTime(Runner) ?? 0f) * 14f) % 2 == 0);
+        hitbox.enabled = IsRolling;
+        sprite.enabled = IsRolling || (Blink.IsRunning &&
+            Mathf.FloorToInt((Blink.RemainingTime(Runner) ?? 0f) * 14f) % 2 == 0);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    internal void HandleContact(Collider2D other)
     {
         if (Object == null || !Object.IsValid || !HasStateAuthority || !IsRolling)
             return;
 
-        if (other.GetComponent<DrumRemovalZone>() != null)
-            BeginRemoval();
-
-        else if (!other.isTrigger && other.attachedRigidbody != null &&
-                 other.attachedRigidbody.TryGetComponent(out PlayerHealth health))
+        if (other.TryGetComponent(out DrumRemovalZone zone))
+        {
+            if (!zone.OneUse || (Encounter != null && Encounter.TryGetComponent(out BranchPuzzle puzzle) &&
+                                 puzzle.TryUseDrumBarrier()))
+                BeginRemoval();
+        }
+        else if (Holder == null && !other.isTrigger && other.GetComponentInParent<PlayerHealth>() is { } health &&
+                 health.Object != null && health.Object.IsValid && health.Health > 0)
         {
             health.RPC_TakeDrumHit(this);
             BeginRemoval();

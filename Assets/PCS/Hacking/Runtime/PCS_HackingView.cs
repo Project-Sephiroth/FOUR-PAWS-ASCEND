@@ -34,7 +34,7 @@ namespace FourPaws.PCS.Hacking
             rotationMode = false;
             SetTimingBackgroundVisible(isActiveAndEnabled && model != null && model.Error.Length == 0);
             if (rotationRoot != null) rotationRoot.SetActive(false);
-            if (title != null) title.text = "타이밍 해킹 / 모든 핀을 연결하세요";
+            if (title != null) title.text = "타이밍 해킹";
             lastConnected = lastMiss = lastAlarm = -1;
             raycastTarget = false;
             SetVerticesDirty();
@@ -46,7 +46,7 @@ namespace FourPaws.PCS.Hacking
             rotationMode = true;
             SetTimingBackgroundVisible(false);
             rotationRoot.SetActive(true);
-            title.text = "회전 연결 해킹 / "+model.TileCount+"개 타일을 연결하세요";
+            title.text = "회전 해킹 "+model.TileCount+"개를 연결하세요";
             lastAlarm = -1;
             Vector2 min=model.PositionAt(0),max=min;for(int i=1;i<model.TileCount;i++){min=Vector2.Min(min,model.PositionAt(i));max=Vector2.Max(max,model.PositionAt(i));}
             Vector2 span=max-min;float unit=Mathf.Min(400f/(span.x+1.8f),400f/(span.y+2f));
@@ -58,8 +58,7 @@ namespace FourPaws.PCS.Hacking
         public void ShowRotation(PCS_RotationPuzzle model, int alarmCount)
         {
             var state = model.Status;
-            progress.text = $"연결된 타일 {state.reachable} / {model.TileCount}\n바깥 핀 {state.outside} / 맞지 않는 핀 {state.unmatched}";
-            alarm.text = $"모의 경보 {alarmCount}\n실제 적은 나타나지 않습니다";
+            progress.text = $"현재 연결된 수 : {state.reachable}";
             for(int i=0;i<model.TileCount;i++)rotationTiles[i].Show(model);
         }
 
@@ -80,7 +79,6 @@ namespace FourPaws.PCS.Hacking
             if (lastAlarm != alarmCount)
             {
                 lastAlarm = alarmCount;
-                alarm.text = $"모의 경보 {alarmCount}\n실제 적은 나타나지 않습니다";
             }
             SetVerticesDirty();
         }

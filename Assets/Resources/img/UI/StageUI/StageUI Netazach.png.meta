@@ -1,0 +1,1357 @@
+fileFormatVersion: 2
+guid: f726a24746a3373459ac1b767d59a0df
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4452082753434387284
+    second: StageUI Netazach_0
+  - first:
+      213: -5407920728960195188
+    second: StageUI Netazach_1
+  - first:
+      213: 5127614287074332594
+    second: StageUI Netazach_2
+  - first:
+      213: 1561237937859578642
+    second: StageUI Netazach_3
+  - first:
+      213: 4008094773991467711
+    second: StageUI Netazach_4
+  - first:
+      213: 2282401712150587031
+    second: StageUI Netazach_5
+  - first:
+      213: 7183908145528584456
+    second: StageUI Netazach_6
+  - first:
+      213: 7569903642713617006
+    second: StageUI Netazach_7
+  - first:
+      213: -1785318304217846588
+    second: StageUI Netazach_8
+  - first:
+      213: 7363505981866484669
+    second: StageUI Netazach_9
+  - first:
+      213: 5626030008556904830
+    second: StageUI Netazach_10
+  - first:
+      213: 548880949070685624
+    second: StageUI Netazach_11
+  - first:
+      213: -1679976708498857235
+    second: StageUI Netazach_12
+  - first:
+      213: 2157096665946438327
+    second: StageUI Netazach_13
+  - first:
+      213: 3839848963842946829
+    second: StageUI Netazach_14
+  - first:
+      213: 1977375754296204115
+    second: StageUI Netazach_15
+  - first:
+      213: -1208577777703483405
+    second: StageUI Netazach_16
+  - first:
+      213: 8844501366284761636
+    second: StageUI Netazach_17
+  - first:
+      213: -3952188988836136156
+    second: StageUI Netazach_18
+  - first:
+      213: -7228966553786405939
+    second: StageUI Netazach_19
+  - first:
+      213: -7155380923725825431
+    second: StageUI Netazach_20
+  - first:
+      213: 4632378096194390768
+    second: StageUI Netazach_21
+  - first:
+      213: -7842445204770325996
+    second: StageUI Netazach_22
+  - first:
+      213: -2534048278254994160
+    second: StageUI Netazach_23
+  - first:
+      213: 2966399628491111848
+    second: StageUI Netazach_24
+  - first:
+      213: 6382521373882186338
+    second: StageUI Netazach_25
+  - first:
+      213: -4048786316204908844
+    second: StageUI Netazach_26
+  - first:
+      213: 5232404201625244959
+    second: StageUI Netazach_27
+  - first:
+      213: -3637508519187445043
+    second: StageUI Netazach_28
+  - first:
+      213: 8431775616349290406
+    second: StageUI Netazach_29
+  - first:
+      213: -402846321717919382
+    second: StageUI Netazach_30
+  - first:
+      213: 6283825273211986084
+    second: StageUI Netazach_31
+  - first:
+      213: 3864728176261519962
+    second: StageUI Netazach_32
+  - first:
+      213: -4965903649015730584
+    second: StageUI Netazach_33
+  - first:
+      213: -6785605447581821547
+    second: StageUI Netazach_34
+  - first:
+      213: -6839525583510799099
+    second: StageUI Netazach_35
+  - first:
+      213: -3950894302187710145
+    second: StageUI Netazach_36
+  - first:
+      213: -1546531801223181972
+    second: StageUI Netazach_37
+  - first:
+      213: 1716450268529155548
+    second: StageUI Netazach_38
+  - first:
+      213: -5893201514161082698
+    second: StageUI Netazach_39
+  - first:
+      213: 4801939033610790000
+    second: StageUI Netazach_40
+  - first:
+      213: 5671928776226920619
+    second: StageUI Netazach_41
+  - first:
+      213: -9109114264229161485
+    second: StageUI Netazach_42
+  - first:
+      213: 4999126760340410988
+    second: StageUI Netazach_43
+  - first:
+      213: -7324929886118888335
+    second: StageUI Netazach_44
+  - first:
+      213: -8213981821212178171
+    second: StageUI Netazach_45
+  - first:
+      213: 8242160834937080110
+    second: StageUI Netazach_46
+  - first:
+      213: -431625789516886473
+    second: StageUI Netazach_47
+  - first:
+      213: 1394974928968596074
+    second: StageUI Netazach_48
+  - first:
+      213: 107556682672547233
+    second: StageUI Netazach_49
+  - first:
+      213: 515229277449176547
+    second: StageUI Netazach_50
+  - first:
+      213: 5933592956460954499
+    second: StageUI Netazach_51
+  - first:
+      213: 6603429279943182233
+    second: StageUI Netazach_52
+  - first:
+      213: -5544240450553726275
+    second: StageUI Netazach_53
+  - first:
+      213: -2741520081493722321
+    second: StageUI Netazach_54
+  - first:
+      213: 7827636446489369274
+    second: StageUI Netazach_55
+  - first:
+      213: -1030121938914075596
+    second: StageUI Netazach_56
+  - first:
+      213: 2960699138748603033
+    second: StageUI Netazach_57
+  - first:
+      213: -3659935123467422351
+    second: StageUI Netazach_58
+  - first:
+      213: -1678892322680757660
+    second: StageUI Netazach_59
+  - first:
+      213: -7151817310301884147
+    second: StageUI Netazach_60
+  - first:
+      213: -8103157742685238960
+    second: StageUI Netazach_61
+  - first:
+      213: 2594057562231824840
+    second: StageUI Netazach_62
+  - first:
+      213: -4616385565017936815
+    second: StageUI Netazach_63
+  - first:
+      213: 7103975340434864534
+    second: StageUI Netazach_64
+  - first:
+      213: -5284375044571219767
+    second: StageUI Netazach_65
+  - first:
+      213: -7211016616862422847
+    second: StageUI Netazach_66
+  - first:
+      213: -6614058833774660089
+    second: StageUI Netazach_67
+  - first:
+      213: 5433920801344950342
+    second: StageUI Netazach_68
+  - first:
+      213: -3646136382461524204
+    second: StageUI Netazach_69
+  - first:
+      213: 3647138318826085209
+    second: StageUI Netazach_70
+  - first:
+      213: -5754174815085220297
+    second: StageUI Netazach_71
+  - first:
+      213: -2496211679974743133
+    second: StageUI Netazach_72
+  - first:
+      213: -7395400677925297362
+    second: StageUI Netazach_73
+  - first:
+      213: -1846374256370003105
+    second: StageUI Netazach_74
+  - first:
+      213: -4489994555962111171
+    second: StageUI Netazach_75
+  - first:
+      213: 2084062670797165626
+    second: StageUI Netazach_76
+  - first:
+      213: -618537776317445743
+    second: StageUI Netazach_77
+  - first:
+      213: 4670970736406929288
+    second: StageUI Netazach_78
+  - first:
+      213: -2594639287057409523
+    second: StageUI Netazach_79
+  - first:
+      213: 2098905366200612528
+    second: StageUI Netazach_80
+  - first:
+      213: -7414439101266863845
+    second: StageUI Netazach_81
+  - first:
+      213: 5069744023767843181
+    second: StageUI Netazach_82
+  - first:
+      213: -572019331386062187
+    second: StageUI Netazach_83
+  - first:
+      213: 7692903035200115938
+    second: StageUI Netazach_84
+  - first:
+      213: 3880651119856724206
+    second: StageUI Netazach_85
+  - first:
+      213: -74506414814091151
+    second: StageUI Netazach_86
+  - first:
+      213: -3617688007017902997
+    second: StageUI Netazach_87
+  - first:
+      213: 5033593317207582421
+    second: StageUI Netazach_88
+  - first:
+      213: 6687593879618166908
+    second: StageUI Netazach_89
+  - first:
+      213: -8169452358092279690
+    second: StageUI Netazach_90
+  - first:
+      213: -5193135015601536505
+    second: StageUI Netazach_91
+  - first:
+      213: -7565465120634912146
+    second: StageUI Netazach_92
+  - first:
+      213: 1926276671109394681
+    second: StageUI Netazach_93
+  - first:
+      213: 5193898047845816250
+    second: StageUI Netazach_94
+  - first:
+      213: 3996559002547741338
+    second: StageUI Netazach_95
+  - first:
+      213: 1691665746153418503
+    second: StageUI Netazach_96
+  - first:
+      213: 3509399706495359849
+    second: StageUI Netazach_97
+  - first:
+      213: -5911148545826743412
+    second: StageUI Netazach_98
+  - first:
+      213: 1895812810441096730
+    second: StageUI Netazach_99
+  - first:
+      213: 4983548870374810232
+    second: StageUI Netazach_100
+  - first:
+      213: -4962501871503701103
+    second: StageUI Netazach_101
+  - first:
+      213: 5715423037207422159
+    second: StageUI Netazach_102
+  - first:
+      213: 3558793939408699837
+    second: StageUI Netazach_103
+  - first:
+      213: -6734871369710570835
+    second: StageUI Netazach_104
+  - first:
+      213: 2171740314241429554
+    second: StageUI Netazach_105
+  - first:
+      213: -8361957162549422299
+    second: StageUI Netazach_106
+  - first:
+      213: -5962528900164707002
+    second: StageUI Netazach_107
+  - first:
+      213: -2152971043911066799
+    second: StageUI Netazach_108
+  - first:
+      213: 6002674961222854246
+    second: StageUI Netazach_109
+  - first:
+      213: 7010455395752695660
+    second: StageUI Netazach_110
+  - first:
+      213: -2764547565327922125
+    second: StageUI Netazach_111
+  - first:
+      213: -1157792632315891807
+    second: StageUI Netazach_112
+  - first:
+      213: 325162336172150330
+    second: StageUI Netazach_113
+  - first:
+      213: 1764887038427573092
+    second: StageUI Netazach_114
+  - first:
+      213: 2855633310850230723
+    second: StageUI Netazach_115
+  - first:
+      213: -7462437990165978892
+    second: StageUI Netazach_116
+  - first:
+      213: 7009703143648320981
+    second: StageUI Netazach_117
+  - first:
+      213: -7598365496369073243
+    second: StageUI Netazach_118
+  - first:
+      213: -2160337852789624104
+    second: StageUI Netazach_119
+  - first:
+      213: -993037207990840990
+    second: StageUI Netazach_120
+  - first:
+      213: 8019520319219487030
+    second: StageUI Netazach_121
+  - first:
+      213: 6659326875475093253
+    second: StageUI Netazach_122
+  - first:
+      213: 2885627191599910540
+    second: StageUI Netazach_123
+  - first:
+      213: -8098753757655280465
+    second: StageUI Netazach_124
+  - first:
+      213: -4537333779698555681
+    second: StageUI Netazach_125
+  - first:
+      213: 6278960334135888113
+    second: StageUI Netazach_126
+  - first:
+      213: -2088763249605467614
+    second: StageUI Netazach_127
+  - first:
+      213: 3502435006665746833
+    second: StageUI Netazach_128
+  - first:
+      213: 5314691658734002942
+    second: StageUI Netazach_129
+  - first:
+      213: -5427987954869088214
+    second: StageUI Netazach_130
+  - first:
+      213: -2211219249815169399
+    second: StageUI Netazach_131
+  - first:
+      213: 5997393234305022732
+    second: StageUI Netazach_132
+  - first:
+      213: 7576810843105780068
+    second: StageUI Netazach_133
+  - first:
+      213: 430336754560763270
+    second: StageUI Netazach_134
+  - first:
+      213: -2964713462229357799
+    second: StageUI Netazach_135
+  - first:
+      213: 5221356951311379186
+    second: StageUI Netazach_136
+  - first:
+      213: -8372177828072489928
+    second: StageUI Netazach_137
+  - first:
+      213: -466911792655722998
+    second: StageUI Netazach_138
+  - first:
+      213: 7455934770840388940
+    second: StageUI Netazach_139
+  - first:
+      213: -6474627941485533290
+    second: StageUI Netazach_140
+  - first:
+      213: 7980251286433404454
+    second: StageUI Netazach_141
+  - first:
+      213: 257760796775017160
+    second: StageUI Netazach_142
+  - first:
+      213: 4000035050639879598
+    second: StageUI Netazach_143
+  - first:
+      213: -3993131664268294514
+    second: StageUI Netazach_144
+  - first:
+      213: 4112512603179412190
+    second: StageUI Netazach_145
+  - first:
+      213: 430241444972721379
+    second: StageUI Netazach_146
+  - first:
+      213: 67475745431067886
+    second: StageUI Netazach_147
+  - first:
+      213: 8052686358050917248
+    second: StageUI Netazach_148
+  - first:
+      213: -3212172507710716138
+    second: StageUI Netazach_149
+  - first:
+      213: -5434592700111624507
+    second: StageUI Netazach_150
+  - first:
+      213: 204960059776996497
+    second: StageUI Netazach_151
+  - first:
+      213: 7654885432793036823
+    second: StageUI Netazach_152
+  - first:
+      213: 8167117738607756735
+    second: StageUI Netazach_153
+  - first:
+      213: 4717519707455005181
+    second: StageUI Netazach_154
+  - first:
+      213: 5959204934500355313
+    second: StageUI Netazach_155
+  - first:
+      213: 871955639539823467
+    second: StageUI Netazach_156
+  - first:
+      213: -5726237023752218529
+    second: StageUI Netazach_157
+  - first:
+      213: 5374733888432846477
+    second: StageUI Netazach_158
+  - first:
+      213: 586114891408727705
+    second: StageUI Netazach_159
+  - first:
+      213: -6165610075174163285
+    second: StageUI Netazach_160
+  - first:
+      213: 7439658920950548507
+    second: StageUI Netazach_161
+  - first:
+      213: -223685802360662657
+    second: StageUI Netazach_162
+  - first:
+      213: 6127004518068863996
+    second: StageUI Netazach_163
+  - first:
+      213: 5319407771686050820
+    second: StageUI Netazach_164
+  - first:
+      213: 1727090092524123705
+    second: StageUI Netazach_165
+  - first:
+      213: 3438534779926271532
+    second: StageUI Netazach_166
+  - first:
+      213: -7202734894993647892
+    second: StageUI Netazach_167
+  - first:
+      213: -3975309429668288300
+    second: StageUI Netazach_168
+  - first:
+      213: -2595515322664903031
+    second: StageUI Netazach_169
+  - first:
+      213: -8523082312486952249
+    second: StageUI Netazach_170
+  - first:
+      213: -112552723283007475
+    second: StageUI Netazach_171
+  - first:
+      213: 3275552784655333309
+    second: StageUI Netazach_172
+  - first:
+      213: -4444776658055251045
+    second: StageUI Netazach_173
+  - first:
+      213: -56893402660167161
+    second: StageUI Netazach_174
+  - first:
+      213: 4835011822768975471
+    second: StageUI Netazach_175
+  - first:
+      213: -982856289456895899
+    second: StageUI Netazach_176
+  - first:
+      213: 454069151322768796
+    second: StageUI Netazach_177
+  - first:
+      213: 4576031125813529727
+    second: StageUI Netazach_178
+  - first:
+      213: 540508711922034440
+    second: StageUI Netazach_179
+  - first:
+      213: 3054063855925278030
+    second: StageUI Netazach_180
+  - first:
+      213: -5041694811299842084
+    second: StageUI Netazach_181
+  - first:
+      213: 4772991513109860969
+    second: StageUI Netazach_182
+  - first:
+      213: 5786048299614218236
+    second: StageUI Netazach_183
+  - first:
+      213: 7888028275419522601
+    second: StageUI Netazach_184
+  - first:
+      213: 8997186322409832933
+    second: StageUI Netazach_185
+  - first:
+      213: 8885547329993719657
+    second: StageUI Netazach_186
+  - first:
+      213: 6726076802067713768
+    second: StageUI Netazach_187
+  - first:
+      213: 3621584260470622439
+    second: StageUI Netazach_188
+  - first:
+      213: 2937086496944256115
+    second: StageUI Netazach_189
+  - first:
+      213: 3865612787688011452
+    second: StageUI Netazach_190
+  - first:
+      213: 869496931571978014
+    second: StageUI Netazach_191
+  - first:
+      213: 6828279939839505014
+    second: StageUI Netazach_192
+  - first:
+      213: -5013865516283490256
+    second: StageUI Netazach_193
+  - first:
+      213: -7475194874362481105
+    second: StageUI Netazach_194
+  - first:
+      213: -5413020875496103740
+    second: StageUI Netazach_195
+  - first:
+      213: -5727434286458227653
+    second: StageUI Netazach_196
+  - first:
+      213: -2988783049298069802
+    second: StageUI Netazach_197
+  - first:
+      213: -2782519279731777793
+    second: StageUI Netazach_198
+  - first:
+      213: 1464558865527769296
+    second: StageUI Netazach_199
+  - first:
+      213: -7587327450145287301
+    second: StageUI Netazach_200
+  - first:
+      213: 6857367375952979938
+    second: StageUI Netazach_201
+  - first:
+      213: -6168235716808225276
+    second: StageUI Netazach_202
+  - first:
+      213: -4642726676264757612
+    second: StageUI Netazach_203
+  - first:
+      213: 1542593820487072507
+    second: StageUI Netazach_204
+  - first:
+      213: 3574461063670449684
+    second: StageUI Netazach_205
+  - first:
+      213: 7934555446197571985
+    second: StageUI Netazach_206
+  - first:
+      213: -1260337331649247816
+    second: StageUI Netazach_207
+  - first:
+      213: -7554596667178785619
+    second: StageUI Netazach_208
+  - first:
+      213: -3499040314231382349
+    second: StageUI Netazach_209
+  - first:
+      213: 4716113619380814908
+    second: StageUI Netazach_210
+  - first:
+      213: -7256552836578548244
+    second: StageUI Netazach_211
+  - first:
+      213: 7297308966105504494
+    second: StageUI Netazach_212
+  - first:
+      213: -5707786978559506058
+    second: StageUI Netazach_213
+  - first:
+      213: 4011983302009188945
+    second: StageUI Netazach_214
+  - first:
+      213: 7594281527529397052
+    second: StageUI Netazach_215
+  - first:
+      213: -6281971639433112186
+    second: StageUI Netazach_216
+  - first:
+      213: 3833414328879998220
+    second: StageUI Netazach_217
+  - first:
+      213: -6323016610419853982
+    second: StageUI Netazach_218
+  - first:
+      213: -5764978139114569186
+    second: StageUI Netazach_219
+  - first:
+      213: 9114396153127200248
+    second: StageUI Netazach_220
+  - first:
+      213: 4935081787155386238
+    second: StageUI Netazach_221
+  - first:
+      213: -1749805799271864549
+    second: StageUI Netazach_222
+  - first:
+      213: 6778680673119650227
+    second: StageUI Netazach_223
+  - first:
+      213: -245770481487495100
+    second: StageUI Netazach_224
+  - first:
+      213: -6718093965571512741
+    second: StageUI Netazach_225
+  - first:
+      213: -239863354611284704
+    second: StageUI Netazach_226
+  - first:
+      213: 5378715561127358790
+    second: StageUI Netazach_227
+  - first:
+      213: 1535298432123454303
+    second: StageUI Netazach_228
+  - first:
+      213: 4471057231144097225
+    second: StageUI Netazach_229
+  - first:
+      213: -6923510090654382004
+    second: StageUI Netazach_230
+  - first:
+      213: 6630101234980418797
+    second: StageUI Netazach_231
+  - first:
+      213: 1234090869426250369
+    second: StageUI Netazach_232
+  - first:
+      213: -7662827359926424364
+    second: StageUI Netazach_233
+  - first:
+      213: 1588511068328424640
+    second: StageUI Netazach_234
+  - first:
+      213: -1029009049514427294
+    second: StageUI Netazach_235
+  - first:
+      213: 8898784508462565992
+    second: StageUI Netazach_236
+  - first:
+      213: -2486701846671862633
+    second: StageUI Netazach_237
+  - first:
+      213: 3053401690955929745
+    second: StageUI Netazach_238
+  - first:
+      213: -3173051774998882823
+    second: StageUI Netazach_239
+  - first:
+      213: 548520623146111868
+    second: StageUI Netazach_240
+  - first:
+      213: 7512350231780372176
+    second: StageUI Netazach_241
+  - first:
+      213: 5545328090426712154
+    second: StageUI Netazach_242
+  - first:
+      213: 291749447154860444
+    second: StageUI Netazach_243
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 16384
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: StageUI Netazach_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45389151da9f8cd30800000000000000
+      internalID: 4452082753434387284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_1
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c852bd8dfb433f4b0800000000000000
+      internalID: -5407920728960195188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_2
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bf884ed602f82740800000000000000
+      internalID: 5127614287074332594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_3
+      rect:
+        serializedVersion: 2
+        x: 1728
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21bcbf7f1a1aaa510800000000000000
+      internalID: 1561237937859578642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_4
+      rect:
+        serializedVersion: 2
+        x: 2304
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fba6cdd06fc9f9730800000000000000
+      internalID: 4008094773991467711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_5
+      rect:
+        serializedVersion: 2
+        x: 2880
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 796aa77b348bcaf10800000000000000
+      internalID: 2282401712150587031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_6
+      rect:
+        serializedVersion: 2
+        x: 3456
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8093449756e52b360800000000000000
+      internalID: 7183908145528584456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_7
+      rect:
+        serializedVersion: 2
+        x: 4032
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6271e78143bd0960800000000000000
+      internalID: 7569903642713617006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_8
+      rect:
+        serializedVersion: 2
+        x: 4608
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cca71a16764937e0800000000000000
+      internalID: -1785318304217846588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_9
+      rect:
+        serializedVersion: 2
+        x: 5184
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db3ad9e4dad603660800000000000000
+      internalID: 7363505981866484669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_10
+      rect:
+        serializedVersion: 2
+        x: 5760
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e71e8bb1c7ca31e40800000000000000
+      internalID: 5626030008556904830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_11
+      rect:
+        serializedVersion: 2
+        x: 6336
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b56659a0540e9700800000000000000
+      internalID: 548880949070685624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_12
+      rect:
+        serializedVersion: 2
+        x: 6912
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de2eef2a5168fa8e0800000000000000
+      internalID: -1679976708498857235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_13
+      rect:
+        serializedVersion: 2
+        x: 7488
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7babae72dfb8fed10800000000000000
+      internalID: 2157096665946438327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_14
+      rect:
+        serializedVersion: 2
+        x: 8064
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d07b209c942e94530800000000000000
+      internalID: 3839848963842946829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_15
+      rect:
+        serializedVersion: 2
+        x: 8640
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35b9b4e95cc017b10800000000000000
+      internalID: 1977375754296204115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_16
+      rect:
+        serializedVersion: 2
+        x: 9216
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f78d8c1ae44a3fe0800000000000000
+      internalID: -1208577777703483405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_17
+      rect:
+        serializedVersion: 2
+        x: 9792
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42a3cd8e12bfdba70800000000000000
+      internalID: 8844501366284761636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_18
+      rect:
+        serializedVersion: 2
+        x: 10368
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42b3633ed010729c0800000000000000
+      internalID: -3952188988836136156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_19
+      rect:
+        serializedVersion: 2
+        x: 10944
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcba164583d8dab90800000000000000
+      internalID: -7228966553786405939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_20
+      rect:
+        serializedVersion: 2
+        x: 11520
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96a37b0f5faf2bc90800000000000000
+      internalID: -7155380923725825431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Netazach_21
+      rect:
+        serializedVersion: 2
+        x: 12096
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fa87f8c553894040800000000000000
+      internalID: 4632378096194390768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 20690ace4c3bb2e408fed638bf8ac139
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":23.0,"y":1.0},"gridSpriteSize":{"x":576.0,"y":324.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      StageUI Netazach_0: 4452082753434387284
+      StageUI Netazach_1: -5407920728960195188
+      StageUI Netazach_10: 5626030008556904830
+      StageUI Netazach_11: 548880949070685624
+      StageUI Netazach_12: -1679976708498857235
+      StageUI Netazach_13: 2157096665946438327
+      StageUI Netazach_14: 3839848963842946829
+      StageUI Netazach_15: 1977375754296204115
+      StageUI Netazach_16: -1208577777703483405
+      StageUI Netazach_17: 8844501366284761636
+      StageUI Netazach_18: -3952188988836136156
+      StageUI Netazach_19: -7228966553786405939
+      StageUI Netazach_2: 5127614287074332594
+      StageUI Netazach_20: -7155380923725825431
+      StageUI Netazach_21: 4632378096194390768
+      StageUI Netazach_3: 1561237937859578642
+      StageUI Netazach_4: 4008094773991467711
+      StageUI Netazach_5: 2282401712150587031
+      StageUI Netazach_6: 7183908145528584456
+      StageUI Netazach_7: 7569903642713617006
+      StageUI Netazach_8: -1785318304217846588
+      StageUI Netazach_9: 7363505981866484669
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

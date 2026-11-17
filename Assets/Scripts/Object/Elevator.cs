@@ -19,10 +19,10 @@ public class Elevator : NetworkBehaviour
     private Collider2D deck;
     private float initialY;
     public bool ExitFinished => ExitStarted && !isMoving;
+    internal bool HasRisen => Object != null && Object.IsValid && FloorY > initialY + 0.001f;
     public float ExitProgress => !ExitStarted ? 0f : ExitFinished ? 1f :
         Mathf.Clamp01((FloorY - initialY) / Mathf.Max(0.01f, exitRise));
-    private float lastRenderedY;
-    private bool wasMoving;
+    private bool exitRiseSoundPlayed;
     private Vector2 initialColumnSize;
 
     private void Awake()
@@ -48,7 +48,7 @@ public class Elevator : NetworkBehaviour
             FloorY = initialY;
 
         ApplyPosition(false);
-        lastRenderedY = FloorY;
+        exitRiseSoundPlayed = ExitStarted;
     }
 
     public override void FixedUpdateNetwork()
@@ -74,12 +74,11 @@ public class Elevator : NetworkBehaviour
         if (!HasStateAuthority)
             ApplyPosition();
 
-        float delta = FloorY - lastRenderedY;
-        if (Mathf.Abs(delta) > 0.0001f && !wasMoving)
-            SoundManager.Play(delta > 0f ? SoundEffect.ElevatorUp : SoundEffect.ElevatorDown);
-
-        wasMoving = Mathf.Abs(delta) > 0.0001f || (wasMoving && isMoving);
-        lastRenderedY = FloorY;
+        if (!exitRiseSoundPlayed && ExitStarted && FloorY > initialY)
+        {
+            exitRiseSoundPlayed = true;
+            SoundManager.Play(SoundEffect.Elevator_Up);
+        }
     }
 
     public bool AllPlayersOnDeck(NetworkRunner runner)

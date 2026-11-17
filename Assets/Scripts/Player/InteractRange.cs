@@ -26,7 +26,7 @@ public class InteractRange : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (Object == null || !Object.IsValid || !HasStateAuthority)
+        if (Interactor.WorldInteractionsDisabled || Object == null || !Object.IsValid || !HasStateAuthority)
             return;
         if (other.GetComponentInParent<IInteractable>() is Component target)
             contacts[other] = target.gameObject;

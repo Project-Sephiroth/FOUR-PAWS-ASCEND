@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 [DefaultExecutionOrder(-105)]
@@ -18,6 +19,7 @@ public sealed class GameMenu : MonoBehaviour
     private float? previousTimeScale;
     private bool isOpen;
     private bool leaving;
+    private static bool quitting;
 
     public static bool BlocksInput => instance != null && instance.isOpen;
 
@@ -58,6 +60,7 @@ public sealed class GameMenu : MonoBehaviour
     private void Update()
     {
         if (pauseMenu == null || leaving || ScenePresentation.BlocksInput ||
+            SceneManager.GetActiveScene().name == nameof(NetworkGameManager.SceneName.Credits) ||
             LocalMultiplayerDebug.BlocksWorldClick || HackingConsole.IsLocalHackOpen || !Input.GetKeyDown(KeyCode.Escape))
             return;
         if (isOpen)
@@ -115,7 +118,6 @@ public sealed class GameMenu : MonoBehaviour
     private void ShowSettings()
     {
         settingsOpenedFromPause = pauseMenu.activeSelf;
-        SoundManager.Play(SoundEffect.UIClick);
         pauseMenu.SetActive(false);
         settings.Reload();
         settingsMenu.SetActive(true);
@@ -150,15 +152,9 @@ public sealed class GameMenu : MonoBehaviour
         if (leaving)
             return;
         leaving = true;
-        SoundManager.Play(SoundEffect.UIClick);
         try
         {
-            var manager = NetworkGameManager.Instance;
-            var launcher = manager != null && !manager.Runner.IsSinglePlayer
-                ? FindAnyObjectByType<NetworkLauncher>()
-                : null;
-            Func<Task> shutdown = launcher != null ? launcher.LeaveForTitle : LocalMultiplayerDebug.LeaveForTitle;
-            await ScenePresentation.LoadLocalAsync(nameof(NetworkGameManager.SceneName.Title), shutdown);
+            await LoadTitleAsync();
         }
         catch (Exception error)
         {
@@ -170,8 +166,48 @@ public sealed class GameMenu : MonoBehaviour
         }
     }
 
-    private static void ExitGame()
+    internal static Task LoadTitleAsync() => LoadAfterSessionAsync(NetworkGameManager.SceneName.Title);
+
+    internal static Task LoadAfterSessionAsync(NetworkGameManager.SceneName destination)
     {
+        var launcher = FindAnyObjectByType<NetworkLauncher>();
+        Func<Task> shutdown = launcher != null ? launcher.LeaveForTitle : LocalMultiplayerDebug.LeaveForTitle;
+        return ScenePresentation.LoadLocalAsync(destination.ToString(), shutdown);
+    }
+
+    public static async void ExitGame()
+    {
+        if (quitting)
+            return;
+        quitting = true;
+        bool inLobby = SceneManager.GetActiveScene().name == nameof(NetworkGameManager.SceneName.Lobby);
+        try
+        {
+            if (inLobby)
+            {
+                await LoadTitleAsync();
+            }
+            else
+            {
+                var manager = NetworkGameManager.Instance;
+                if (manager != null && manager.Object != null && manager.Object.IsValid)
+                    await manager.Runner.Shutdown();
+                else if (FindAnyObjectByType<NetworkLauncher>() is NetworkLauncher launcher)
+                    await launcher.LeaveForTitle();
+            }
+        }
+        catch (Exception error)
+        {
+            Debug.LogException(error);
+        }
+        finally
+        {
+            quitting = false;
+        }
+
+        if (inLobby)
+            return;
+
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
@@ -183,7 +219,8 @@ public sealed class GameMenu : MonoBehaviour
     {
         if (shortcut == null)
             return;
-        bool show = !isOpen && !leaving && !ScenePresentation.BlocksInput && !LocalMultiplayerDebug.BlocksWorldClick;
+        bool show = !isOpen && !leaving && !ScenePresentation.BlocksInput && !LocalMultiplayerDebug.BlocksWorldClick &&
+            SceneManager.GetActiveScene().name != nameof(NetworkGameManager.SceneName.Credits);
         shortcut.SetVisible(show);
         if (show)
             UIManager.EnsureLocalEventSystem();

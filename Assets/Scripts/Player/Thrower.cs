@@ -5,30 +5,40 @@ using static IMoveable;
 public class Thrower : Interactor
 {
     [SerializeField] private Mover mover;
+    [SerializeField] private BearCarryPresentation carryPresentation;
     [SerializeField] private SpriteRenderer model; //모델이 바라보는 방향에 따라 던지기 때문에 참조
 
     [Header("던지기 설정")]
     [SerializeField] private float minDistance = 1f;
     [SerializeField] private float maxDistance = 3f;
     [SerializeField] private float minAngle = 0f;
+    [SerializeField, Range(-89f, 0f)] private float rockMinAngle = -25f;
     [SerializeField] private float maxAngle = 60f;
     [SerializeField] private float throwSpeed = 5f;
     [SerializeField] private float cycleTime = 2f;
 
     [Header("미리보기")]
     [SerializeField] private Transform throwArrow;
+    [SerializeField] private Transform puppetKeyHoldPoint;
     [SerializeField] private float arrowBaseLength = 1f;
 
+    private SpriteRenderer arrowSprite;
     private Vector3 arrowOriginalScale;
+    private Vector3 arrowOriginalPosition;
+    private Vector3 originalKeyHoldPosition;
     private Vector3 originalHoldPosition; //애니메이션 플립에 대비
 
-    private float throwDistance;
-    private float throwAngle;
+    [Networked] private float ThrowDistance { get; set; }
+    [Networked] private float ThrowAngle { get; set; }
     private float aimDirection;
 
     private float aimTimer;
     [SerializeField] private RockMaker rockMaker;
     private bool waitingForHold;
+    private bool wasThrowing;
+    private bool wasGrabbingAlly;
+    private static readonly int GrabState = Animator.StringToHash("Base Layer.Bear_Grab");
+    private static readonly int ThrowState = Animator.StringToHash("Base Layer.Bear_Throw");
     [Networked] private TickTimer ThrowRecovery { get; set; }
     public bool LocksMovement => waitingForHold || aimState != AimState.None || LiftedAlly != null ||
         !ThrowRecovery.ExpiredOrNotRunning(Runner) || (rockMaker != null && rockMaker.IsPreparing);
@@ -44,6 +54,8 @@ public class Thrower : Interactor
     private MovingObject curMovingObject;
     [Networked] public MovingObject CarriedKey { get; private set; }
     [Networked] private Passenger LiftedAlly { get; set; }
+    [Networked] private NetworkBool HoldingRock { get; set; }
+    private float MinimumAimAngle => HoldingRock ? rockMinAngle : minAngle;
     private float keyHoldDeadline;
 
     public void TryCarryKey(MovingObject key)
@@ -61,7 +73,7 @@ public class Thrower : Interactor
     {
         if (!HasStateAuthority || CarriedKey != null || LiftedAlly != null ||
             curMovingObject != null || passenger == null || passenger.IsCarried ||
-            !passenger.CanBeCarried || holdPoint == null)
+            !passenger.CanBeLifted || holdPoint == null)
             return;
 
         LiftedAlly = passenger;
@@ -93,9 +105,14 @@ public class Thrower : Interactor
         if (holdPoint != null)
             originalHoldPosition = holdPoint.localPosition;
 
+        if (puppetKeyHoldPoint != null)
+            originalKeyHoldPosition = puppetKeyHoldPoint.localPosition;
+
         if (throwArrow != null)
         {
+            arrowSprite = throwArrow.GetComponent<SpriteRenderer>();
             arrowOriginalScale = throwArrow.localScale;
+            arrowOriginalPosition = throwArrow.localPosition;
             throwArrow.gameObject.SetActive(false);
         }
 
@@ -126,7 +143,7 @@ public class Thrower : Interactor
             return;
         }
 
-        if (curMovingObject == null && LiftedAlly == null)
+        if (!HoldingRock && curMovingObject == null && LiftedAlly == null)
         {
             CancelAim();
             return;
@@ -134,16 +151,11 @@ public class Thrower : Interactor
 
         aimTimer += Time.deltaTime;
 
-        switch (aimState)
-        {
-            case AimState.Distance:
-                UpdateDistance();
-                break;
-
-            case AimState.Angle:
-                UpdateAngle();
-                break;
-        }
+        float progress = Mathf.PingPong(aimTimer / Mathf.Max(0.01f, cycleTime), 1f);
+        if (aimState == AimState.Distance)
+            ThrowDistance = Mathf.Lerp(minDistance, maxDistance, progress);
+        else
+            ThrowAngle = Mathf.Lerp(MinimumAimAngle, maxAngle, progress);
 
         //클릭 시 현재 단계 확정
         if (WorldClickPressed())
@@ -175,11 +187,10 @@ public class Thrower : Interactor
         if (aimState != AimState.None)
             aimDirection = FacesLeft() ? -1f : 1f;
 
-        if (Object == null || !Object.IsValid || !HasStateAuthority)
-            return;
-
-        if (aimState != AimState.None)
+        if (IsAiming)
             UpdateArrow();
+        else
+            HideArrow();
     }
 
     private bool FacesLeft() => mover != null ? mover.FacesLeftNow : model != null && model.flipX;
@@ -189,9 +200,22 @@ public class Thrower : Interactor
         if (holdPoint == null)
             return;
 
-        Vector3 pos = originalHoldPosition;
-        pos.x = Mathf.Abs(pos.x) * (FacesLeft() ? -1f : 1f);
-        holdPoint.localPosition = pos;
+        holdPoint.localPosition = FaceOffset(originalHoldPosition);
+        if (puppetKeyHoldPoint != null)
+        {
+            Vector3 keyPosition = originalKeyHoldPosition;
+            if (FacesLeft())
+                keyPosition.x = -keyPosition.x;
+            puppetKeyHoldPoint.localPosition = keyPosition;
+        }
+    }
+
+    internal Transform PuppetKeyHoldPoint => puppetKeyHoldPoint != null ? puppetKeyHoldPoint : holdPoint;
+
+    private Vector3 FaceOffset(Vector3 position)
+    {
+        position.x = Mathf.Abs(position.x) * (FacesLeft() ? -1f : 1f);
+        return position;
     }
 
     private void OnDisable()
@@ -203,7 +227,7 @@ public class Thrower : Interactor
     #region Throw
     public void TryThrow(MovingObject movingObject)
     {
-        if (!HasStateAuthority || movingObject == null || holdPoint == null ||
+        if (!HasStateAuthority || movingObject == null || !movingObject.AllowsHolder(this) || holdPoint == null ||
             CarriedKey != null || LiftedAlly != null || waitingForHold || aimState != AimState.None)
             return;
 
@@ -239,12 +263,17 @@ public class Thrower : Interactor
         BeginAim();
     }
 
+    internal void BeginRockAim()
+    {
+        HoldingRock = true;
+        BeginAim();
+    }
+
     private void BeginAim()
     {
-        bool facesLeft = mover != null ? mover.FacesLeftNow : model != null && model.flipX;
-        aimDirection = facesLeft ? -1f : 1f;
-        throwDistance = minDistance;
-        throwAngle = minAngle;
+        aimDirection = FacesLeft() ? -1f : 1f;
+        ThrowDistance = minDistance;
+        ThrowAngle = MinimumAimAngle;
         aimTimer = 0f;
         aimState = AimState.Distance;
         IsAiming = true;
@@ -254,56 +283,67 @@ public class Thrower : Interactor
     private void Throw()
     {
         aimDirection = FacesLeft() ? -1f : 1f;
-        UpdateHoldPoint();
-        if (LiftedAlly != null)
-            LiftedAlly.RPC_Throw(this, GetDestination(), throwSpeed, GetArcHeight());
-        else if (curMovingObject != null)
-            curMovingObject.RPC_RequestMove(this, MoveType.Parabola, GetDestination(), throwSpeed, GetArcHeight());
+        UpdateArrow();
+        Vector2 origin = arrowSprite != null && arrowSprite.sprite != null
+            ? throwArrow.TransformPoint(arrowSprite.sprite.bounds.center)
+            : GetArrowAnchor();
+        float range = aimDirection * ThrowDistance;
+        if (HoldingRock)
+        {
+            rockMaker.ThrowRock(origin, range, ThrowAngle, throwSpeed);
+        }
+        else
+        {
+            Vector2 destination = origin + Vector2.right * range;
+            float height = GetArcHeight();
+            if (LiftedAlly != null)
+                LiftedAlly.RPC_Throw(this, origin, destination, throwSpeed, height);
+            else if (curMovingObject != null)
+                curMovingObject.RPC_RequestMove(this, MoveType.Parabola, origin, destination, throwSpeed, height);
+        }
         CancelAim();
         ThrowRecovery = TickTimer.CreateFromSeconds(Runner, throwRecoverySeconds);
-        RPC_PlayThrow();
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_PlayThrow()
-    {
-        if (anim != null)
-            anim.SetTrigger("Throw");
-    }
+    internal bool HasAllyCarryPose(MyEnum.CharacterType character) =>
+        carryPresentation != null && carryPresentation.HasAllyPose(character);
 
     public override void Render()
     {
+        bool throwing = !ThrowRecovery.ExpiredOrNotRunning(Runner);
+        var ally = LiftedAlly;
+        bool grabbingAlly = !throwing && ally != null && ally.CurrentLifter == this;
+        bool showGrab = !throwing && (grabbingAlly || IsAiming || (CarriedKey != null && CarriedKey.Holder == this));
+        if (carryPresentation != null)
+        {
+            var allyType = grabbingAlly ? ally.BearCarryCharacter : MyEnum.CharacterType.None;
+            carryPresentation.Show(showGrab && ally == null, HoldingRock, allyType, FacesLeft());
+        }
+
+        if (throwing && !wasThrowing)
+            SoundManager.Play(SoundEffect.Throw);
+
         if (anim != null)
-            anim.SetBool("IsGrab", IsAiming || CarriedKey != null || LiftedAlly != null);
+        {
+            anim.SetBool("IsGrab", showGrab);
+            anim.SetBool("IsThrowing", throwing);
+            // 모든 화면에서 네트워크 던지기 상태가 시작할 때 첫 프레임부터 재생합니다.
+            if (throwing && !wasThrowing)
+                anim.Play(ThrowState, 0, 0f);
+            else if (grabbingAlly && !wasGrabbingAlly)
+                anim.Play(GrabState, 0, 0f);
+        }
+        wasThrowing = throwing;
+        wasGrabbingAlly = grabbingAlly;
     }
 
-    private void UpdateDistance()
+    private Vector3 GetArrowAnchor()
     {
-        float duration = Mathf.Max(0.01f, cycleTime);
+        if (throwArrow == null)
+            return holdPoint.position;
 
-        float t = Mathf.PingPong(aimTimer / duration, 1f);
-
-        throwDistance = Mathf.Lerp(minDistance, maxDistance, t);
-    }
-
-    private void UpdateAngle()
-    {
-        float duration = Mathf.Max(0.01f, cycleTime);
-
-        float t = Mathf.PingPong(aimTimer / duration, 1f);
-
-        throwAngle = Mathf.Lerp(minAngle, maxAngle, t);
-    }
-
-    /// <summary>
-    /// 잡고 있는 오브젝트가 던져질 위치를 계산
-    /// </summary>
-    /// <returns></returns>
-    private Vector2 GetDestination()
-    {
-        Vector2 startPos = holdPoint.position;
-
-        return startPos + new Vector2(aimDirection * throwDistance, 0f);
+        Vector3 position = FaceOffset(arrowOriginalPosition);
+        return throwArrow.parent != null ? throwArrow.parent.TransformPoint(position) : position;
     }
 
     /// <summary>
@@ -312,9 +352,9 @@ public class Thrower : Interactor
     /// <returns></returns>
     private float GetArcHeight()
     {
-        float rad = Mathf.Clamp(throwAngle, 0f, 89f) * Mathf.Deg2Rad;
+        float rad = Mathf.Clamp(ThrowAngle, 0f, 89f) * Mathf.Deg2Rad;
 
-        return throwDistance * Mathf.Tan(rad) / 4f;
+        return ThrowDistance * Mathf.Tan(rad) / 4f;
     }
 
     #endregion
@@ -330,7 +370,7 @@ public class Thrower : Interactor
             case AimState.Distance: //현재 거리 확정 후 각도 조절 시작
                 aimState = AimState.Angle;
                 aimTimer = 0f;
-                throwAngle = minAngle;
+                ThrowAngle = MinimumAimAngle;
                 break;
 
             case AimState.Angle: //현재 각도 확정 후 던지기
@@ -345,6 +385,7 @@ public class Thrower : Interactor
     private void CancelAim()
     {
         curMovingObject = null;
+        HoldingRock = false;
         waitingForHold = false;
         aimState = AimState.None;
         IsAiming = false;
@@ -360,16 +401,15 @@ public class Thrower : Interactor
         if (!throwArrow.gameObject.activeSelf)
             throwArrow.gameObject.SetActive(true);
 
-        //화살표 꼬리를 손 위치에 고정
-        throwArrow.position = holdPoint.position;
+        throwArrow.position = GetArrowAnchor();
 
         //각도 조절
-        float angle = aimDirection > 0f ? throwAngle : 180f - throwAngle;
+        float angle = FacesLeft() ? 180f - ThrowAngle : ThrowAngle;
 
         throwArrow.rotation = Quaternion.Euler(0f, 0f, angle);
 
         //X축 스케일로 길이 조절
-        float scaleX = throwDistance / Mathf.Max(0.01f, arrowBaseLength);
+        float scaleX = ThrowDistance / Mathf.Max(0.01f, arrowBaseLength);
 
         throwArrow.localScale = new Vector3(arrowOriginalScale.x * scaleX, arrowOriginalScale.y, arrowOriginalScale.z);
     }

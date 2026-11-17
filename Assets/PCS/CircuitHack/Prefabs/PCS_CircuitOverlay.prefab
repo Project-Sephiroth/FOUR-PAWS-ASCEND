@@ -269,6 +269,7 @@ GameObject:
   - component: {fileID: 1271442722268766860}
   - component: {fileID: 4613860118867529131}
   - component: {fileID: 972697275693544869}
+  - component: {fileID: 7800000000000000000}
   m_Layer: 0
   m_Name: Close
   m_TagString: Untagged
@@ -4504,6 +4505,7 @@ GameObject:
   - component: {fileID: 2830818532521159368}
   - component: {fileID: 9091833501700514581}
   - component: {fileID: 6831865990851201687}
+  - component: {fileID: 7800000000000000001}
   m_Layer: 0
   m_Name: Restart
   m_TagString: Untagged
@@ -5427,6 +5429,7 @@ GameObject:
   - component: {fileID: 3352109489145533766}
   - component: {fileID: 157487703982682759}
   - component: {fileID: 8812571709733140269}
+  - component: {fileID: 7800000000000000002}
   m_Layer: 0
   m_Name: NewHack
   m_TagString: Untagged
@@ -6298,3 +6301,39 @@ MonoBehaviour:
   m_EffectColor: {r: 0.43, g: 0.6, b: 0.58, a: 1}
   m_EffectDistance: {x: 2, y: 2}
   m_UseGraphicAlpha: 1
+--- !u!114 &7800000000000000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 857576042350714597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6823324506786100457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8553326814055149281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound

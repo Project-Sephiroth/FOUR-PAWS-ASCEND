@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 477683463598251795}
   - component: {fileID: 5720357180836099355}
   m_Layer: 10
-  m_Name: Flight Visual
+  m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58,7 +58,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -77,8 +77,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 558289701
-  m_SortingLayer: 2
+  m_SortingLayerID: 1312611439
+  m_SortingLayer: 5
   m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: d9ef4fea4d974c64b8b02df46ca80225, type: 3}
@@ -101,7 +101,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6693495991874044583}
   - component: {fileID: 4776478587502208355}
-  - component: {fileID: 4412533703204020972}
   - component: {fileID: 5441757423536069285}
   - component: {fileID: 7423584935903156389}
   - component: {fileID: 8811247424528696001}
@@ -154,31 +153,8 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
---- !u!114 &4412533703204020972
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4863071232083572439}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29a38f32580fed9459e749a71ad04b9b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MovingObject
-  canInteract: 1
-  moveSpeed: 3
-  arcHeight: 2
-  outline: {fileID: 0}
-  _IsMoving:
-    RawValue: 0
-  _Holder: {fileID: 0}
-  _ReleasedByTongue:
-    RawValue: 0
-  _ReleasedByThrower:
-    RawValue: 0
 --- !u!114 &5441757423536069285
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,7 +174,6 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 8811247424528696002}
-  - {fileID: 4412533703204020972}
   - {fileID: 8811247424528696001}
   ForceRemoteRenderTimeframe: 0
 --- !u!61 &7423584935903156389
@@ -217,7 +192,7 @@ BoxCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 136
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2

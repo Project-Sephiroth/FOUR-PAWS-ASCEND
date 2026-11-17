@@ -39,6 +39,7 @@ namespace FourPaws.PCS.CircuitHack
             foreach(var stage in stages){if(!stage)return "선택한 단계 데이터가 없습니다.";error=CircuitMazeData.Validate(stage.Capture(),false);if(error!=null)return error;}return null;
         }
         public void StartHack(){if(layouts!=null&&layouts.Length>0)StartSequence(layouts);else StartSequence(stages);}
+        internal bool StartAllStages() => layouts?.Length > 0 ? StartLayouts(layouts, false) : StartLegacy(stages, false);
         public bool StartSingleStage(CircuitStageLayout stage)=>StartLayouts(new[]{stage},true);
         public bool StartSequence(CircuitStageLayout[] selected)=>HackingConsole.IsGameplayScene(gameObject.scene) && selected != null && selected.Length > 0 ? StartSingleStage(selected[0]) : StartLayouts(selected,false);
         public bool StartSingleStage(CircuitMazeData stage)=>StartLegacy(new[]{stage},true);
@@ -77,7 +78,24 @@ namespace FourPaws.PCS.CircuitHack
             else CurrentData=legacy[StageIndex];
             BeginAttempt();return true;
         }
-        private void BeginAttempt(){if(turnSfx)turnSfx.ClearPlayback(this);elapsed=0;AttemptId++;State=HackState.Running;Signal.Reset(CurrentData.start,CurrentData.initialDirection,SpeedFor(CurrentData.baseSpeed,Failures,assistSlowdown));if(input)input.RequireRelease();if(failureAudio)failureAudio.Stop();if(view){view.Bind(CurrentData);view.Show(this);}}
+        private void BeginAttempt()
+        {
+            if (turnSfx) turnSfx.ClearPlayback(this);
+            elapsed = 0;
+            AttemptId++;
+            State = HackState.Running;
+
+            float speed = SpeedFor(CurrentData.baseSpeed, Failures, assistSlowdown);
+            Signal.Reset(CurrentData.start, CurrentData.initialDirection, speed);
+
+            if (input) input.RequireRelease();
+            if (failureAudio) failureAudio.Stop();
+            if (view)
+            {
+                view.Bind(CurrentData);
+                view.Show(this);
+            }
+        }
         public static float SpeedFor(float original,int failures,bool assist)=>original*(assist?Mathf.Max(.6f,Mathf.Pow(.9f,failures/3)):1f);
         public void RestartStage(){if(State==HackState.Running||State==HackState.FailFeedback||State==HackState.StageFeedback)BeginAttempt();}
         public void ReloadLayoutAndStart(){if(CurrentData==null||sources==null)return;var selected=sources[StageIndex];CloseHack();StartSingleStage(selected);}

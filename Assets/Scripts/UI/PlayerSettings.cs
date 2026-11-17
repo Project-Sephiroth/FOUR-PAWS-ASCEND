@@ -58,22 +58,17 @@ internal sealed class PlayerSettings
         PlayerPrefs.Save();
         ApplyAudio();
         ApplyDisplay();
-        SoundManager.Play(SoundEffect.UIClick);
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    private static void RestoreSavedSettings()
-    {
-        ApplyAudio();
-        ApplyDisplay();
-    }
+    private static void RestoreSavedDisplay() => ApplyDisplay();
 
-    private static void ApplyAudio()
+    internal static void ApplyAudio()
     {
-        AudioListener.volume = Mathf.Clamp01(PlayerPrefs.GetFloat(MasterKey, 1f));
         SoundManager.Instance?.SetVolumeLevels(
-            Mathf.Clamp01(PlayerPrefs.GetFloat(MusicKey, 1f)),
-            Mathf.Clamp01(PlayerPrefs.GetFloat(EffectsKey, 1f)));
+            PlayerPrefs.GetFloat(MasterKey, 1f),
+            PlayerPrefs.GetFloat(MusicKey, 1f),
+            PlayerPrefs.GetFloat(EffectsKey, 1f));
     }
 
     private static void ApplyDisplay()

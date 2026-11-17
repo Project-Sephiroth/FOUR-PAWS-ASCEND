@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public sealed class PlayerHealthHud : MonoBehaviour
@@ -12,7 +13,8 @@ public sealed class PlayerHealthHud : MonoBehaviour
     private void LateUpdate()
     {
         var manager = NetworkGameManager.Instance;
-        if (manager == null || manager.Object == null || !manager.Object.IsValid ||
+        if (SceneManager.GetActiveScene().name == nameof(NetworkGameManager.SceneName.Lobby) ||
+            manager == null || manager.Object == null || !manager.Object.IsValid ||
             !manager.TryGetGameplayPlayer(manager.Runner.LocalPlayer, out var player) ||
             player == null || !player.IsValid || !player.TryGetComponent(out PlayerHealth health))
         {

@@ -29,6 +29,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Netzach.unity
     guid: aab84646ca75be444845dc81a1ddf640
+  - enabled: 1
+    path: Assets/Scenes/Credits.unity
+    guid: bfee3bbdc7e3407ab8bd547bbb628c62
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

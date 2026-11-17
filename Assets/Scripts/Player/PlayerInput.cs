@@ -10,19 +10,29 @@ public class PlayerInput : NetworkBehaviour
     public bool CanMoveInput = true;
     public bool CanJumpInput = true;
 
+    private PlayerHealth health;
+    internal bool IsHacking => health != null && health.IsHacking;
+
+    private void Awake() => health = GetComponent<PlayerHealth>();
+
+    internal void ClearMovementInput()
+    {
+        MoveInput = Vector2.zero;
+        JumpInput = false;
+    }
+
     private void Update()
     {
         if (Object == null || !Object.IsValid || !HasStateAuthority)
             return;
 
-        if (!LocalMultiplayerDebug.AllowsInput(Object))
+        if (IsHacking || !LocalMultiplayerDebug.AllowsInput(Object))
         {
-            MoveInput = Vector2.zero;
-            JumpInput = false;
+            ClearMovementInput();
             return;
         }
         if (CanMoveInput)
-            GetMoveInput();
+            MoveInput.x = Input.GetAxis("Horizontal");
         else
             MoveInput = Vector2.zero;
 
@@ -30,11 +40,6 @@ public class PlayerInput : NetworkBehaviour
             GetJumpInput();
         else
             JumpInput = false;
-    }
-
-    void GetMoveInput()
-    {
-        MoveInput.x = Input.GetAxis("Horizontal");
     }
 
     void GetJumpInput()

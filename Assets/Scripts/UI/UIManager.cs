@@ -7,8 +7,8 @@ public sealed class UIManager : MonoBehaviour
     // 레이어 사이에 여유를 두어 한 화면 안의 팝업 캔버스도 자기 UI 범위에서 그릴 수 있게 합니다.
     internal enum Layer
     {
-        Health = 40, Puzzle = 41, Shortcut = 45, Pause = 150, Settings = 170,
-        Hacking = 190, Debug = 220, Transition = 1000
+        Generator = 30, Health = 40, Puzzle = 41, Spectator = 44, Shortcut = 45, Pause = 150, Settings = 170,
+        Hacking = 190, Debug = 900, DemoComplete = 950, Transition = 1000
     }
 
     private static UIManager instance;
@@ -19,6 +19,7 @@ public sealed class UIManager : MonoBehaviour
         instance = this;
         Mount(assets.healthHud, Layer.Health);
         Mount(assets.puzzleProgressHud, Layer.Puzzle);
+        Mount(assets.spectatorViewHud, Layer.Spectator);
         gameObject.AddComponent<GameMenu>().Initialize(assets, this);
     }
 

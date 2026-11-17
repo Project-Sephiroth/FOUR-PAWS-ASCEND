@@ -3,7 +3,7 @@ using UnityEngine;
 using static IMoveable;
 
 [RequireComponent(typeof(Rigidbody2D))]
-// 돌, 열쇠, 잡을 수 있는 로봇에 공통으로 붙습니다. 누가 들고 있는지와 물체가 어떻게 움직이는지를 한곳에서 관리합니다.
+// 열쇠, 잡을 수 있는 아군과 로봇에 공통으로 붙습니다. 누가 들고 있는지와 물체가 어떻게 움직이는지를 한곳에서 관리합니다.
 public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
 {
     // canInteract는 평상시 상호작용 허용 여부, moveSpeed와 arcHeight는 기본 이동 속도와 포물선의 높이입니다.
@@ -11,6 +11,13 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float arcHeight = 2f;
     [SerializeField] private InteractableOutline outline;
+    [SerializeField] private Transform holdPivot;
+    [SerializeField] private bool tongueAlly;
+    [SerializeField] private bool tongueOnly;
+    internal bool AllowsHolder(Interactor interactor) =>
+        interactor is Tongue || (!tongueOnly && (robot == null || interactor is not Thrower));
+    private Passenger passenger;
+    private PlayerHealth playerHealth;
 
     // IsMoving은 정해진 경로를 따라 움직이는 중인지, Holder는 지금 누가 들고 있는지 나타냅니다.
     // StartPosition과 Destination은 경로의 양 끝, Path는 직선이나 포물선입니다. Duration은 전체 이동 시간이고 Elapsed는 지금까지 지난 시간입니다.
@@ -35,30 +42,43 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
     private RobotBase robot;
     // 클릭과 외곽선이 같은 조건을 사용해야 잡을 수 없는 물체를 표시하지 않습니다.
     public bool CanInteract => Object != null && Object.IsValid && canInteract && !IsHeld && !IsMoving &&
-        !RobotAirborne && (robot == null || !robot.SuppressBody) && (rock == null || !rock.HasImpacted);
+        !RobotAirborne && (robot == null || !robot.SuppressBody);
+    internal Vector2 TongueGripPosition => holdPivot != null ? holdPivot.position : transform.position;
+    internal bool CanBeTongueHeld => CanInteract && !TongueTargetUnavailable;
+    internal bool TongueTargetUnavailable => Object == null || !Object.IsValid ||
+        (robot != null && robot.SuppressBody) ||
+        (tongueAlly && !CanGripAlly);
+    internal bool IsHeldByTongue => Object != null && Object.IsValid && Holder is Tongue;
+    private bool CanGripAlly => passenger != null && !passenger.IsCarried &&
+        playerHealth != null && playerHealth.Health > 0;
     public bool IsCrushed => robot != null && robot.IsCrushed;
-    private bool UsesThrowParent => robot != null;
 
     // rb는 물리로 움직이는 몸체, col은 부딪히는 모양입니다. original로 시작하는 값들은 잡기 전의 물리 설정으로 돌려놓을 때 사용합니다.
     // suppressingPhysics는 물리를 이미 멈춘 상태인지 기억해 매번 설정을 덮어쓰지 않게 합니다.
     private Rigidbody2D rb;
     private Collider2D col;
-    private Rock rock;
     private bool suppressingPhysics;
     private bool originalSimulation;
     private bool originalColliderEnabled;
+    private bool originalColliderTrigger;
+    private bool tongueHitboxActive;
     private RigidbodyType2D originalBodyType;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
-        rock = GetComponent<Rock>();
         key = GetComponent<Key>();
         robot = GetComponent<RobotBase>();
+        if (tongueAlly)
+        {
+            passenger = GetComponent<Passenger>();
+            playerHealth = GetComponent<PlayerHealth>();
+        }
         originalSimulation = rb.simulated;
         originalBodyType = rb.bodyType;
         originalColliderEnabled = col != null && col.enabled;
+        originalColliderTrigger = col != null && col.isTrigger;
     }
 
     // 매 틱의 처리 순서
@@ -84,17 +104,49 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
             FallRobot();
         else if (Holder is Tongue tongue)
         {
-            if (tongue.State == Tongue.TongueState.Holding || tongue.State == Tongue.TongueState.Retracting)
-                transform.position = tongue.GetFollowPosition();
+            if (tongueAlly && !CanGripAlly)
+            {
+                ReleaseAllyFromTongue();
+                return;
+            }
+
+            if (tongue.State == Tongue.TongueState.Holding)
+                FollowTongue(tongue);
         }
-        else if (!UsesThrowParent && Holder != null && Holder.HoldPoint != null)
-            transform.position = Holder.HoldPoint.position;
+        else if (Holder is Thrower bear)
+            FollowBear(bear);
+    }
+
+    internal bool ReleaseAllyFromTongue()
+    {
+        if (!HasStateAuthority || !tongueAlly || Holder is not Tongue tongue)
+            return false;
+
+        Holder = null;
+        ReleasedByTongue = true;
+        ApplyHeldPhysics();
+        tongue.RPC_AllyReleased(this);
+        return true;
+    }
+
+    private void FollowBear(Thrower bear)
+    {
+        Transform anchor = key != null ? bear.PuppetKeyHoldPoint : bear.HoldPoint;
+        if (anchor != null)
+            transform.position = anchor.position;
+    }
+
+    // 혀의 목표점을 피벗에 맞춥니다. Rigidbody와 Transform은 같은 위치에 둡니다.
+    private void FollowTongue(Tongue tongue)
+    {
+        Vector2 gripOffset = TongueGripPosition - (Vector2)transform.position;
+        SetBodyPosition(tongue.GetFollowPosition() - gripOffset);
     }
 
     public override void Render()
     {
-        if (rock != null && HasStateAuthority && Holder is Thrower bear && bear.HoldPoint != null)
-            transform.position = bear.HoldPoint.position;
+        if (HasStateAuthority && Holder is Thrower bear)
+            FollowBear(bear);
         if ((robot != null || !HasStateAuthority) && (key == null || !key.IsConsumed))
             ApplyHeldPhysics();
     }
@@ -103,6 +155,9 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
     public void OnInteract(Interactor interactor)
     {
         if (Object == null || !Object.IsValid || !canInteract || IsCrushed || IsHeld || IsMoving || RobotAirborne || (robot != null && robot.SuppressBody))
+            return;
+
+        if (!AllowsHolder(interactor) || (tongueAlly && interactor is not Tongue))
             return;
 
         if (key != null && interactor is Thrower)
@@ -116,7 +171,7 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
     // 잡기 순서
     // 1. 온라인에서는 요청을 보낸 사람이 조작하는 캐릭터인지 확인합니다.
     // 2. accepted에 잡기 가능 여부를 담습니다. 이미 잡혔거나 날아가는 물체는 잡을 수 없습니다.
-    // 3. 허용하면 Holder를 설정하고 물리를 끈 뒤, 곰이 잡은 돌과 로봇을 손 아래에 붙입니다.
+    // 3. 허용하면 Holder를 설정하고 물리를 끈 뒤, 곰이 잡은 물체를 손 위치에 둡니다.
     // 4. 결과를 곰이나 개구리에게 돌려줘서 다음 동작을 시작할 수 있게 합니다.
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RequestHold(Interactor interactor, RpcInfo info = default)
@@ -124,28 +179,25 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
         if (interactor == null || (!Runner.IsSinglePlayer && info.Source != interactor.Object.StateAuthority))
             return;
 
-        bool accepted = !IsCrushed && !IsHeld && !IsMoving && (rock == null || !rock.HasImpacted) && !RobotAirborne && (robot == null || !robot.SuppressBody) && (key == null || key.CanPickUp) &&
-                        (canInteract || (rock != null && interactor is Thrower &&
-                            interactor.Object.StateAuthority == Object.StateAuthority));
+        bool accepted = canInteract && !IsCrushed && !IsHeld && !IsMoving && !RobotAirborne &&
+            (robot == null || !robot.SuppressBody) && (key == null || key.CanPickUp);
+        accepted &= AllowsHolder(interactor) && (!tongueAlly || (interactor is Tongue && CanGripAlly));
         if (accepted)
         {
-            if (rock != null && interactor is Thrower rockThrower)
-                rock.SetThrower(rockThrower);
-
             ReleasedByTongue = false;
             ReleasedByThrower = false;
             Holder = interactor;
-            ApplyHeldPhysics();
-            if (interactor is Thrower && interactor.HoldPoint != null)
+
+            if (interactor is Tongue)
             {
-                if (UsesThrowParent)
-                {
-                    transform.SetParent(interactor.HoldPoint, true);
-                    transform.localPosition = Vector3.zero;
-                }
-                else
-                    transform.position = interactor.HoldPoint.position;
+                passenger?.OnTongueGrabbed();
+                robot?.StartHeldStruggle();
             }
+
+            ApplyHeldPhysics();
+
+            if (interactor is Thrower bear)
+                FollowBear(bear);
         }
 
         if (interactor is Tongue tongue)
@@ -164,18 +216,20 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
         if (interactor == null || Holder != interactor || (!Runner.IsSinglePlayer && info.Source != interactor.Object.StateAuthority))
             return;
 
-        if (UsesThrowParent)
-            transform.SetParent(null, true);
-
-        transform.position = position;
         ReleasedByTongue = interactor is Tongue;
+        if (ReleasedByTongue)
+        {
+            position -= TongueGripPosition - (Vector2)transform.position;
+            SetBodyPosition(position);
+        }
+        else
+            transform.position = position;
         Holder = null;
         if (robot != null && ReleasedByTongue && !IsCrushed)
         {
             RobotAirborne = true;
             RobotFallSpeed = 0f;
             rb.position = position;
-            robot.DefeatFromDrop();
         }
         ApplyHeldPhysics();
     }
@@ -190,17 +244,24 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
     // 놓을 때는 Awake에서 저장한 설정을 되돌립니다. 동적 몸체의 이전 속도는 지워서 잡히기 전 속도로 튀지 않게 합니다.
     private void ApplyHeldPhysics()
     {
-        bool suppress = IsHeld || (robot != null && robot.SuppressBody) || (rock != null && rock.HasImpacted);
-        if (suppressingPhysics == suppress)
+        bool suppress = IsHeld || (robot != null && robot.SuppressBody);
+        // 혀에 잡힌 로봇은 물리 반응 없이 따라가지만 돌의 충돌 검사에는 남겨 둡니다.
+        bool tongueHitbox = robot != null && Holder is Tongue && !robot.SuppressBody && originalColliderEnabled;
+        if (suppressingPhysics == suppress && tongueHitboxActive == tongueHitbox)
             return;
 
+        if (tongueHitboxActive != tongueHitbox)
+        {
+            rb.bodyType = tongueHitbox ? RigidbodyType2D.Kinematic : originalBodyType;
+            if (col != null)
+                col.isTrigger = tongueHitbox || originalColliderTrigger;
+        }
         suppressingPhysics = suppress;
-        rb.simulated = !suppress && originalSimulation;
+        tongueHitboxActive = tongueHitbox;
+        rb.simulated = (tongueHitbox || !suppress) && originalSimulation;
         if (col != null)
-            col.enabled = !suppress && originalColliderEnabled;
+            col.enabled = (tongueHitbox || !suppress) && originalColliderEnabled;
 
-        if (!suppress && rock != null)
-            rock.IgnoreThrowerContacts();
         if (HasStateAuthority && rb.bodyType == RigidbodyType2D.Dynamic)
         {
             rb.linearVelocity = Vector2.zero;
@@ -211,33 +272,21 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
     // 던지기 순서
     // 1. 현재 잡고 있는 캐릭터의 요청인지 확인하고 물체를 손에서 분리합니다.
     // 2. 손 위치로 출발점을 맞춘 뒤 잡은 상태를 풀고 물리를 되돌립니다.
-    // 3. BeginMove로 경로를 준비합니다. 로봇이면 착지할 때까지 공중 상태로 둡니다.
+    // 3. BeginMove로 경로를 준비합니다.
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_RequestMove(Interactor interactor, MoveType type, Vector2 target,
+    public void RPC_RequestMove(Interactor interactor, MoveType type, Vector2 origin, Vector2 target,
         float speed, float height, RpcInfo info = default)
     {
-        if (interactor == null || Holder != interactor || (!Runner.IsSinglePlayer && info.Source != interactor.Object.StateAuthority))
+        if (robot != null || interactor == null || Holder != interactor ||
+            (!Runner.IsSinglePlayer && info.Source != interactor.Object.StateAuthority))
             return;
 
-        if (UsesThrowParent)
-            transform.SetParent(null, true);
-
-        if (interactor.HoldPoint != null)
-        {
-            Vector3 launchPosition = interactor.HoldPoint.position;
-            transform.position = launchPosition;
-            rb.position = launchPosition;
-        }
+        SetBodyPosition(origin);
 
         Holder = null;
         ApplyHeldPhysics();
         BeginMove(type, target, speed, height);
         ReleasedByThrower = key != null && interactor is Thrower && IsMoving;
-        if (robot != null)
-        {
-            RobotAirborne = true;
-            RobotFallSpeed = 0f;
-        }
     }
 
     public void TryMove(MoveType type, Vector2 targetPosition)
@@ -249,7 +298,6 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
     }
 
     // 이동 거리와 속도로 전체 시간을 정합니다. 경로를 코드에서 그대로 따라가게 이동 중에는 물리 몸체를 Kinematic으로 바꿉니다.
-    // 돌의 포물선에는 최소 높이를 두고, 시작과 동시에 Rock에 알려 출발 때 겹친 대상을 기록하게 합니다.
     private void BeginMove(MoveType type, Vector2 target, float speed, float height)
     {
         StartPosition = transform.position;
@@ -259,19 +307,15 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
             return;
 
         Path = type;
-        ArcHeight = type == MoveType.Parabola && (rock != null || key != null) ? Mathf.Max(0.35f, height) : height;
+        ArcHeight = type == MoveType.Parabola && key != null ? Mathf.Max(0.35f, height) : height;
         Duration = distance / speed;
         Elapsed = 0f;
         IsMoving = true;
         rb.bodyType = RigidbodyType2D.Kinematic;
-        if (rock != null)
-            rock.BeginFlight();
     }
 
     // 이동 순서
-    // 1. 이동이 끝났으면 원래 물리 타입으로 복구합니다. 동적 돌은 경로 끝에서 가던 방향과 속도로 이어서 움직입니다.
-    // 2. 움직이는 중이면 progress를 0~1로 계산해 출발점과 도착점 사이의 next 위치를 구합니다. 포물선에서는 중간 지점이 가장 높습니다.
-    // 3. 돌은 명중했는지, 떨어지는 로봇은 땅에 닿는지 확인합니다. 둘 다 해당하지 않으면 next 위치로 이동합니다.
+    // 경로를 따라 이동하며 로봇의 착지를 확인하고, 끝나면 원래 물리 타입으로 복구합니다.
     public void Move()
     {
         if (!HasStateAuthority || !IsMoving)
@@ -282,49 +326,32 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
         {
             IsMoving = false;
             rb.bodyType = originalBodyType;
-            if (rock != null && rb.bodyType == RigidbodyType2D.Dynamic)
-            {
-                Vector2 velocity = (Destination - StartPosition) / Duration;
-                if (Path == MoveType.Parabola)
-                    velocity.y -= 4f * ArcHeight / Duration;
-                rb.linearVelocity = velocity;
-            }
             return;
         }
 
         Elapsed = Mathf.Min(Elapsed + Runner.DeltaTime, Duration);
-        float progress = Elapsed / Duration;
-        Vector2 next = Vector2.Lerp(StartPosition, Destination, progress);
-        if (Path == MoveType.Parabola)
-            next.y += 4f * ArcHeight * progress * (1f - progress);
+        Vector2 next = SamplePath(Elapsed);
 
-        if (rock != null && rock.TryImpactAlong(next))
-            return;
         if (RobotAirborne)
         {
             if (!TryLandRobot(next))
-                SetRobotPosition(next);
+                SetBodyPosition(next);
             return;
         }
 
-        if (rock != null || key != null)
-        {
-            rock?.TrackFlightStep(rb.position, next, Runner.DeltaTime);
-            rb.position = next;
-            transform.position = new Vector3(next.x, next.y, transform.position.z);
-        }
+        if (key != null)
+            SetBodyPosition(next);
         else
             rb.MovePosition(next);
     }
 
-    // 돌이 부딪히면 이동을 멈추고 충돌 지점에 그림을 잠깐 남깁니다.
-    internal void StopRockAt(Vector2 position)
+    private Vector2 SamplePath(float elapsed)
     {
-        IsMoving = false;
-        rock?.ResetFlightPose();
-        rb.simulated = false;
-        rb.position = position;
-        transform.position = new Vector3(position.x, position.y, transform.position.z);
+        float progress = elapsed / Duration;
+        Vector2 position = Vector2.Lerp(StartPosition, Destination, progress);
+        if (Path == MoveType.Parabola)
+            position.y += 4f * ArcHeight * progress * (1f - progress);
+        return position;
     }
 
     // 던지기 경로가 끝났거나 혀에서 놓인 로봇은 매 틱 아래로 빨라집니다. 먼저 바닥 충돌을 보고, 월드 아래로 빠지면 제거를 요청합니다.
@@ -337,28 +364,29 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
             if (next.y < -35f)
             {
                 EndRobotFlight();
-                robot.DefeatOnLanding();
+                robot.HandleOutOfBounds();
                 return;
             }
-            SetRobotPosition(next);
+            SetBodyPosition(next);
         }
     }
 
     // 물리 몸체 위치와 화면에 보이는 Transform 위치를 함께 맞춥니다. 둘이 다른 위치를 가리키면 착지 계산과 보이는 위치가 어긋날 수 있습니다.
-    private void SetRobotPosition(Vector2 position)
+    private void SetBodyPosition(Vector2 position)
     {
         rb.position = position;
         transform.position = new Vector3(position.x, position.y, transform.position.z);
     }
 
     // 착지 순서
-    // 1. 아래로 움직이는 경우에만 Ground 레이어를 검사합니다. 벽을 스치는 일과 바닥에 떨어지는 일을 구분하기 위해서입니다.
+    // 1. 드론은 모든 방향에서 Ground 충돌을 검사하고, 다른 로봇은 아래로 움직일 때만 바닥을 검사합니다.
     // 2. 상자 충돌체는 실제 물리 위치, 크기, 각도를 사용해 이동 구간을 BoxCast로 검사합니다.
-    // 3. 위를 향한 면 중 가장 가까운 곳을 찾습니다. 그 바로 앞에 로봇을 멈추고 공중 상태를 끝낸 뒤 RobotBase에 착지를 알립니다.
+    // 3. 가장 가까운 충돌 지점 앞에서 로봇을 멈추고 공중 상태를 끝냅니다.
     private bool TryLandRobot(Vector2 next)
     {
         Vector2 displacement = next - rb.position;
-        if (col == null || displacement.y >= 0f)
+        var drone = robot as DroneRobot;
+        if (col == null || displacement.sqrMagnitude <= 0.00000001f || (drone == null && displacement.y >= 0f))
             return false;
 
         var filter = new ContactFilter2D { useTriggers = false };
@@ -379,14 +407,17 @@ public class MovingObject : NetworkBehaviour, IInteractable, IMoveable
         int count = Physics2D.BoxCast(center, size, angle, direction, filter, groundHits, distance + 0.02f);
         float travel = float.PositiveInfinity;
         for (int i = 0; i < count; i++)
-            if (groundHits[i].normal.y > 0.3f)
+            if (drone != null || groundHits[i].normal.y > 0.3f)
                 travel = Mathf.Min(travel, groundHits[i].distance);
         if (float.IsPositiveInfinity(travel))
             return false;
 
-        SetRobotPosition(rb.position + direction * Mathf.Max(0f, travel - 0.02f));
+        SetBodyPosition(rb.position + direction * Mathf.Max(0f, travel - 0.02f));
         EndRobotFlight();
-        robot.DefeatOnLanding();
+        if (drone != null)
+            drone.HitGround();
+        else if (!ReleasedByTongue && !robot.RequiresCrushing)
+            robot.DefeatOnLanding();
         return true;
     }
 

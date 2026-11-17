@@ -13,7 +13,7 @@ public sealed class PuzzleProgressHud : MonoBehaviour
     private int visibleHead = -1;
     private float shownProgress;
 
-    // 씬이 바뀌면 해당 동물 하나를 표시합니다. 그 머리 전체가 씬의 0~100% 진행도를 나타냅니다.
+    // 머리는 현재 조작하는 동물, 채움 정도는 현재 씬의 퍼즐 진행도를 따릅니다.
     private void LateUpdate()
     {
         var scene = SceneManager.GetActiveScene();
@@ -22,20 +22,6 @@ public sealed class PuzzleProgressHud : MonoBehaviour
             sceneHandle = scene.handle;
             director = null;
             shownProgress = 0f;
-            visibleHead = scene.name switch
-            {
-                "Hod" => 0,
-                "Malkuth" => 1,
-                "Yesod" => 2,
-                "Netzach" => 3,
-                _ => -1
-            };
-            for (int i = 0; i < fills.Length; i++)
-                if (fills[i] != null)
-                {
-                    fills[i].fillAmount = 0f;
-                    fills[i].transform.parent.gameObject.SetActive(i == visibleHead);
-                }
             if (HackingConsole.IsGameplayScene(scene))
                 foreach (var item in scene.GetRootGameObjects())
                 {
@@ -44,10 +30,25 @@ public sealed class PuzzleProgressHud : MonoBehaviour
                         break;
                 }
         }
-        var manager = NetworkGameManager.Instance;
-        canvas.enabled = visibleHead >= 0 && director != null && manager != null && manager.Object != null && manager.Object.IsValid;
+        int head = ScenePresentation.LocalCharacter() switch
+        {
+            MyEnum.CharacterType.Mouse => 0,
+            MyEnum.CharacterType.Bear => 1,
+            MyEnum.CharacterType.Rabbit => 2,
+            MyEnum.CharacterType.Frog => 3,
+            _ => -1
+        };
+        canvas.enabled = director != null && head >= 0 && head < fills.Length;
         if (!canvas.enabled)
             return;
+
+        if (head != visibleHead)
+        {
+            visibleHead = head;
+            for (int i = 0; i < fills.Length; i++)
+                if (fills[i] != null)
+                    fills[i].transform.parent.gameObject.SetActive(i == visibleHead);
+        }
 
         shownProgress = Mathf.MoveTowards(shownProgress, director.ReadProgress(), Time.unscaledDeltaTime * 1.15f);
         if (fills[visibleHead] != null)

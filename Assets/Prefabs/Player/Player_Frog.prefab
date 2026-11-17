@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &909184023
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 909184024}
+  m_Layer: 3
+  m_Name: holdPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &909184024
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 909184023}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4527536813658835898}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &505921429212253325
 GameObject:
   m_ObjectHideFlags: 0
@@ -22,6 +53,7 @@ GameObject:
   - component: {fileID: 6507309972623953729}
   - component: {fileID: -1108707625085643393}
   - component: {fileID: 909184001}
+  - component: {fileID: 909184021}
   m_Layer: 3
   m_Name: Player_Frog
   m_TagString: Player
@@ -47,6 +79,7 @@ Transform:
   - {fileID: 3520650106904805658}
   - {fileID: 304994230050668416}
   - {fileID: 5914864101770483648}
+  - {fileID: 909184024}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5885117669419392458
@@ -75,6 +108,7 @@ MonoBehaviour:
   - {fileID: 6154881667276453139}
   - {fileID: -1108707625085643393}
   - {fileID: 909184001}
+  - {fileID: 909184021}
   - {fileID: 4961979422228578352}
   - {fileID: 7946381705657237752}
   - {fileID: 4066162875382254432}
@@ -131,7 +165,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 3
+  m_Mass: 2
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 1
@@ -195,6 +229,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50932fa9129160445b78de05b550c049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  footstepInterval: 0.3
   speed: 2
   CanMove: 1
   jumpForce: 5
@@ -275,6 +310,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Passenger
   outlineMat: {fileID: 0}
+  playerModel: {fileID: 4100260308554641846}
+  bearCarryCharacter: 4
   puppetKey: 0
   _CurrentLifter: {fileID: 0}
   _CanRide:
@@ -294,13 +331,16 @@ MonoBehaviour:
   interactRange: {fileID: 4961979422228578352}
   detectLayer:
     serializedVersion: 2
-    m_Bits: 768
+    m_Bits: 776
   holdPoint: {fileID: 5914864101770483648}
   _CurInteractObject: {fileID: 0}
   anim: {fileID: 36281683945568774}
   tonguePivot: {fileID: 5813377695839847349}
   line: {fileID: 6507309972623953729}
   tongueSpeed: 15
+  lengthPerScroll: 0.25
+  minHoldLength: 0.5
+  maxHoldLength: 7
   mover: {fileID: 5476022286700897556}
   _State: 0
   _EndPos: {x: 0, y: 0}
@@ -445,6 +485,32 @@ MonoBehaviour:
   damageSprite: {fileID: 7969604923066544343}
   _Health: 0
   _IsHacking:
+    RawValue: 0
+--- !u!114 &909184021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 505921429212253325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29a38f32580fed9459e749a71ad04b9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MovingObject
+  canInteract: 1
+  moveSpeed: 4
+  arcHeight: 2
+  outline: {fileID: 0}
+  holdPivot: {fileID: 909184024}
+  tongueAlly: 1
+  tongueOnly: 0
+  _IsMoving:
+    RawValue: 0
+  _Holder: {fileID: 0}
+  _ReleasedByTongue:
+    RawValue: 0
+  _ReleasedByThrower:
     RawValue: 0
 --- !u!1 &1750155540070545492
 GameObject:

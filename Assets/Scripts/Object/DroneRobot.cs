@@ -1,20 +1,30 @@
+using Fusion;
 using UnityEngine;
 
 public class DroneRobot : RobotBase
 {
-    [SerializeField, Min(0f)] private float flightHeight = 0.65f; //시작 위치 기준 가장 높게 날 수 있는 양
-    [SerializeField] private LayerMask flightObstacles; //장애물로 판단할 레이어
-    [SerializeField] private AnimationClip deathAnimation; //없어지는 시간이랑 맞추려고 죽는 애니메이션 캐싱
-    private BoxCollider2D flightHitbox; 
-    private readonly RaycastHit2D[] flightHits = new RaycastHit2D[4]; //날라갈 거리 계산 시 장애물 캐싱
+    [SerializeField] private float flightHeight = 0.65f;
+    [SerializeField] private LayerMask flightObstacles;
+    [SerializeField] private AnimationClip deathAnimation;
+
+    private const float Clearance = 0.025f;
+    [SerializeField] private float firingRange = 3f;
+    private BoxCollider2D flightHitbox;
+    private readonly RaycastHit2D[] flightHits = new RaycastHit2D[4];
+    private Vector2 bypassDirection;
+    private int groundMask;
+    private readonly Collider2D[] groundContacts = new Collider2D[1];
+    [Networked] private NetworkBool HasGroundContact { get; set; }
 
     protected override bool FlipModel => true;
-    protected override float RemovalDuration => deathAnimation != null ? Mathf.Max(base.RemovalDuration, deathAnimation.length) : base.RemovalDuration;
+    protected override float RemovalDuration => deathAnimation != null
+        ? Mathf.Max(base.RemovalDuration, deathAnimation.length) : base.RemovalDuration;
 
     protected override void Awake()
     {
         base.Awake();
         flightHitbox = GetComponent<BoxCollider2D>();
+        groundMask = LayerMask.GetMask("Ground");
     }
 
     protected override void UpdateMovement()
@@ -22,44 +32,143 @@ public class DroneRobot : RobotBase
         if (flightHitbox == null)
             return;
 
-        Vector2 position = transform.position;
-
-        float edge = GoingRight ? patrolX.y : patrolX.x; //현재 순찰 구간의 끝
-        float span = Mathf.Max(0.01f, patrolX.y - patrolX.x); //순찰 구간 길이
-        float progress = Mathf.Clamp01((position.x - patrolX.x) / span); //구간 중 현재 위치 
-        float height = spawnPosition.y + Mathf.Sin(progress * Mathf.PI) * flightHeight; //구간 가운데에서 가장 높아지도록 사인 곡선으로 height를 구하기
-
-        Vector2 step = Vector2.MoveTowards(position, new Vector2(edge, height), speed * Runner.DeltaTime) - position; //이번에 시도할 이동량
-
-        //BoxCast 로 이동거리보다 0.025 더 멀리 검사합니다
-        //블록이 감지 되면 순찰 방향을 반대방향으로 설정합니다
-        if (step.sqrMagnitude > 0.000001f)
+        if (HasGroundContact)
         {
             var filter = new ContactFilter2D { useTriggers = false };
-            filter.SetLayerMask(flightObstacles);
+            filter.SetLayerMask(groundMask);
             Bounds bounds = flightHitbox.bounds;
-
-            const float clearance = 0.025f; //벽과 몸체 사이에 남길 작은 간격
-            float travel = step.magnitude; //충돌 검사 후 이번 틱에 실제로 갈 수 있는 거리
-            int count = Physics2D.BoxCast(bounds.center, bounds.size, 0f, step.normalized, filter, flightHits, travel + clearance);
-            
-            for (int i = 0; i < count; i++)
-                travel = Mathf.Min(travel, Mathf.Max(0f, flightHits[i].distance - clearance));
-
-            FacingLeft = !GoingRight; //네트워크 불
-
-            Vector2 next = position + step.normalized * travel;
-            transform.position = new Vector3(next.x, next.y, transform.position.z);
-
-            if (count > 0 || Mathf.Abs(next.x - edge) < 0.025f)
-                GoingRight = !GoingRight;
-
-            State = travel > 0f ? RobotState.Patrol : RobotState.Idle;
+            Vector2 size = (Vector2)bounds.size + Vector2.one * (2f * Clearance + 0.01f);
+            HasGroundContact = Physics2D.OverlapBox(bounds.center, size, 0f, filter, groundContacts) > 0;
         }
-        else
+
+        Vector2 position = transform.position;
+        bool contactChase = Encounter != null && Encounter.UsesContactDrones;
+        var target = BranchPuzzle.FindClosestPlayer(Runner, position, hackingOnly: !contactChase);
+        if (target != null)
         {
-            GoingRight = !GoingRight;
-            State = RobotState.Idle;
+            Vector2 targetPoint = GetTargetPoint(target);
+            float distanceSquared = (targetPoint - position).sqrMagnitude;
+            if (contactChase)
+            {
+                Chase(position, targetPoint);
+                if (distanceSquared <= 0.7f * 0.7f && CanShootFromHere(target))
+                    TryContactAttack(target);
+            }
+            else if (UsesRangedAttack && distanceSquared <= firingRange * firingRange && CanShootFromHere(target))
+            {
+                bypassDirection = Vector2.zero;
+                FacingLeft = targetPoint.x < position.x;
+                if (!UpdateRangedAttack(target))
+                    State = RobotState.Aim;
+            }
+            else
+            {
+                UpdateRangedAttack(null);
+                Chase(position, targetPoint);
+            }
+            return;
         }
+
+        UpdateRangedAttack(null);
+        bypassDirection = Vector2.zero;
+        if (contactChase)
+        {
+            State = RobotState.Idle;
+            return;
+        }
+
+        float edge = GoingRight ? patrolX.y : patrolX.x;
+        float span = Mathf.Max(0.01f, patrolX.y - patrolX.x);
+        float progress = Mathf.Clamp01((position.x - patrolX.x) / span);
+        float height = spawnPosition.y + Mathf.Sin(progress * Mathf.PI) * flightHeight;
+        Vector2 step = Vector2.ClampMagnitude(new Vector2(edge, height) - position, speed * Runner.DeltaTime);
+        Vector2 shift = ClearStep(step, out bool hitsGround);
+        ApplyStep(shift, RobotState.Patrol, hitsGround);
+        if (shift.sqrMagnitude < step.sqrMagnitude * 0.99f || Mathf.Abs(position.x + shift.x - edge) < Clearance)
+            GoingRight = !GoingRight;
+    }
+
+    private void Chase(Vector2 position, Vector2 target)
+    {
+        Vector2 delta = target - position;
+
+        // 바로 갈 수 없으면 벽면을 따라 돌다가 표적 쪽 길이 다시 열릴 때 방향을 바꿉니다.
+        float stepSize = speed * Runner.DeltaTime;
+        Vector2 direct = Vector2.ClampMagnitude(delta, stepSize);
+        bool hasDirectPath = ClearStep(delta).sqrMagnitude >= delta.sqrMagnitude * 0.99f;
+        if (hasDirectPath)
+            bypassDirection = Vector2.zero;
+
+        Vector2 step = bypassDirection != Vector2.zero ? bypassDirection * stepSize : direct;
+        Vector2 shift = ClearStep(step, out bool hitsGround);
+        if (shift.sqrMagnitude < direct.sqrMagnitude * 0.25f)
+        {
+            Vector2 horizontal = delta.x < 0f ? Vector2.left : Vector2.right;
+            Vector2 vertical = delta.y < 0f ? Vector2.down : Vector2.up;
+            Vector2 preferred = Mathf.Abs(delta.x) >= Mathf.Abs(delta.y) ? horizontal : vertical;
+            Vector2 secondary = preferred == horizontal ? vertical : horizontal;
+            shift = FindBypass(stepSize, preferred, secondary);
+        }
+
+        ApplyStep(shift, RobotState.Chase, hitsGround);
+    }
+
+    private Vector2 FindBypass(float stepSize, Vector2 preferred, Vector2 secondary)
+    {
+        Vector2 shift = ClearStep(preferred * stepSize);
+        if (shift.sqrMagnitude < stepSize * stepSize * 0.25f)
+            shift = ClearStep(secondary * stepSize);
+        if (shift.sqrMagnitude < stepSize * stepSize * 0.25f)
+            shift = ClearStep(-secondary * stepSize);
+        if (shift.sqrMagnitude < stepSize * stepSize * 0.25f)
+            shift = ClearStep(-preferred * stepSize);
+
+        bypassDirection = shift.normalized;
+        return shift;
+    }
+
+    private Vector2 ClearStep(Vector2 step) => ClearStep(step, out _);
+
+    private Vector2 ClearStep(Vector2 step, out bool hitsGround)
+    {
+        hitsGround = false;
+        float distance = step.magnitude;
+        if (distance < 0.0001f)
+            return Vector2.zero;
+
+        var filter = new ContactFilter2D { useTriggers = false };
+        filter.SetLayerMask(flightObstacles.value | groundMask);
+        Bounds bounds = flightHitbox.bounds;
+        Vector2 direction = step / distance;
+        int count = Physics2D.BoxCast(bounds.center, bounds.size, 0f, direction, filter, flightHits, distance + Clearance);
+        float nearest = distance + Clearance;
+        for (int i = 0; i < count; i++)
+        {
+            var hit = flightHits[i];
+            if (hit.distance > nearest)
+                continue;
+
+            if (hit.distance < nearest)
+                hitsGround = false;
+            nearest = hit.distance;
+            hitsGround |= (groundMask & (1 << hit.collider.gameObject.layer)) != 0;
+        }
+        return direction * Mathf.Clamp(nearest - Clearance, 0f, distance);
+    }
+
+    internal void HitGround()
+    {
+        HasGroundContact = true;
+        TakeGroundImpact();
+    }
+
+    private void ApplyStep(Vector2 shift, RobotState movingState, bool hitsGround)
+    {
+        transform.position += (Vector3)shift;
+        if (Mathf.Abs(shift.x) > 0.001f)
+            FacingLeft = shift.x < 0f;
+        State = shift.sqrMagnitude > 0.000001f ? movingState : RobotState.Idle;
+        if (hitsGround && !HasGroundContact)
+            HitGround();
     }
 }

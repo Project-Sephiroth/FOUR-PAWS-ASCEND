@@ -8,5 +8,7 @@ public sealed class GamePresentationAssets : ScriptableObject
     public SettingsShortcutView settingsShortcut;
     public PlayerHealthHud healthHud;
     public PuzzleProgressHud puzzleProgressHud;
+    public SpectatorViewHud spectatorViewHud;
     public SceneTransitionView sceneTransition;
+    public GameObject demoComplete;
 }

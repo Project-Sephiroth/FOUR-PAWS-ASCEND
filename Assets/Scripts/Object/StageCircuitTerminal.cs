@@ -15,6 +15,7 @@ public class StageCircuitTerminal : MonoBehaviour
     }
 
     [SerializeField] private HackType hackType;
+    [SerializeField] private bool playAllCircuitStages;
     [SerializeField] private CircuitHackManager manager;
     [SerializeField] private PCS_HackingSession session;
     [SerializeField] private PCS_TimingStageData timingStage;
@@ -23,6 +24,9 @@ public class StageCircuitTerminal : MonoBehaviour
     [SerializeField] private MovingFloor requiredArrival;
     [SerializeField] private int terminal;
     [SerializeField] private UnityEvent onCompleted;
+
+    internal int CircuitStageCount => manager == null ? 0 :
+        playAllCircuitStages ? (manager.layouts?.Length > 0 ? manager.layouts.Length : manager.stages?.Length ?? 0) : 1;
 
     internal void SetBranch(BranchPuzzle puzzle, int index)
     {
@@ -37,7 +41,6 @@ public class StageCircuitTerminal : MonoBehaviour
     }
 
     private long run = -1;
-    private bool closeAfterResult;
     private bool completionApplied;
 
     public void DebugComplete()
@@ -45,20 +48,21 @@ public class StageCircuitTerminal : MonoBehaviour
         if (!NetworkGameManager.CanUseStageDebug || completionApplied)
             return;
         completionApplied = true;
-        branch?.DebugCompleteTerminal(terminal);
-        onCompleted?.Invoke();
         if (run >= 0)
         {
             run = -1;
-            PlayerHealth.SetLocalHacking(false);
-            closeAfterResult = true;
+            CloseHack();
         }
+
+        branch?.DebugCompleteTerminal(terminal);
+        onCompleted?.Invoke();
     }
 
     private void OnEnable()
     {
         if (manager != null)
         {
+            manager.OnStageCompleted += CircuitStageCompleted;
             manager.OnHackCompleted += CircuitCompleted;
             manager.OnHackCancelled += CircuitCancelled;
         }
@@ -73,6 +77,7 @@ public class StageCircuitTerminal : MonoBehaviour
     {
         if (manager != null)
         {
+            manager.OnStageCompleted -= CircuitStageCompleted;
             manager.OnHackCompleted -= CircuitCompleted;
             manager.OnHackCancelled -= CircuitCancelled;
         }
@@ -82,17 +87,20 @@ public class StageCircuitTerminal : MonoBehaviour
             session.OnHackCancelled -= SessionCancelled;
         }
 
-        if (run >= 0 || closeAfterResult)
+        if (run >= 0)
+        {
+            run = -1;
+            branch?.SetHackActive(terminal, false);
             CloseHack();
-        run = -1;
-        closeAfterResult = false;
+        }
     }
 
     private void Update()
     {
-        if (closeAfterResult)
+        if (run >= 0 && branch != null && branch.ShouldCloseHack(terminal))
         {
-            closeAfterResult = false;
+            run = -1;
+            branch.SetHackActive(terminal, false);
             CloseHack();
         }
 
@@ -152,10 +160,11 @@ public class StageCircuitTerminal : MonoBehaviour
 
         bool started = hackType switch
         {
+            HackType.Circuit when playAllCircuitStages => manager.StartAllStages(),
             HackType.Circuit when manager.layouts?.Length > 0 =>
-                manager.StartSingleStage(manager.layouts[Mathf.Clamp(terminal, 0, manager.layouts.Length - 1)]),
+                manager.StartSingleStage(manager.layouts[0]),
             HackType.Circuit =>
-                manager.StartSingleStage(manager.stages[Mathf.Clamp(terminal, 0, manager.stages.Length - 1)]),
+                manager.StartSingleStage(manager.stages[0]),
             HackType.Timing => session.StartSingleStage(timingStage),
             HackType.Rotation => session.StartSingleStage(rotationStage),
             _ => false
@@ -165,6 +174,7 @@ public class StageCircuitTerminal : MonoBehaviour
             run = hackType == HackType.Circuit ? manager.RunId : session.SessionId;
             UIManager.EnsureLocalEventSystem();
             PlayerHealth.SetLocalHacking(true);
+            branch?.SetHackActive(terminal, true);
         }
     }
 
@@ -175,6 +185,13 @@ public class StageCircuitTerminal : MonoBehaviour
         else
             session?.CloseHack();
         PlayerHealth.SetLocalHacking(false);
+    }
+
+    private void CircuitStageCompleted(int id, int attempt, string stage)
+    {
+        if (id == run && terminal == 2 && branch != null && branch.Object != null &&
+            branch.Object.IsValid && manager.StageIndex + 1 < manager.StageCount)
+            branch.RPC_ReportHackStage(manager.StageIndex + 1);
     }
 
     private void CircuitCompleted(int id)
@@ -208,11 +225,11 @@ public class StageCircuitTerminal : MonoBehaviour
 
         completionApplied = branch == null;
         run = -1;
-        PlayerHealth.SetLocalHacking(false);
+        SoundManager.Play(SoundEffect.HackingComplete);
+        CloseHack();
         if (branch != null)
             branch.RPC_HackCompleted(terminal);
         onCompleted?.Invoke();
-        closeAfterResult = true;
     }
 
     private void Cancelled(long id)
@@ -221,6 +238,7 @@ public class StageCircuitTerminal : MonoBehaviour
             return;
 
         run = -1;
+        branch?.SetHackActive(terminal, false);
         PlayerHealth.SetLocalHacking(false);
     }
 }

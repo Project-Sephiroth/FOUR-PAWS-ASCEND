@@ -11,6 +11,7 @@ public class FallingPlatform : NetworkBehaviour
     [SerializeField] private bool startsHidden;
     [SerializeField] private bool lockAfterRestore = true;
     [SerializeField] private float detectBelow;
+    [SerializeField] private bool detectFeet;
     [SerializeField] private float fallDistance = 4f;
 
     [Networked] private TickTimer FallDelay { get; set; }
@@ -29,8 +30,6 @@ public class FallingPlatform : NetworkBehaviour
         model = GetComponent<SpriteRenderer>();
     }
 
-    private RobotBase triggeredRobot;
-
     public override void Spawned()
     {
         ApplyState();
@@ -39,7 +38,7 @@ public class FallingPlatform : NetworkBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (Object == null || !Object.IsValid || !HasStateAuthority || LockedInPlace ||
-            FallDelay.IsRunning || FallProgress > 0f || !collision.gameObject.CompareTag("Player"))
+            detectFeet || FallDelay.IsRunning || FallProgress > 0f || !collision.gameObject.CompareTag("Player"))
             return;
 
         if (collision.transform.position.y >= transform.position.y)
@@ -51,56 +50,60 @@ public class FallingPlatform : NetworkBehaviour
         if (!HasStateAuthority || LockedInPlace || FallProgress >= 1f)
             return;
 
-        if (detectBelow > 0f)
+        if (detectFeet && !FallDelay.IsRunning && surface.enabled)
         {
-            Bounds bounds = surface.bounds;
-            if (!FallDelay.IsRunning)
+            Bounds platform = surface.bounds;
+            foreach (var player in NetworkGameManager.GetPlayerObjects(Runner))
             {
-                ScanBelow(bounds, detectBelow, false);
-                return;
+                if (!player.TryGetComponent(out Collider2D feet) || !feet.isActiveAndEnabled ||
+                    (feet.attachedRigidbody != null && !feet.attachedRigidbody.simulated))
+                    continue;
+
+                Bounds body = feet.bounds;
+                if (body.max.x > platform.min.x && body.min.x < platform.max.x &&
+                    Mathf.Abs(body.min.y - platform.max.y) <= 0.12f)
+                {
+                    FallDelay = TickTimer.CreateFromSeconds(Runner, fallDelay);
+                    break;
+                }
             }
-            ScanBelow(bounds, fallDistance * 2f * Runner.DeltaTime / Mathf.Max(0.1f, fallDuration), true);
+        }
+
+        if (detectBelow > 0f && !FallDelay.IsRunning)
+        {
+            Physics2D.SyncTransforms();
+            ScanBelow(surface.bounds, detectBelow, false);
+            return;
         }
 
         if (!FallDelay.Expired(Runner))
             return;
 
-        if (triggeredRobot != null)
+        float nextProgress = Mathf.Clamp01(FallProgress + Runner.DeltaTime / Mathf.Max(0.1f, fallDuration));
+        if (detectBelow > 0f)
         {
-            if (triggeredRobot.IsTongueHeld && !triggeredRobot.IsCrushed)
-                triggeredRobot.Crush();
-            triggeredRobot = null;
+            Physics2D.SyncTransforms();
+            float displacement = fallDistance * (nextProgress * nextProgress - FallProgress * FallProgress);
+            float parentScale = transform.parent == null ? 1f : Mathf.Abs(transform.parent.lossyScale.y);
+            ScanBelow(surface.bounds, displacement * parentScale, true);
         }
 
-        FallProgress = Mathf.Clamp01(FallProgress + Runner.DeltaTime / Mathf.Max(0.1f, fallDuration));
+        FallProgress = nextProgress;
         ApplyState();
     }
 
     private void ScanBelow(Bounds bounds, float depth, bool impact)
     {
         Vector2 center = new Vector2(bounds.center.x, bounds.min.y - depth * 0.5f);
-        var scan = new Bounds(center, new Vector3(bounds.size.x, depth + 0.02f, 2f));
-        foreach (RobotBase robot in RobotBase.LiveRobots)
-        {
-            if (robot == null || robot.Object == null || !robot.Object.IsValid || robot.Runner != Runner ||
-                robot.IsCrushed || !robot.IsTongueHeld || !scan.Contains(robot.transform.position))
-                continue;
-
-            if (impact)
-                robot.Crush();
-            else
-            {
-                triggeredRobot = robot;
-                FallDelay = TickTimer.CreateFromTicks(Runner, 1);
-                return;
-            }
-        }
         var filter = new ContactFilter2D { useTriggers = true };
         filter.SetLayerMask(LayerMask.GetMask("Player", "Object", "Rock"));
-        Physics2D.OverlapBox(center, new Vector2(bounds.size.x, depth + 0.02f), 0f, filter, detected);
+        Physics2D.OverlapBox(center, new Vector2(bounds.size.x, depth), 0f, filter, detected);
         foreach (Collider2D hit in detected)
         {
-            if (hit == surface || (hit.isTrigger && hit.GetComponentInParent<RobotBase>() == null))
+            var robot = hit.GetComponentInParent<RobotBase>();
+            if (hit == surface || (robot != null
+                    ? robot.Object == null || !robot.Object.IsValid || robot.SuppressBody
+                    : hit.isTrigger))
                 continue;
 
             if (!impact)
@@ -109,7 +112,7 @@ public class FallingPlatform : NetworkBehaviour
                 return;
             }
 
-            if (hit.GetComponentInParent<RobotBase>() is RobotBase robot)
+            if (robot != null)
                 robot.Crush();
             if (hit.GetComponentInParent<PlayerHealth>() is PlayerHealth player)
                 player.RPC_Crushed(this);

@@ -4,27 +4,26 @@ using UnityEngine;
 public class RockMaker : NetworkBehaviour
 {
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private MovingObject rockPrefab;
+    [SerializeField] private Rock rockPrefab;
     [SerializeField] private Thrower thrower;
     [SerializeField] private Animator animator;
     [SerializeField] private AnimationClip makeRockClip;
 
-    private MovingObject curRock;
+    private const float GroundClickTolerance = 0.25f;
     [Networked] private TickTimer MakeTimer { get; set; }
     public bool IsPreparing => MakeTimer.IsRunning;
 
     public bool TryMakeRock(Vector2 mousePosition)
     {
-        if (!HasStateAuthority || IsPreparing || (curRock != null && curRock.Object != null && curRock.Object.IsValid) ||
-            rockPrefab == null || thrower == null || thrower.HoldPoint == null ||
-            Physics2D.OverlapPoint(mousePosition, groundLayer) == null)
+        if (!HasStateAuthority || IsPreparing || rockPrefab == null || thrower == null ||
+            Physics2D.OverlapCircle(mousePosition, GroundClickTolerance, groundLayer) == null)
             return false;
 
-        MakeTimer = TickTimer.CreateFromSeconds(Runner, makeRockClip != null ? makeRockClip.length : 0f);
+        MakeTimer = TickTimer.CreateFromSeconds(Runner, makeRockClip != null ? makeRockClip.length : Runner.DeltaTime);
         if (animator != null && makeRockClip != null)
             RPC_PlayMakeRock();
         else
-            SpawnPreparedRock();
+            FinishPreparingRock();
         return true;
     }
 
@@ -39,19 +38,22 @@ public class RockMaker : NetworkBehaviour
     public override void FixedUpdateNetwork()
     {
         if (HasStateAuthority && MakeTimer.Expired(Runner))
-            SpawnPreparedRock();
+            FinishPreparingRock();
     }
 
-    public void SpawnPreparedRock()
+    public void FinishPreparingRock()
     {
         if (Object == null || !Object.IsValid || !HasStateAuthority || !IsPreparing)
             return;
-        MakeTimer = default;
-        if (!rockPrefab.TryGetComponent(out NetworkObject prefab))
-            return;
 
-        var spawned = Runner.Spawn(prefab, thrower.HoldPoint.position, Quaternion.identity);
-        if (spawned != null && spawned.TryGetComponent(out curRock))
-            thrower.TryThrow(curRock);
+        MakeTimer = default;
+        thrower.BeginRockAim();
+    }
+
+    internal void ThrowRock(Vector2 origin, float signedRange, float angle, float speed)
+    {
+        var rock = Runner.Spawn(rockPrefab, origin, Quaternion.identity);
+        if (rock != null)
+            rock.Launch(signedRange, angle, speed);
     }
 }

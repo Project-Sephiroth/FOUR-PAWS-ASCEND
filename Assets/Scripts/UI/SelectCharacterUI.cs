@@ -14,20 +14,19 @@ public class SelectCharacterUI : NetworkBehaviour
     private NetworkObject lobbyPlayer;
     private MyEnum.CharacterType spawnedType;
 
+    private SelectCharacterButton[] buttons;
+
     public override void Spawned()
     {
-        rabbit.OnClick += OnButtonSelected;
-        bear.OnClick += OnButtonSelected;
-        mouse.OnClick += OnButtonSelected;
-        frog.OnClick += OnButtonSelected;
+        buttons = new[] { rabbit, bear, mouse, frog };
+        foreach (var button in buttons)
+            button.OnClick += OnButtonSelected;
     }
 
     public override void Despawned(NetworkRunner runner, bool hasState)
     {
-        rabbit.OnClick -= OnButtonSelected;
-        bear.OnClick -= OnButtonSelected;
-        mouse.OnClick -= OnButtonSelected;
-        frog.OnClick -= OnButtonSelected;
+        foreach (var button in buttons)
+            button.OnClick -= OnButtonSelected;
     }
 
     private void OnButtonSelected(MyEnum.CharacterType type)
@@ -52,8 +51,7 @@ public class SelectCharacterUI : NetworkBehaviour
         if (type == MyEnum.CharacterType.None)
             return;
 
-        var root = GameObject.FindWithTag("Spawn");
-        if (root != null && root.TryGetComponent(out PlayerSpawner spawner))
+        if (PlayerSpawner.TryFindInScene(out var spawner))
             lobbyPlayer = spawner.SpawnCharacter(Runner);
     }
 
@@ -72,9 +70,7 @@ public class SelectCharacterUI : NetworkBehaviour
         }
         UpdateLobbyPlayer(selected);
 
-        rabbit.Blocked(manager.IsCharacterTaken(MyEnum.CharacterType.Rabbit));
-        bear.Blocked(manager.IsCharacterTaken(MyEnum.CharacterType.Bear));
-        mouse.Blocked(manager.IsCharacterTaken(MyEnum.CharacterType.Mouse));
-        frog.Blocked(manager.IsCharacterTaken(MyEnum.CharacterType.Frog));
+        foreach (var button in buttons)
+            button.Blocked(manager.IsCharacterTaken(button.CharacterType));
     }
 }

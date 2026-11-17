@@ -2,27 +2,32 @@ using Fusion;
 using UnityEngine;
 
 /// <summary>
-/// 해킹으로 끌 수 있는 네트워크 레이저. 씬의 배치와 연결은 Inspector에서 결정
+/// 연결된 두 레이저는 하나의 네트워크 상태를 반대로 읽습니다.
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
 public class LaserHazard : NetworkBehaviour
 {
     [Networked] private TickTimer DamageInterval { get; set; }
-    [Networked] public NetworkBool IsOff { get; private set; }
+    [SerializeField] private LaserHazard oppositeState;
+    [Networked] private NetworkBool BeamOff { get; set; }
+    [Networked] internal NetworkBool HasSwitched { get; private set; }
+    internal bool IsOff => oppositeState != null ? !oppositeState.BeamOff : BeamOff;
 
-    public void TurnOff()
+    internal void HitButton()
     {
-        if (Object != null && Object.IsValid)
-            RPC_TurnOff();
+        var state = oppositeState != null ? oppositeState : this;
+        if (state.Object != null && state.Object.IsValid)
+            state.RPC_DisableBeam(oppositeState == null);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    private void RPC_TurnOff(RpcInfo info = default)
+    private void RPC_DisableBeam(bool lowerOff, RpcInfo info = default)
     {
-        //현재 레이저 비활성화는 쥐만 가능(해킹이 가능해서)
-        if (NetworkGameManager.Instance != null &&
-            NetworkGameManager.Instance.GetGameplayCharacter(Runner.IsSinglePlayer ? Runner.LocalPlayer : info.Source) == MyEnum.CharacterType.Mouse)
-            IsOff = true;
+        if (!Runner.IsSinglePlayer && NetworkGameManager.Instance?.GetGameplayCharacter(info.Source) != MyEnum.CharacterType.Bear)
+            return;
+
+        BeamOff = lowerOff;
+        HasSwitched = true;
     }
 
     public override void Render()

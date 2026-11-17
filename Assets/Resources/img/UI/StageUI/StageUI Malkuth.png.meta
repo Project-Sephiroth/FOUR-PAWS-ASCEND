@@ -1,0 +1,1357 @@
+fileFormatVersion: 2
+guid: b4f1844ca5a3dba4daecfbc227ca886a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2842721637805610425
+    second: StageUI Malkuth_0
+  - first:
+      213: -782637180579239097
+    second: StageUI Malkuth_1
+  - first:
+      213: -2332695042865167135
+    second: StageUI Malkuth_2
+  - first:
+      213: 1316205475319331474
+    second: StageUI Malkuth_3
+  - first:
+      213: -1608090469228771032
+    second: StageUI Malkuth_4
+  - first:
+      213: 916081140530555165
+    second: StageUI Malkuth_5
+  - first:
+      213: 6547665975408336705
+    second: StageUI Malkuth_6
+  - first:
+      213: -4482311979217287830
+    second: StageUI Malkuth_7
+  - first:
+      213: 7923489209403614782
+    second: StageUI Malkuth_8
+  - first:
+      213: -5684025390698223922
+    second: StageUI Malkuth_9
+  - first:
+      213: -2203928985527344770
+    second: StageUI Malkuth_10
+  - first:
+      213: 2261295081244768991
+    second: StageUI Malkuth_11
+  - first:
+      213: -2848884200306410486
+    second: StageUI Malkuth_12
+  - first:
+      213: -8415085366407385282
+    second: StageUI Malkuth_13
+  - first:
+      213: -6018391583307545962
+    second: StageUI Malkuth_14
+  - first:
+      213: 1595041272480683429
+    second: StageUI Malkuth_15
+  - first:
+      213: 3902226408922333482
+    second: StageUI Malkuth_16
+  - first:
+      213: 1511278565314786522
+    second: StageUI Malkuth_17
+  - first:
+      213: -8405135954375869966
+    second: StageUI Malkuth_18
+  - first:
+      213: 4150026545959583150
+    second: StageUI Malkuth_19
+  - first:
+      213: 2905635806853602374
+    second: StageUI Malkuth_20
+  - first:
+      213: -7151956580357468542
+    second: StageUI Malkuth_21
+  - first:
+      213: 1607602278406720936
+    second: StageUI Malkuth_22
+  - first:
+      213: -6841273391746940764
+    second: StageUI Malkuth_23
+  - first:
+      213: -3643062058282828167
+    second: StageUI Malkuth_24
+  - first:
+      213: -5838228241644776380
+    second: StageUI Malkuth_25
+  - first:
+      213: -7165619948557492747
+    second: StageUI Malkuth_26
+  - first:
+      213: 5148238809692083581
+    second: StageUI Malkuth_27
+  - first:
+      213: -7713305207661230262
+    second: StageUI Malkuth_28
+  - first:
+      213: 5243741582704803653
+    second: StageUI Malkuth_29
+  - first:
+      213: 9218950327807654286
+    second: StageUI Malkuth_30
+  - first:
+      213: -8501442626608447867
+    second: StageUI Malkuth_31
+  - first:
+      213: -757733535847308688
+    second: StageUI Malkuth_32
+  - first:
+      213: -7963796992446384504
+    second: StageUI Malkuth_33
+  - first:
+      213: 3408151814201394197
+    second: StageUI Malkuth_34
+  - first:
+      213: -3700046211023251433
+    second: StageUI Malkuth_35
+  - first:
+      213: -2926199333846268640
+    second: StageUI Malkuth_36
+  - first:
+      213: -737006580588689439
+    second: StageUI Malkuth_37
+  - first:
+      213: -7257207709197232727
+    second: StageUI Malkuth_38
+  - first:
+      213: 4733972149445205400
+    second: StageUI Malkuth_39
+  - first:
+      213: -8537128002790898284
+    second: StageUI Malkuth_40
+  - first:
+      213: 4800050484384182498
+    second: StageUI Malkuth_41
+  - first:
+      213: -7614499964075856528
+    second: StageUI Malkuth_42
+  - first:
+      213: -2953228657727754586
+    second: StageUI Malkuth_43
+  - first:
+      213: -1392955706317391293
+    second: StageUI Malkuth_44
+  - first:
+      213: 8497840237730359222
+    second: StageUI Malkuth_45
+  - first:
+      213: -3959721884839825957
+    second: StageUI Malkuth_46
+  - first:
+      213: -3555911097028592007
+    second: StageUI Malkuth_47
+  - first:
+      213: 6908765355089970554
+    second: StageUI Malkuth_48
+  - first:
+      213: 7628143003752112603
+    second: StageUI Malkuth_49
+  - first:
+      213: -3385141404139760882
+    second: StageUI Malkuth_50
+  - first:
+      213: 3246949890980194776
+    second: StageUI Malkuth_51
+  - first:
+      213: -2399455223661171611
+    second: StageUI Malkuth_52
+  - first:
+      213: 2752662194995833203
+    second: StageUI Malkuth_53
+  - first:
+      213: 9057078793531698195
+    second: StageUI Malkuth_54
+  - first:
+      213: -5331239107644544242
+    second: StageUI Malkuth_55
+  - first:
+      213: -5482925213841135311
+    second: StageUI Malkuth_56
+  - first:
+      213: 7230903966648986711
+    second: StageUI Malkuth_57
+  - first:
+      213: 6766757802835052164
+    second: StageUI Malkuth_58
+  - first:
+      213: -7821518002631496320
+    second: StageUI Malkuth_59
+  - first:
+      213: -4214894237280475890
+    second: StageUI Malkuth_60
+  - first:
+      213: -8198543447637292199
+    second: StageUI Malkuth_61
+  - first:
+      213: -226413082521983847
+    second: StageUI Malkuth_62
+  - first:
+      213: -7649439935246795274
+    second: StageUI Malkuth_63
+  - first:
+      213: -8872586253934876379
+    second: StageUI Malkuth_64
+  - first:
+      213: 5470248050447150970
+    second: StageUI Malkuth_65
+  - first:
+      213: -2433226254563486753
+    second: StageUI Malkuth_66
+  - first:
+      213: -8677141167868351819
+    second: StageUI Malkuth_67
+  - first:
+      213: -7872516580283394336
+    second: StageUI Malkuth_68
+  - first:
+      213: -510650870382339609
+    second: StageUI Malkuth_69
+  - first:
+      213: -6088001071576423145
+    second: StageUI Malkuth_70
+  - first:
+      213: -2407519283137477681
+    second: StageUI Malkuth_71
+  - first:
+      213: -6448747553977574010
+    second: StageUI Malkuth_72
+  - first:
+      213: 5921122269531303996
+    second: StageUI Malkuth_73
+  - first:
+      213: -8062853465183869677
+    second: StageUI Malkuth_74
+  - first:
+      213: -72230530781404648
+    second: StageUI Malkuth_75
+  - first:
+      213: -3225746815351809580
+    second: StageUI Malkuth_76
+  - first:
+      213: -6347170060883100046
+    second: StageUI Malkuth_77
+  - first:
+      213: -3441156652326073089
+    second: StageUI Malkuth_78
+  - first:
+      213: -4223474678958759195
+    second: StageUI Malkuth_79
+  - first:
+      213: 7790943908512445797
+    second: StageUI Malkuth_80
+  - first:
+      213: -4619849952201313550
+    second: StageUI Malkuth_81
+  - first:
+      213: 4770018958456623430
+    second: StageUI Malkuth_82
+  - first:
+      213: 1753116240575135776
+    second: StageUI Malkuth_83
+  - first:
+      213: -7716425393568425183
+    second: StageUI Malkuth_84
+  - first:
+      213: 8061429313943385489
+    second: StageUI Malkuth_85
+  - first:
+      213: -824554367333002492
+    second: StageUI Malkuth_86
+  - first:
+      213: -3642263175794246784
+    second: StageUI Malkuth_87
+  - first:
+      213: -7886843856726521158
+    second: StageUI Malkuth_88
+  - first:
+      213: -5067788666362350006
+    second: StageUI Malkuth_89
+  - first:
+      213: 128255777398995194
+    second: StageUI Malkuth_90
+  - first:
+      213: -2655888888640937734
+    second: StageUI Malkuth_91
+  - first:
+      213: -1048645153368735513
+    second: StageUI Malkuth_92
+  - first:
+      213: 450925634942460885
+    second: StageUI Malkuth_93
+  - first:
+      213: 7676865045502532960
+    second: StageUI Malkuth_94
+  - first:
+      213: 2752237488405313268
+    second: StageUI Malkuth_95
+  - first:
+      213: 5543418325901063100
+    second: StageUI Malkuth_96
+  - first:
+      213: -5015758531043966574
+    second: StageUI Malkuth_97
+  - first:
+      213: 4887711776335439106
+    second: StageUI Malkuth_98
+  - first:
+      213: -4727104947603680556
+    second: StageUI Malkuth_99
+  - first:
+      213: 6239182441893257541
+    second: StageUI Malkuth_100
+  - first:
+      213: 4096568235199091556
+    second: StageUI Malkuth_101
+  - first:
+      213: 1351771381692454561
+    second: StageUI Malkuth_102
+  - first:
+      213: -1915396946343545266
+    second: StageUI Malkuth_103
+  - first:
+      213: 2004236708902065314
+    second: StageUI Malkuth_104
+  - first:
+      213: 1507611989888720643
+    second: StageUI Malkuth_105
+  - first:
+      213: -1896208853750649576
+    second: StageUI Malkuth_106
+  - first:
+      213: 3583880358530318114
+    second: StageUI Malkuth_107
+  - first:
+      213: -105239682718185417
+    second: StageUI Malkuth_108
+  - first:
+      213: 3797639706264890371
+    second: StageUI Malkuth_109
+  - first:
+      213: -7827718484761153144
+    second: StageUI Malkuth_110
+  - first:
+      213: 8624866130729735581
+    second: StageUI Malkuth_111
+  - first:
+      213: 514341656948924396
+    second: StageUI Malkuth_112
+  - first:
+      213: 7422535552824612043
+    second: StageUI Malkuth_113
+  - first:
+      213: -7131362246129758318
+    second: StageUI Malkuth_114
+  - first:
+      213: -3731350364281328411
+    second: StageUI Malkuth_115
+  - first:
+      213: -5735797353035088805
+    second: StageUI Malkuth_116
+  - first:
+      213: 3845628461160583335
+    second: StageUI Malkuth_117
+  - first:
+      213: -6570997405865185828
+    second: StageUI Malkuth_118
+  - first:
+      213: -1214802888631859002
+    second: StageUI Malkuth_119
+  - first:
+      213: 7002446133496136066
+    second: StageUI Malkuth_120
+  - first:
+      213: 8931797326220171634
+    second: StageUI Malkuth_121
+  - first:
+      213: -701516173185737322
+    second: StageUI Malkuth_122
+  - first:
+      213: 6899061546715052703
+    second: StageUI Malkuth_123
+  - first:
+      213: -1235505318675753543
+    second: StageUI Malkuth_124
+  - first:
+      213: 222478943619472715
+    second: StageUI Malkuth_125
+  - first:
+      213: 5984989554352389242
+    second: StageUI Malkuth_126
+  - first:
+      213: -433457833552986818
+    second: StageUI Malkuth_127
+  - first:
+      213: 7083448155427819680
+    second: StageUI Malkuth_128
+  - first:
+      213: 7426105709899847213
+    second: StageUI Malkuth_129
+  - first:
+      213: 8042824751116832340
+    second: StageUI Malkuth_130
+  - first:
+      213: -5207392280779377104
+    second: StageUI Malkuth_131
+  - first:
+      213: 1385712940603117794
+    second: StageUI Malkuth_132
+  - first:
+      213: 1318775754050937226
+    second: StageUI Malkuth_133
+  - first:
+      213: 5954161511674124983
+    second: StageUI Malkuth_134
+  - first:
+      213: -5946161019198766558
+    second: StageUI Malkuth_135
+  - first:
+      213: 6619173031274322487
+    second: StageUI Malkuth_136
+  - first:
+      213: 1056610519195182839
+    second: StageUI Malkuth_137
+  - first:
+      213: -1442108199801745080
+    second: StageUI Malkuth_138
+  - first:
+      213: 4043249441666626846
+    second: StageUI Malkuth_139
+  - first:
+      213: -8193154741608938973
+    second: StageUI Malkuth_140
+  - first:
+      213: -8365235950354929464
+    second: StageUI Malkuth_141
+  - first:
+      213: 5447868103978391199
+    second: StageUI Malkuth_142
+  - first:
+      213: 6806690173044702485
+    second: StageUI Malkuth_143
+  - first:
+      213: 2304767123262561192
+    second: StageUI Malkuth_144
+  - first:
+      213: 3784950855346071779
+    second: StageUI Malkuth_145
+  - first:
+      213: 233711085062827684
+    second: StageUI Malkuth_146
+  - first:
+      213: 3045248223233700164
+    second: StageUI Malkuth_147
+  - first:
+      213: -633689986796886714
+    second: StageUI Malkuth_148
+  - first:
+      213: -8239786565325813271
+    second: StageUI Malkuth_149
+  - first:
+      213: 8576402927490820380
+    second: StageUI Malkuth_150
+  - first:
+      213: 4930923759917163171
+    second: StageUI Malkuth_151
+  - first:
+      213: 8145922863979818077
+    second: StageUI Malkuth_152
+  - first:
+      213: 8117962670100550554
+    second: StageUI Malkuth_153
+  - first:
+      213: 7315677713174819459
+    second: StageUI Malkuth_154
+  - first:
+      213: -8792738630815127310
+    second: StageUI Malkuth_155
+  - first:
+      213: 6428118053633169543
+    second: StageUI Malkuth_156
+  - first:
+      213: -3216293831306241761
+    second: StageUI Malkuth_157
+  - first:
+      213: -8151962502780928194
+    second: StageUI Malkuth_158
+  - first:
+      213: -4993175183720833834
+    second: StageUI Malkuth_159
+  - first:
+      213: -3803610628745491555
+    second: StageUI Malkuth_160
+  - first:
+      213: 3894076759747912726
+    second: StageUI Malkuth_161
+  - first:
+      213: 821030022551021404
+    second: StageUI Malkuth_162
+  - first:
+      213: 3403134065863452135
+    second: StageUI Malkuth_163
+  - first:
+      213: -5705470196555229334
+    second: StageUI Malkuth_164
+  - first:
+      213: 968769534461117894
+    second: StageUI Malkuth_165
+  - first:
+      213: -3044311913976682987
+    second: StageUI Malkuth_166
+  - first:
+      213: 6812322942315448117
+    second: StageUI Malkuth_167
+  - first:
+      213: -3991910536436618291
+    second: StageUI Malkuth_168
+  - first:
+      213: 4643389542033432723
+    second: StageUI Malkuth_169
+  - first:
+      213: 159737981304524045
+    second: StageUI Malkuth_170
+  - first:
+      213: 5277207080524729662
+    second: StageUI Malkuth_171
+  - first:
+      213: -2546366153189797501
+    second: StageUI Malkuth_172
+  - first:
+      213: -2303323096071346360
+    second: StageUI Malkuth_173
+  - first:
+      213: -7916005677947996298
+    second: StageUI Malkuth_174
+  - first:
+      213: 1212147913363935170
+    second: StageUI Malkuth_175
+  - first:
+      213: -7672328441996177743
+    second: StageUI Malkuth_176
+  - first:
+      213: 3014939395711007711
+    second: StageUI Malkuth_177
+  - first:
+      213: -38850211262066134
+    second: StageUI Malkuth_178
+  - first:
+      213: -6070581533074036580
+    second: StageUI Malkuth_179
+  - first:
+      213: 472767498141155092
+    second: StageUI Malkuth_180
+  - first:
+      213: -6113318919355009879
+    second: StageUI Malkuth_181
+  - first:
+      213: -8948402367816326466
+    second: StageUI Malkuth_182
+  - first:
+      213: -4633573058642142059
+    second: StageUI Malkuth_183
+  - first:
+      213: 2239178760257029769
+    second: StageUI Malkuth_184
+  - first:
+      213: 3111082760186962000
+    second: StageUI Malkuth_185
+  - first:
+      213: 2974277514710553961
+    second: StageUI Malkuth_186
+  - first:
+      213: -8793179652779758416
+    second: StageUI Malkuth_187
+  - first:
+      213: 6920226622362999989
+    second: StageUI Malkuth_188
+  - first:
+      213: 136732354473360387
+    second: StageUI Malkuth_189
+  - first:
+      213: 5579342316204003932
+    second: StageUI Malkuth_190
+  - first:
+      213: -994727070891088432
+    second: StageUI Malkuth_191
+  - first:
+      213: -7033538761360376327
+    second: StageUI Malkuth_192
+  - first:
+      213: 4428766363883566093
+    second: StageUI Malkuth_193
+  - first:
+      213: 4406045878561976916
+    second: StageUI Malkuth_194
+  - first:
+      213: -3757287097391511472
+    second: StageUI Malkuth_195
+  - first:
+      213: -7929312507947257832
+    second: StageUI Malkuth_196
+  - first:
+      213: 1441636681515194384
+    second: StageUI Malkuth_197
+  - first:
+      213: -122272053016454196
+    second: StageUI Malkuth_198
+  - first:
+      213: -5481181015848623453
+    second: StageUI Malkuth_199
+  - first:
+      213: -6658730627228408392
+    second: StageUI Malkuth_200
+  - first:
+      213: 1007515251297968192
+    second: StageUI Malkuth_201
+  - first:
+      213: 1759005152136281648
+    second: StageUI Malkuth_202
+  - first:
+      213: 7057949603246655208
+    second: StageUI Malkuth_203
+  - first:
+      213: -573915572595307511
+    second: StageUI Malkuth_204
+  - first:
+      213: 3801988199999531403
+    second: StageUI Malkuth_205
+  - first:
+      213: -490321314407137251
+    second: StageUI Malkuth_206
+  - first:
+      213: 69867028140686358
+    second: StageUI Malkuth_207
+  - first:
+      213: 251681802017933598
+    second: StageUI Malkuth_208
+  - first:
+      213: -3335559271144062974
+    second: StageUI Malkuth_209
+  - first:
+      213: 7139883231126239500
+    second: StageUI Malkuth_210
+  - first:
+      213: -460965089952605749
+    second: StageUI Malkuth_211
+  - first:
+      213: -4499835858244874861
+    second: StageUI Malkuth_212
+  - first:
+      213: -4426889565325427248
+    second: StageUI Malkuth_213
+  - first:
+      213: 3676374791793150745
+    second: StageUI Malkuth_214
+  - first:
+      213: -5919089256879293406
+    second: StageUI Malkuth_215
+  - first:
+      213: -382079062764686606
+    second: StageUI Malkuth_216
+  - first:
+      213: -8440996733365670758
+    second: StageUI Malkuth_217
+  - first:
+      213: 1886907917274465146
+    second: StageUI Malkuth_218
+  - first:
+      213: 5395186312119602900
+    second: StageUI Malkuth_219
+  - first:
+      213: -2042783959715325594
+    second: StageUI Malkuth_220
+  - first:
+      213: 6550993856859193851
+    second: StageUI Malkuth_221
+  - first:
+      213: 2123320313134226994
+    second: StageUI Malkuth_222
+  - first:
+      213: -3183155959088904667
+    second: StageUI Malkuth_223
+  - first:
+      213: -6588879693647889446
+    second: StageUI Malkuth_224
+  - first:
+      213: -3713115701549273463
+    second: StageUI Malkuth_225
+  - first:
+      213: 6017391153341801855
+    second: StageUI Malkuth_226
+  - first:
+      213: -6916798609059237062
+    second: StageUI Malkuth_227
+  - first:
+      213: 487684102403236637
+    second: StageUI Malkuth_228
+  - first:
+      213: 8411137937519469022
+    second: StageUI Malkuth_229
+  - first:
+      213: -6751477921031311592
+    second: StageUI Malkuth_230
+  - first:
+      213: -3834407162395406799
+    second: StageUI Malkuth_231
+  - first:
+      213: 8494893240163270334
+    second: StageUI Malkuth_232
+  - first:
+      213: 4863424773664401558
+    second: StageUI Malkuth_233
+  - first:
+      213: -1572634341192207243
+    second: StageUI Malkuth_234
+  - first:
+      213: -8405400692747736492
+    second: StageUI Malkuth_235
+  - first:
+      213: 4199142647119066631
+    second: StageUI Malkuth_236
+  - first:
+      213: 2497216541931786568
+    second: StageUI Malkuth_237
+  - first:
+      213: -91768582735642629
+    second: StageUI Malkuth_238
+  - first:
+      213: -2054406681062646343
+    second: StageUI Malkuth_239
+  - first:
+      213: -7655655066404936378
+    second: StageUI Malkuth_240
+  - first:
+      213: 2314197332653017175
+    second: StageUI Malkuth_241
+  - first:
+      213: 978819506631878058
+    second: StageUI Malkuth_242
+  - first:
+      213: 3481678166858768061
+    second: StageUI Malkuth_243
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 16384
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: StageUI Malkuth_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b558b8a440637720800000000000000
+      internalID: 2842721637805610425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_1
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74baf8f71a38325f0800000000000000
+      internalID: -782637180579239097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_2
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e405b8b73a90afd0800000000000000
+      internalID: -2332695042865167135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_3
+      rect:
+        serializedVersion: 2
+        x: 1728
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29a35dff7e9144210800000000000000
+      internalID: 1316205475319331474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_4
+      rect:
+        serializedVersion: 2
+        x: 2304
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8298deefc3aeea9e0800000000000000
+      internalID: -1608090469228771032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_5
+      rect:
+        serializedVersion: 2
+        x: 2880
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1922c691f296bc00800000000000000
+      internalID: 916081140530555165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_6
+      rect:
+        serializedVersion: 2
+        x: 3456
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14f102c738bfdda50800000000000000
+      internalID: 6547665975408336705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_7
+      rect:
+        serializedVersion: 2
+        x: 4032
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a658642d001abc1c0800000000000000
+      internalID: -4482311979217287830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_8
+      rect:
+        serializedVersion: 2
+        x: 4608
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e36a42c9473e5fd60800000000000000
+      internalID: 7923489209403614782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_9
+      rect:
+        serializedVersion: 2
+        x: 5184
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec6a12db5094e11b0800000000000000
+      internalID: -5684025390698223922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_10
+      rect:
+        serializedVersion: 2
+        x: 5760
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e71a47bb3421a61e0800000000000000
+      internalID: -2203928985527344770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_11
+      rect:
+        serializedVersion: 2
+        x: 6336
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdabee145ebb16f10800000000000000
+      internalID: 2261295081244768991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_12
+      rect:
+        serializedVersion: 2
+        x: 6912
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0c7382f9eab678d0800000000000000
+      internalID: -2848884200306410486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_13
+      rect:
+        serializedVersion: 2
+        x: 7488
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3f23bcb17c973b80800000000000000
+      internalID: -8415085366407385282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_14
+      rect:
+        serializedVersion: 2
+        x: 8064
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 692c0c5edb06a7ca0800000000000000
+      internalID: -6018391583307545962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_15
+      rect:
+        serializedVersion: 2
+        x: 8640
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a55c402699b22610800000000000000
+      internalID: 1595041272480683429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_16
+      rect:
+        serializedVersion: 2
+        x: 9216
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a21c6f87e3e772630800000000000000
+      internalID: 3902226408922333482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_17
+      rect:
+        serializedVersion: 2
+        x: 9792
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad4ff3a19d329f410800000000000000
+      internalID: 1511278565314786522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_18
+      rect:
+        serializedVersion: 2
+        x: 10368
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f9ff8eb165fa5b80800000000000000
+      internalID: -8405135954375869966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_19
+      rect:
+        serializedVersion: 2
+        x: 10944
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eadbc50e72bd79930800000000000000
+      internalID: 4150026545959583150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_20
+      rect:
+        serializedVersion: 2
+        x: 11520
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64c1a222f54e25820800000000000000
+      internalID: 2905635806853602374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Malkuth_21
+      rect:
+        serializedVersion: 2
+        x: 12096
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28e86c202652fbc90800000000000000
+      internalID: -7151956580357468542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: c3bbb88ce37c3274cb7fd17025573995
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":23.0,"y":1.0},"gridSpriteSize":{"x":576.0,"y":324.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      StageUI Malkuth_0: 2842721637805610425
+      StageUI Malkuth_1: -782637180579239097
+      StageUI Malkuth_10: -2203928985527344770
+      StageUI Malkuth_11: 2261295081244768991
+      StageUI Malkuth_12: -2848884200306410486
+      StageUI Malkuth_13: -8415085366407385282
+      StageUI Malkuth_14: -6018391583307545962
+      StageUI Malkuth_15: 1595041272480683429
+      StageUI Malkuth_16: 3902226408922333482
+      StageUI Malkuth_17: 1511278565314786522
+      StageUI Malkuth_18: -8405135954375869966
+      StageUI Malkuth_19: 4150026545959583150
+      StageUI Malkuth_2: -2332695042865167135
+      StageUI Malkuth_20: 2905635806853602374
+      StageUI Malkuth_21: -7151956580357468542
+      StageUI Malkuth_3: 1316205475319331474
+      StageUI Malkuth_4: -1608090469228771032
+      StageUI Malkuth_5: 916081140530555165
+      StageUI Malkuth_6: 6547665975408336705
+      StageUI Malkuth_7: -4482311979217287830
+      StageUI Malkuth_8: 7923489209403614782
+      StageUI Malkuth_9: -5684025390698223922
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -30,15 +30,5 @@ public class GameStartUI : NetworkBehaviour
             NetworkGameManager.Instance.LoadScene(NetworkGameManager.SceneName.Map.ToString());
     }
 
-    public async void QuitGame()
-    {
-        if (NetworkGameManager.Instance.Runner != null)
-            await NetworkGameManager.Instance.Runner.Shutdown();
-
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
-    }
+    public void QuitGame() => GameMenu.ExitGame();
 }

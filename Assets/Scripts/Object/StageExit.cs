@@ -19,12 +19,16 @@ public class StageExit : NetworkBehaviour
     private Vector3 leftStart;
     private Vector3 rightStart;
     private bool requestedTransition;
+    private bool openingSoundPlayed;
+    private bool departureSoundPlayed;
     private StagePuzzleDirector director;
 
     internal void SetDirector(StagePuzzleDirector stageDirector) => director = stageDirector;
 
     public override void Spawned()
     {
+        openingSoundPlayed = LiftProgress > 0f;
+        departureSoundPlayed = LiftProgress >= 1f;
         if (leftLeaf != null)
             leftStart = leftLeaf.localPosition;
 
@@ -74,6 +78,18 @@ public class StageExit : NetworkBehaviour
     {
         if (!HasStateAuthority)
             ApplyLift();
+
+        if (!openingSoundPlayed && LiftProgress > 0f)
+        {
+            openingSoundPlayed = true;
+            SoundManager.Play(SoundEffect.Elevator_Open);
+        }
+
+        if (!departureSoundPlayed && LiftProgress >= 1f)
+        {
+            departureSoundPlayed = true;
+            SoundManager.Play(SoundEffect.Elevator_Up);
+        }
     }
 
     private void ApplyLift()

@@ -6,7 +6,8 @@ public class SelectCharacterButton : NetworkBehaviour
 {
     [SerializeField] private MyEnum.CharacterType myType;
     [SerializeField] private GameObject blocker;
-    public UnityAction<MyEnum.CharacterType> OnClick;
+    public event UnityAction<MyEnum.CharacterType> OnClick;
+    internal MyEnum.CharacterType CharacterType => myType;
 
     public bool IsBlocked { get; private set; }
 

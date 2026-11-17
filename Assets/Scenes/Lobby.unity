@@ -545,6 +545,7 @@ MonoBehaviour:
   maxX: 2.8
   minY: 0
   maxY: 0.5
+  holdThreshold: 0.3
 --- !u!1001 &557817002
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -627,11 +628,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4070602120189774081, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
       propertyPath: StateHashes.Array.size
-      value: 11
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 4070602120189774081, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
       propertyPath: TriggerHashes.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4070602120189774081, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
       propertyPath: 'StateHashes.Array.data[7]'
@@ -1148,6 +1149,26 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &909189001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1300307410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9049281c52ccb54cb90ad7d2eecd056, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
+  rabbitPrefab: {fileID: 2817390880039839120, guid: dd0f6547caff46742bab1e0f8e0ba635, type: 3}
+  bearPrefab: {fileID: 7809413871449971425, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
+  mousePrefab: {fileID: 4353250075812841545, guid: 60c440a7bd9000c4a8500fcac590b3ee, type: 3}
+  frogPrefab: {fileID: 505921429212253325, guid: 688e319115fb9684996026253f49992c, type: 3}
+  rabbitSpawnPos: {x: -3, y: -0.93}
+  bearSpawnPos: {x: -1.2, y: -0.93}
+  mouseSpawnPos: {x: 1.2, y: -0.93}
+  frogSpawnPos: {x: 3, y: -0.93}
 --- !u!1 &935759751
 GameObject:
   m_ObjectHideFlags: 0
@@ -3084,26 +3105,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b893781678acb5b438081f769c5bc809, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkLauncher
---- !u!114 &909189001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1300307410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9049281c52ccb54cb90ad7d2eecd056, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
-  rabbitPrefab: {fileID: 2817390880039839120, guid: dd0f6547caff46742bab1e0f8e0ba635, type: 3}
-  bearPrefab: {fileID: 7809413871449971425, guid: fe18e31e42e08584a8d551e170c2ea33, type: 3}
-  mousePrefab: {fileID: 4353250075812841545, guid: 60c440a7bd9000c4a8500fcac590b3ee, type: 3}
-  frogPrefab: {fileID: 505921429212253325, guid: 688e319115fb9684996026253f49992c, type: 3}
-  rabbitSpawnPos: {x: -3.0, y: -0.93}
-  bearSpawnPos: {x: -1.2, y: -0.93}
-  mouseSpawnPos: {x: 1.2, y: -0.93}
-  frogSpawnPos: {x: 3.0, y: -0.93}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

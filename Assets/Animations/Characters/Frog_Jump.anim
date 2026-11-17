@@ -24,6 +24,10 @@ AnimationClip:
       value: {fileID: 3812343828281459939, guid: 39329cd4594f5f943b7fd4daee271fa2, type: 3}
     - time: 0.083333336
       value: {fileID: -8018657486589477668, guid: 39329cd4594f5f943b7fd4daee271fa2, type: 3}
+    - time: 0.5
+      value: {fileID: -4887017584159531163, guid: 81277abca218ce14ea37f31e0e2d00b8, type: 3}
+    - time: 0.9166667
+      value: {fileID: 3812343828281459939, guid: 39329cd4594f5f943b7fd4daee271fa2, type: 3}
     attribute: m_Sprite
     path: model_frog
     classID: 212
@@ -48,12 +52,14 @@ AnimationClip:
     pptrCurveMapping:
     - {fileID: 3812343828281459939, guid: 39329cd4594f5f943b7fd4daee271fa2, type: 3}
     - {fileID: -8018657486589477668, guid: 39329cd4594f5f943b7fd4daee271fa2, type: 3}
+    - {fileID: -4887017584159531163, guid: 81277abca218ce14ea37f31e0e2d00b8, type: 3}
+    - {fileID: 3812343828281459939, guid: 39329cd4594f5f943b7fd4daee271fa2, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.16666667
+    m_StopTime: 1
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0

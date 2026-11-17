@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public sealed class IntroSequence : MonoBehaviour
@@ -12,11 +11,23 @@ public sealed class IntroSequence : MonoBehaviour
     [SerializeField] private IntroAdvanceInput advanceInput;
     [SerializeField] private IntroTypewriter typewriter;
     [SerializeField] private Transform sceneCamera;
+    [SerializeField] private Animator[] characters;
+
+    private static readonly int IsJump = Animator.StringToHash("IsJump");
 
     private int cutIndex;
     private int lineIndex;
     private bool cameraPlaying;
     private bool loadingTitle;
+
+    private void Awake()
+    {
+        foreach (var character in characters)
+        {
+            character.GetComponent<Rigidbody2D>().simulated = false;
+            character.updateMode = AnimatorUpdateMode.UnscaledTime;
+        }
+    }
 
     private void OnEnable() => advanceInput.Advance += Advance;
 
@@ -24,8 +35,11 @@ public sealed class IntroSequence : MonoBehaviour
 
     private void Start() => ShowCut();
 
-    private void ShowCut()
+    private void ShowCut(bool playTransitionSound = false)
     {
+        if (playTransitionSound)
+            SoundManager.Play(SoundEffect.CutScene);
+
         while (cutIndex < narration.cuts.Length)
         {
             var cut = narration.cuts[cutIndex];
@@ -55,6 +69,7 @@ public sealed class IntroSequence : MonoBehaviour
         if (cameraPlaying || loadingTitle)
             return;
 
+        SoundManager.Play(SoundEffect.UIClick);
         if (typewriter.IsTyping)
         {
             typewriter.Reveal();
@@ -70,7 +85,7 @@ public sealed class IntroSequence : MonoBehaviour
         }
 
         cutIndex++;
-        ShowCut();
+        ShowCut(playTransitionSound: true);
     }
 
     private IEnumerator PlayCamera()
@@ -84,21 +99,32 @@ public sealed class IntroSequence : MonoBehaviour
             yield return null;
         }
 
-        for (float time = 0f; time < 0.45f; time += Time.unscaledDeltaTime)
+        var startingPositions = new Vector3[characters.Length];
+        for (int i = 0; i < characters.Length; i++)
         {
-            var offset = new Vector3(Mathf.Sin(time * 131f), Mathf.Cos(time * 167f), 0f);
-            sceneCamera.position = lowered + offset * 0.24f;
+            startingPositions[i] = characters[i].transform.position;
+            characters[i].SetBool(IsJump, true);
+        }
+
+        const float fallDuration = 0.9f;
+        const float fallDistance = 9.5f;
+        for (float time = 0f; time < fallDuration; time += Time.unscaledDeltaTime)
+        {
+            float progress = time / fallDuration;
+            float descent = progress * progress;
+            float shakeStrength = 0.24f * (1f - progress);
+            var shake = new Vector3(Mathf.Sin(time * 131f), Mathf.Cos(time * 167f), 0f);
+            sceneCamera.position = lowered + Vector3.down * (0.5f * descent) + shake * shakeStrength;
+
+            for (int i = 0; i < characters.Length; i++)
+                characters[i].transform.position = startingPositions[i] + Vector3.down * (fallDistance * descent);
+
             yield return null;
         }
 
-        for (float time = 0f; time < 0.55f; time += Time.unscaledDeltaTime)
-        {
-            float progress = time / 0.55f;
-            sceneCamera.position = lowered + Vector3.up * (12f * progress * progress);
-            yield return null;
-        }
-
-        sceneCamera.position = lowered + Vector3.up * 12f;
+        sceneCamera.position = lowered + Vector3.down * 0.5f;
+        for (int i = 0; i < characters.Length; i++)
+            characters[i].transform.position = startingPositions[i] + Vector3.down * fallDistance;
         FinishIntro();
     }
 
@@ -116,7 +142,6 @@ public sealed class IntroSequence : MonoBehaviour
         if (loadingTitle)
             return;
 
-        loadingTitle = true;
-        SceneManager.LoadScene("Assets/Scenes/Title.unity");
+        FinishIntro();
     }
 }

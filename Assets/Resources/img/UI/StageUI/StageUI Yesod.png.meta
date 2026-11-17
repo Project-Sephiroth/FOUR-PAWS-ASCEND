@@ -1,0 +1,1315 @@
+fileFormatVersion: 2
+guid: 8e777183cd3953a43824529a59c310db
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 348716524847796297
+    second: StageUI Yesod_0
+  - first:
+      213: 3842744694433480386
+    second: StageUI Yesod_1
+  - first:
+      213: 4105174215171599117
+    second: StageUI Yesod_2
+  - first:
+      213: 7083547675802661255
+    second: StageUI Yesod_3
+  - first:
+      213: 501390229129267676
+    second: StageUI Yesod_4
+  - first:
+      213: 40642955590093416
+    second: StageUI Yesod_5
+  - first:
+      213: -1618422715388146752
+    second: StageUI Yesod_6
+  - first:
+      213: -1842710428781749192
+    second: StageUI Yesod_7
+  - first:
+      213: 6224738073665996188
+    second: StageUI Yesod_8
+  - first:
+      213: 193650119729636607
+    second: StageUI Yesod_9
+  - first:
+      213: -7912147544257973373
+    second: StageUI Yesod_10
+  - first:
+      213: -1293461256102045939
+    second: StageUI Yesod_11
+  - first:
+      213: -3995555989591742134
+    second: StageUI Yesod_12
+  - first:
+      213: 1950294637044438889
+    second: StageUI Yesod_13
+  - first:
+      213: -2797266527620784112
+    second: StageUI Yesod_14
+  - first:
+      213: 7949769656871611126
+    second: StageUI Yesod_15
+  - first:
+      213: 6680035614793273020
+    second: StageUI Yesod_16
+  - first:
+      213: -3306669775721374952
+    second: StageUI Yesod_17
+  - first:
+      213: -6718097962051337678
+    second: StageUI Yesod_18
+  - first:
+      213: -3548567883479505927
+    second: StageUI Yesod_19
+  - first:
+      213: -2449056959470876248
+    second: StageUI Yesod_20
+  - first:
+      213: 4820697565238575422
+    second: StageUI Yesod_21
+  - first:
+      213: 2288944446586543666
+    second: StageUI Yesod_22
+  - first:
+      213: 7550379249889915487
+    second: StageUI Yesod_23
+  - first:
+      213: -1568946825902166859
+    second: StageUI Yesod_24
+  - first:
+      213: -2302301598940212127
+    second: StageUI Yesod_25
+  - first:
+      213: -932221721244391876
+    second: StageUI Yesod_26
+  - first:
+      213: 7229297221056868255
+    second: StageUI Yesod_27
+  - first:
+      213: -6696010966416243950
+    second: StageUI Yesod_28
+  - first:
+      213: 5507147632387403240
+    second: StageUI Yesod_29
+  - first:
+      213: -4751331193766431159
+    second: StageUI Yesod_30
+  - first:
+      213: -2204237437416586494
+    second: StageUI Yesod_31
+  - first:
+      213: -5375170444785424285
+    second: StageUI Yesod_32
+  - first:
+      213: 7366533078419273066
+    second: StageUI Yesod_33
+  - first:
+      213: -8791926149641272073
+    second: StageUI Yesod_34
+  - first:
+      213: -3392442656769993249
+    second: StageUI Yesod_35
+  - first:
+      213: 6480452969655097451
+    second: StageUI Yesod_36
+  - first:
+      213: 7383569172811813437
+    second: StageUI Yesod_37
+  - first:
+      213: -5429856570517794876
+    second: StageUI Yesod_38
+  - first:
+      213: 2066084211562214173
+    second: StageUI Yesod_39
+  - first:
+      213: 5427241847677872022
+    second: StageUI Yesod_40
+  - first:
+      213: 6522151876424424388
+    second: StageUI Yesod_41
+  - first:
+      213: 648167427646420196
+    second: StageUI Yesod_42
+  - first:
+      213: -3813453563329603403
+    second: StageUI Yesod_43
+  - first:
+      213: -7762260624601192708
+    second: StageUI Yesod_44
+  - first:
+      213: -3745101897548100403
+    second: StageUI Yesod_45
+  - first:
+      213: -6150259905759524990
+    second: StageUI Yesod_46
+  - first:
+      213: 1201351961715443058
+    second: StageUI Yesod_47
+  - first:
+      213: 4004873226121994186
+    second: StageUI Yesod_48
+  - first:
+      213: 2139005089026211115
+    second: StageUI Yesod_49
+  - first:
+      213: -2279060407221662447
+    second: StageUI Yesod_50
+  - first:
+      213: 5250421380946386370
+    second: StageUI Yesod_51
+  - first:
+      213: 8057743249169550595
+    second: StageUI Yesod_52
+  - first:
+      213: 6325265909914400957
+    second: StageUI Yesod_53
+  - first:
+      213: 6888948097572358718
+    second: StageUI Yesod_54
+  - first:
+      213: -4695351047115069365
+    second: StageUI Yesod_55
+  - first:
+      213: 9056810464686359124
+    second: StageUI Yesod_56
+  - first:
+      213: -960746815633574526
+    second: StageUI Yesod_57
+  - first:
+      213: -8257231321657995160
+    second: StageUI Yesod_58
+  - first:
+      213: -5844807755550598794
+    second: StageUI Yesod_59
+  - first:
+      213: -7700156920208041516
+    second: StageUI Yesod_60
+  - first:
+      213: -6558968730784746100
+    second: StageUI Yesod_61
+  - first:
+      213: -7789261364982357157
+    second: StageUI Yesod_62
+  - first:
+      213: -1184600968455634954
+    second: StageUI Yesod_63
+  - first:
+      213: 5827766342045003368
+    second: StageUI Yesod_64
+  - first:
+      213: 3394158352493288027
+    second: StageUI Yesod_65
+  - first:
+      213: -7472473969999825530
+    second: StageUI Yesod_66
+  - first:
+      213: -8406323519119359064
+    second: StageUI Yesod_67
+  - first:
+      213: -5137509856137433047
+    second: StageUI Yesod_68
+  - first:
+      213: -3820437592206067051
+    second: StageUI Yesod_69
+  - first:
+      213: -1171334034609252511
+    second: StageUI Yesod_70
+  - first:
+      213: 8269319968973338898
+    second: StageUI Yesod_71
+  - first:
+      213: -4771574784848819025
+    second: StageUI Yesod_72
+  - first:
+      213: -1131500598168260349
+    second: StageUI Yesod_73
+  - first:
+      213: 6155645598437433813
+    second: StageUI Yesod_74
+  - first:
+      213: -403811877980404221
+    second: StageUI Yesod_75
+  - first:
+      213: -8109325041085510601
+    second: StageUI Yesod_76
+  - first:
+      213: -5615042532508022344
+    second: StageUI Yesod_77
+  - first:
+      213: 8941807868234684515
+    second: StageUI Yesod_78
+  - first:
+      213: -3050212676658067530
+    second: StageUI Yesod_79
+  - first:
+      213: 2785445711657475040
+    second: StageUI Yesod_80
+  - first:
+      213: 8058516999716929323
+    second: StageUI Yesod_81
+  - first:
+      213: -6084515386439575315
+    second: StageUI Yesod_82
+  - first:
+      213: -2354345389836473671
+    second: StageUI Yesod_83
+  - first:
+      213: 4685010535805093752
+    second: StageUI Yesod_84
+  - first:
+      213: 1595672841829149327
+    second: StageUI Yesod_85
+  - first:
+      213: -8691735176623743378
+    second: StageUI Yesod_86
+  - first:
+      213: -155384045643835226
+    second: StageUI Yesod_87
+  - first:
+      213: -6486347932828755930
+    second: StageUI Yesod_88
+  - first:
+      213: -2974478630354780647
+    second: StageUI Yesod_89
+  - first:
+      213: -7553988056813309235
+    second: StageUI Yesod_90
+  - first:
+      213: 3138404248175038694
+    second: StageUI Yesod_91
+  - first:
+      213: -2612204837867595568
+    second: StageUI Yesod_92
+  - first:
+      213: 5760839556732439733
+    second: StageUI Yesod_93
+  - first:
+      213: 8488176991354833808
+    second: StageUI Yesod_94
+  - first:
+      213: -7263095881593489558
+    second: StageUI Yesod_95
+  - first:
+      213: -2957287665422960988
+    second: StageUI Yesod_96
+  - first:
+      213: -8001699249146355713
+    second: StageUI Yesod_97
+  - first:
+      213: 1945264652641311026
+    second: StageUI Yesod_98
+  - first:
+      213: 3339529930009638376
+    second: StageUI Yesod_99
+  - first:
+      213: -1271579263989729635
+    second: StageUI Yesod_100
+  - first:
+      213: -2718740061232435951
+    second: StageUI Yesod_101
+  - first:
+      213: 5910254501133959217
+    second: StageUI Yesod_102
+  - first:
+      213: 8963645043780478201
+    second: StageUI Yesod_103
+  - first:
+      213: 6924382650915471921
+    second: StageUI Yesod_104
+  - first:
+      213: 2642171060583185475
+    second: StageUI Yesod_105
+  - first:
+      213: -6872750191845376840
+    second: StageUI Yesod_106
+  - first:
+      213: 3436210514956518708
+    second: StageUI Yesod_107
+  - first:
+      213: -4538413331903600850
+    second: StageUI Yesod_108
+  - first:
+      213: -9219110268926632337
+    second: StageUI Yesod_109
+  - first:
+      213: -7453140126432644170
+    second: StageUI Yesod_110
+  - first:
+      213: -3701696015988158904
+    second: StageUI Yesod_111
+  - first:
+      213: 7146435658533795406
+    second: StageUI Yesod_112
+  - first:
+      213: 6315319644758254130
+    second: StageUI Yesod_113
+  - first:
+      213: 5103774709165503226
+    second: StageUI Yesod_114
+  - first:
+      213: 3250929644267493972
+    second: StageUI Yesod_115
+  - first:
+      213: 3420931211446465356
+    second: StageUI Yesod_116
+  - first:
+      213: -3723427419939048818
+    second: StageUI Yesod_117
+  - first:
+      213: 1860124010280319351
+    second: StageUI Yesod_118
+  - first:
+      213: -3296096258049988559
+    second: StageUI Yesod_119
+  - first:
+      213: 8275052153369946377
+    second: StageUI Yesod_120
+  - first:
+      213: 8731164987413476250
+    second: StageUI Yesod_121
+  - first:
+      213: 1082223782389514009
+    second: StageUI Yesod_122
+  - first:
+      213: -7939347891330717828
+    second: StageUI Yesod_123
+  - first:
+      213: 6658843687208491248
+    second: StageUI Yesod_124
+  - first:
+      213: -407443145252695702
+    second: StageUI Yesod_125
+  - first:
+      213: -4421547587390154904
+    second: StageUI Yesod_126
+  - first:
+      213: 2472553092251567801
+    second: StageUI Yesod_127
+  - first:
+      213: -966340485910118299
+    second: StageUI Yesod_128
+  - first:
+      213: -3543906131008075185
+    second: StageUI Yesod_129
+  - first:
+      213: 2142745193335480629
+    second: StageUI Yesod_130
+  - first:
+      213: -5760980683650007708
+    second: StageUI Yesod_131
+  - first:
+      213: -1051867652518771080
+    second: StageUI Yesod_132
+  - first:
+      213: 4608175481360240819
+    second: StageUI Yesod_133
+  - first:
+      213: 1867767525857747549
+    second: StageUI Yesod_134
+  - first:
+      213: 5848681587577543702
+    second: StageUI Yesod_135
+  - first:
+      213: 4638005705655239875
+    second: StageUI Yesod_136
+  - first:
+      213: 594078790594341192
+    second: StageUI Yesod_137
+  - first:
+      213: 2329127192902003623
+    second: StageUI Yesod_138
+  - first:
+      213: -7512038236996991702
+    second: StageUI Yesod_139
+  - first:
+      213: -1736087318154221927
+    second: StageUI Yesod_140
+  - first:
+      213: 2249145213953781931
+    second: StageUI Yesod_141
+  - first:
+      213: -318145199376384590
+    second: StageUI Yesod_142
+  - first:
+      213: -2767089012473022927
+    second: StageUI Yesod_143
+  - first:
+      213: -4932497967941758155
+    second: StageUI Yesod_144
+  - first:
+      213: 1251209297746641655
+    second: StageUI Yesod_145
+  - first:
+      213: 4608494725720527847
+    second: StageUI Yesod_146
+  - first:
+      213: -5958465734195963333
+    second: StageUI Yesod_147
+  - first:
+      213: -4851546611313769471
+    second: StageUI Yesod_148
+  - first:
+      213: -6675270635652380630
+    second: StageUI Yesod_149
+  - first:
+      213: -2730782986773870236
+    second: StageUI Yesod_150
+  - first:
+      213: -6141300707564675320
+    second: StageUI Yesod_151
+  - first:
+      213: -8786366847349411447
+    second: StageUI Yesod_152
+  - first:
+      213: 8989856372447184187
+    second: StageUI Yesod_153
+  - first:
+      213: -5650940163149314880
+    second: StageUI Yesod_154
+  - first:
+      213: 1951609399136762876
+    second: StageUI Yesod_155
+  - first:
+      213: -4713211771832553996
+    second: StageUI Yesod_156
+  - first:
+      213: -6977868186189901678
+    second: StageUI Yesod_157
+  - first:
+      213: -1287302181753189398
+    second: StageUI Yesod_158
+  - first:
+      213: 2851279011798951617
+    second: StageUI Yesod_159
+  - first:
+      213: -592600295049841362
+    second: StageUI Yesod_160
+  - first:
+      213: -5321017779990528413
+    second: StageUI Yesod_161
+  - first:
+      213: 2333150768682584179
+    second: StageUI Yesod_162
+  - first:
+      213: -2807947299290609978
+    second: StageUI Yesod_163
+  - first:
+      213: -7698446551273632937
+    second: StageUI Yesod_164
+  - first:
+      213: -166969545723524496
+    second: StageUI Yesod_165
+  - first:
+      213: 4775419013268076299
+    second: StageUI Yesod_166
+  - first:
+      213: -2506279776111504086
+    second: StageUI Yesod_167
+  - first:
+      213: -6313883279986676695
+    second: StageUI Yesod_168
+  - first:
+      213: -1500382353518283398
+    second: StageUI Yesod_169
+  - first:
+      213: -2971133987153997882
+    second: StageUI Yesod_170
+  - first:
+      213: 2497452427008225209
+    second: StageUI Yesod_171
+  - first:
+      213: 806206877106531406
+    second: StageUI Yesod_172
+  - first:
+      213: -5906418321446082912
+    second: StageUI Yesod_173
+  - first:
+      213: -5930673725677535642
+    second: StageUI Yesod_174
+  - first:
+      213: -663634168922598025
+    second: StageUI Yesod_175
+  - first:
+      213: 4927703698068204786
+    second: StageUI Yesod_176
+  - first:
+      213: -6255154229149242167
+    second: StageUI Yesod_177
+  - first:
+      213: -7113140244345766496
+    second: StageUI Yesod_178
+  - first:
+      213: 120196365948372704
+    second: StageUI Yesod_179
+  - first:
+      213: -3813637724929361247
+    second: StageUI Yesod_180
+  - first:
+      213: -4851392143603573980
+    second: StageUI Yesod_181
+  - first:
+      213: 1814776844987525308
+    second: StageUI Yesod_182
+  - first:
+      213: -7815948027387670950
+    second: StageUI Yesod_183
+  - first:
+      213: 445490445639991163
+    second: StageUI Yesod_184
+  - first:
+      213: -4769425370969952783
+    second: StageUI Yesod_185
+  - first:
+      213: -5509925337893814643
+    second: StageUI Yesod_186
+  - first:
+      213: 860202471199960761
+    second: StageUI Yesod_187
+  - first:
+      213: 1267998674933404051
+    second: StageUI Yesod_188
+  - first:
+      213: 3073661796909871116
+    second: StageUI Yesod_189
+  - first:
+      213: 2550122423190719156
+    second: StageUI Yesod_190
+  - first:
+      213: -8199013917561902772
+    second: StageUI Yesod_191
+  - first:
+      213: -2654086886757718865
+    second: StageUI Yesod_192
+  - first:
+      213: 7868507683014529146
+    second: StageUI Yesod_193
+  - first:
+      213: -178726342417575544
+    second: StageUI Yesod_194
+  - first:
+      213: -7222401430790573838
+    second: StageUI Yesod_195
+  - first:
+      213: 6980839056780487141
+    second: StageUI Yesod_196
+  - first:
+      213: 714570119357959851
+    second: StageUI Yesod_197
+  - first:
+      213: -980728674008368756
+    second: StageUI Yesod_198
+  - first:
+      213: -488062395260995042
+    second: StageUI Yesod_199
+  - first:
+      213: -6624365216773098760
+    second: StageUI Yesod_200
+  - first:
+      213: 6260417561009132193
+    second: StageUI Yesod_201
+  - first:
+      213: 8841492384298972093
+    second: StageUI Yesod_202
+  - first:
+      213: -5777130680601254134
+    second: StageUI Yesod_203
+  - first:
+      213: 742617632222980435
+    second: StageUI Yesod_204
+  - first:
+      213: -8672722293951775201
+    second: StageUI Yesod_205
+  - first:
+      213: -7657390267637597352
+    second: StageUI Yesod_206
+  - first:
+      213: 2164761614886978707
+    second: StageUI Yesod_207
+  - first:
+      213: -3493117369541396068
+    second: StageUI Yesod_208
+  - first:
+      213: -354185881758781211
+    second: StageUI Yesod_209
+  - first:
+      213: -7438777353537768824
+    second: StageUI Yesod_210
+  - first:
+      213: -2481172906162417683
+    second: StageUI Yesod_211
+  - first:
+      213: 2498447403666809367
+    second: StageUI Yesod_212
+  - first:
+      213: 7242035363458210620
+    second: StageUI Yesod_213
+  - first:
+      213: -8299428189309592861
+    second: StageUI Yesod_214
+  - first:
+      213: 1736168591340448873
+    second: StageUI Yesod_215
+  - first:
+      213: 1863636042537308351
+    second: StageUI Yesod_216
+  - first:
+      213: 737721544536253983
+    second: StageUI Yesod_217
+  - first:
+      213: -1510641651296490405
+    second: StageUI Yesod_218
+  - first:
+      213: -8508043821632625266
+    second: StageUI Yesod_219
+  - first:
+      213: 6277126479682844800
+    second: StageUI Yesod_220
+  - first:
+      213: 2087725524353460933
+    second: StageUI Yesod_221
+  - first:
+      213: 1988310615672355829
+    second: StageUI Yesod_222
+  - first:
+      213: -4049836259195325082
+    second: StageUI Yesod_223
+  - first:
+      213: -1415146241131615265
+    second: StageUI Yesod_224
+  - first:
+      213: -3204601409190127807
+    second: StageUI Yesod_225
+  - first:
+      213: -861573708635494362
+    second: StageUI Yesod_226
+  - first:
+      213: 1628110040264681695
+    second: StageUI Yesod_227
+  - first:
+      213: 937491001546588513
+    second: StageUI Yesod_228
+  - first:
+      213: 6140601784287227875
+    second: StageUI Yesod_229
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 16384
+    resizeAlgorithm: 1
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: StageUI Yesod_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9409cdee4d3e6d400800000000000000
+      internalID: 348716524847796297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_1
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ce793a90fb245530800000000000000
+      internalID: 3842744694433480386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_2
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0b6564d23288f830800000000000000
+      internalID: 4105174215171599117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_3
+      rect:
+        serializedVersion: 2
+        x: 1728
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 781f2c5b411dd4260800000000000000
+      internalID: 7083547675802661255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_4
+      rect:
+        serializedVersion: 2
+        x: 2304
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd90a15c1cb45f600800000000000000
+      internalID: 501390229129267676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_5
+      rect:
+        serializedVersion: 2
+        x: 2880
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86ac1928d84609000800000000000000
+      internalID: 40642955590093416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_6
+      rect:
+        serializedVersion: 2
+        x: 3456
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cbcdd87d153a89e0800000000000000
+      internalID: -1618422715388146752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_7
+      rect:
+        serializedVersion: 2
+        x: 4032
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83c5e8cc0a06d66e0800000000000000
+      internalID: -1842710428781749192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_8
+      rect:
+        serializedVersion: 2
+        x: 4608
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9506b44c46b26650800000000000000
+      internalID: 6224738073665996188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_9
+      rect:
+        serializedVersion: 2
+        x: 5184
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff4623502cbffa200800000000000000
+      internalID: 193650119729636607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_10
+      rect:
+        serializedVersion: 2
+        x: 5760
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38336069ab7623290800000000000000
+      internalID: -7912147544257973373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_11
+      rect:
+        serializedVersion: 2
+        x: 6336
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d079e4337d3bc0ee0800000000000000
+      internalID: -1293461256102045939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_12
+      rect:
+        serializedVersion: 2
+        x: 6912
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4923303ffeec88c0800000000000000
+      internalID: -3995555989591742134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_13
+      rect:
+        serializedVersion: 2
+        x: 7488
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9671268a3a6d01b10800000000000000
+      internalID: 1950294637044438889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_14
+      rect:
+        serializedVersion: 2
+        x: 8064
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 010a217e9ec1e29d0800000000000000
+      internalID: -2797266527620784112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_15
+      rect:
+        serializedVersion: 2
+        x: 8640
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fae20c1261435e60800000000000000
+      internalID: 7949769656871611126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_16
+      rect:
+        serializedVersion: 2
+        x: 9216
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cbe06b2dff044bc50800000000000000
+      internalID: 6680035614793273020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_17
+      rect:
+        serializedVersion: 2
+        x: 9792
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81b5b94cb595c12d0800000000000000
+      internalID: -3306669775721374952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_18
+      rect:
+        serializedVersion: 2
+        x: 10368
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23287ad5f7584c2a0800000000000000
+      internalID: -6718097962051337678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_19
+      rect:
+        serializedVersion: 2
+        x: 10944
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f328d3af44f0cec0800000000000000
+      internalID: -3548567883479505927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_20
+      rect:
+        serializedVersion: 2
+        x: 11520
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a94a08cba3330ed0800000000000000
+      internalID: -2449056959470876248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StageUI Yesod_21
+      rect:
+        serializedVersion: 2
+        x: 12096
+        y: 0
+        width: 576
+        height: 324
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e31c2a9f4ee86e240800000000000000
+      internalID: 4820697565238575422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 020174ed8de08464b8cb096aa837e21a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":23.0,"y":1.0},"gridSpriteSize":{"x":576.0,"y":324.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      StageUI Yesod_0: 348716524847796297
+      StageUI Yesod_1: 3842744694433480386
+      StageUI Yesod_10: -7912147544257973373
+      StageUI Yesod_11: -1293461256102045939
+      StageUI Yesod_12: -3995555989591742134
+      StageUI Yesod_13: 1950294637044438889
+      StageUI Yesod_14: -2797266527620784112
+      StageUI Yesod_15: 7949769656871611126
+      StageUI Yesod_16: 6680035614793273020
+      StageUI Yesod_17: -3306669775721374952
+      StageUI Yesod_18: -6718097962051337678
+      StageUI Yesod_19: -3548567883479505927
+      StageUI Yesod_2: 4105174215171599117
+      StageUI Yesod_20: -2449056959470876248
+      StageUI Yesod_21: 4820697565238575422
+      StageUI Yesod_3: 7083547675802661255
+      StageUI Yesod_4: 501390229129267676
+      StageUI Yesod_5: 40642955590093416
+      StageUI Yesod_6: -1618422715388146752
+      StageUI Yesod_7: -1842710428781749192
+      StageUI Yesod_8: 6224738073665996188
+      StageUI Yesod_9: 193650119729636607
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

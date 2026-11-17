@@ -2,51 +2,43 @@ using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
 public class SidePortal : MonoBehaviour
 {
     [SerializeField] private Vector2 destination;
-    [SerializeField, Min(0f)] private float holdSeconds = 2f;
-    // enteredAt에는 몸체가 트리거에 처음 머문 시간을 기록합니다. 이동한 몸체는 트리거에서 나갈 때까지 중복 이동을 막습니다.
-    private readonly Dictionary<Rigidbody2D, float> enteredAt = new();
-    private readonly HashSet<Rigidbody2D> teleported = new();
+    private static readonly HashSet<SidePortal> Portals = new();
+    private Collider2D trigger;
 
-    private void OnTriggerStay2D(Collider2D other)
+    private void OnEnable()
     {
-        var body = other.attachedRigidbody;
-        if (!IsPlayerBody(other, body) || teleported.Contains(body) ||
-            !body.TryGetComponent(out NetworkObject player) || !player.IsValid || !player.HasStateAuthority)
-            return;
+        trigger = GetComponent<Collider2D>();
+        Portals.Add(this);
+    }
 
-        if (!enteredAt.TryGetValue(body, out float start))
+    private void OnDisable() => Portals.Remove(this);
+
+    internal static bool TryUse(Rigidbody2D body)
+    {
+        if (body == null || !body.TryGetComponent(out Collider2D playerCollider) ||
+            GameMenu.BlocksWorldClick || LocalMultiplayerDebug.BlocksWorldClick || HackingConsole.IsLocalHackOpen)
+            return false;
+
+        // Mover가 점프 입력을 한 번 소비합니다. 반대편에 도착한 뒤 다시 누르면 돌아갈 수 있습니다.
+        foreach (var portal in Portals)
         {
-            enteredAt[body] = Time.fixedTime;
-            return;
+            if (portal.gameObject.scene != body.gameObject.scene || !portal.trigger.enabled ||
+                !portal.trigger.Distance(playerCollider).isOverlapped)
+                continue;
+
+            Vector2 target = portal.destination;
+            body.linearVelocity = Vector2.zero;
+            body.position = target;
+            Vector3 position = new(target.x, target.y, body.transform.position.z);
+            if (body.TryGetComponent(out NetworkTransform sync))
+                sync.Teleport(position);
+            body.transform.position = position;
+            return true;
         }
-        if (Time.fixedTime - start < holdSeconds)
-            return;
-
-        teleported.Add(body);
-        body.linearVelocity = Vector2.zero;
-        body.position = destination;
-        if (body.TryGetComponent(out NetworkTransform networkTransform))
-            networkTransform.Teleport(new Vector3(destination.x, destination.y, body.transform.position.z));
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        var body = other.attachedRigidbody;
-        if (!IsPlayerBody(other, body))
-            return;
-        enteredAt.Remove(body);
-        teleported.Remove(body);
-    }
-
-    private static bool IsPlayerBody(Collider2D collider, Rigidbody2D body) =>
-        body != null && body.CompareTag("Player") && collider.gameObject == body.gameObject && !collider.isTrigger;
-
-    private void OnDisable()
-    {
-        enteredAt.Clear();
-        teleported.Clear();
+        return false;
     }
 }

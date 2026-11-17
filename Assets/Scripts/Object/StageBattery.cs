@@ -4,33 +4,25 @@ using UnityEngine;
 public class StageBattery : NetworkBehaviour
 {
     [SerializeField] private Vector2 exitPosition;
-    private LaserHazard upperLaser;
-    private LaserHazard lowerLaser;
     [Networked] private NetworkBool IsAvailable { get; set; }
     [Networked] private NetworkBool Returned { get; set; }
     [Networked] public NetworkBool HasBeenPickedUp { get; private set; }
 
     private StagePuzzleDirector director;
 
-    internal void SetDirector(StagePuzzleDirector stageDirector, LaserHazard upper, LaserHazard lower)
-    {
-        director = stageDirector;
-        upperLaser = upper;
-        lowerLaser = lower;
-    }
+    internal void SetDirector(StagePuzzleDirector stageDirector) => director = stageDirector;
 
-    public void TrySpawn(bool enabled)
+    internal void TrySpawn()
     {
-        if (enabled && Object != null && Object.IsValid)
+        if (Object != null && Object.IsValid)
             RPC_TrySpawn();
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     private void RPC_TrySpawn()
     {
-        if (Returned)
-            return;
-        IsAvailable = (upperLaser == null || upperLaser.IsOff) && (lowerLaser == null || lowerLaser.IsOff);
+        if (!Returned && Carrier == null)
+            IsAvailable = true;
     }
     [SerializeField] private float exitRadius = 1.75f;
     [Networked] private NetworkObject Carrier { get; set; }
@@ -38,15 +30,6 @@ public class StageBattery : NetworkBehaviour
     private Collider2D pickup;
     private Vector3 home;
 
-    private void OnGUI()
-    {
-        if (Camera.main == null || Object == null || !Object.IsValid)
-            return;
-
-        Vector3 point = Camera.main.WorldToScreenPoint(exitPosition + Vector2.up * 1.5f);
-        if (point.z > 0f)
-            GUI.Box(new Rect(point.x - 72, Screen.height - point.y - 14, 144, 28), "배터리 반납");
-    }
 
     private void Awake()
     {

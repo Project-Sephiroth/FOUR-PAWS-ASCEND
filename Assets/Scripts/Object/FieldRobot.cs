@@ -1,14 +1,27 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FieldRobot : RobotBase
 {
-    protected override bool FlipModel => true; //좌우 이동에 따른 플립
+    protected override bool FlipModel => true;
+    internal override bool RequiresCrushing =>
+        gameObject.scene.name == nameof(NetworkGameManager.SceneName.Yesod) ||
+        SceneManager.GetActiveScene().name == nameof(NetworkGameManager.SceneName.Yesod);
 
     protected override void UpdateMovement()
     {
         var target = FindTarget();
         if (UsesRangedAttack && UpdateRangedAttack(target))
             return;
+
+        if (gameObject.scene.name == nameof(NetworkGameManager.SceneName.Netzach) ||
+            SceneManager.GetActiveScene().name == nameof(NetworkGameManager.SceneName.Netzach))
+        {
+            FacingLeft = true;
+            State = RobotState.Patrol;
+            transform.position += Vector3.left * (Runner.DeltaTime * speed);
+            return;
+        }
 
         //추적할 플레이어가 있다면 플레이어를 따라가고 아닐 경우 순찰 구간 유지
         float destination = target != null ? target.transform.position.x : GoingRight ? patrolX.y : patrolX.x;

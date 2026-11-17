@@ -12,6 +12,9 @@ public class PlayerHealth : NetworkBehaviour
     private const float HitFlashSeconds = 0.20f;
     private Color originalColor;
     private bool showingHitFlash;
+    private bool showingSquash;
+    private float originalModelScaleY;
+    private float originalModelPositionY;
 
     public override void FixedUpdateNetwork()
     {
@@ -22,6 +25,7 @@ public class PlayerHealth : NetworkBehaviour
     [Networked] public int Health { get; private set; } //체력 UI 도 참조 중
     [Networked] private TickTimer HitCooldown { get; set; }
     [Networked] private TickTimer HitFlash { get; set; }
+    [Networked] private TickTimer SquashTimer { get; set; }
     [Networked] public NetworkBool IsHacking { get; private set; } //로봇의 타겟 탐색 시 쓰임
 
     public override void Spawned()
@@ -38,6 +42,7 @@ public class PlayerHealth : NetworkBehaviour
         if (damageSprite == null)
             return;
 
+        ApplySquash(!SquashTimer.ExpiredOrNotRunning(Runner));
         float remaining = HitFlash.RemainingTime(Runner) ?? 0f;
         if (remaining <= 0f)
         {
@@ -54,7 +59,45 @@ public class PlayerHealth : NetworkBehaviour
         damageSprite.color = Color.Lerp(originalColor, red, Mathf.Clamp01(remaining / HitFlashSeconds));
     }
 
-    public override void Despawned(NetworkRunner runner, bool hasState) => RestoreSpriteColor();
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        RestoreSpriteColor();
+        ApplySquash(false);
+    }
+
+    private void ApplySquash(bool squashed)
+    {
+        if (damageSprite == null || showingSquash == squashed)
+            return;
+
+        Transform model = damageSprite.transform;
+        Vector3 scale = model.localScale;
+        Vector3 position = model.localPosition;
+        if (squashed)
+        {
+            originalModelScaleY = scale.y;
+            originalModelPositionY = position.y;
+            scale.y *= 0.35f;
+            float bottom = damageSprite.localBounds.min.y;
+            position.y += bottom * (originalModelScaleY - scale.y);
+        }
+        else
+        {
+            scale.y = originalModelScaleY;
+            position.y = originalModelPositionY;
+        }
+
+        model.localScale = scale;
+        model.localPosition = position;
+        showingSquash = squashed;
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    internal void RPC_Squash(BranchPuzzle crusher, RpcInfo info = default)
+    {
+        if (crusher != null && (Runner.IsSinglePlayer || crusher.Object.StateAuthority == info.Source) && Health > 0)
+            SquashTimer = TickTimer.CreateFromSeconds(Runner, 1f);
+    }
 
     private void RestoreSpriteColor()
     {

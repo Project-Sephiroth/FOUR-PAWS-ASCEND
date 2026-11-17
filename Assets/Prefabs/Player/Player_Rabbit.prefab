@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &909184023
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 909184024}
+  m_Layer: 3
+  m_Name: holdPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &909184024
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 909184023}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.65, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7285058586047746084}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &186763781927163755
 GameObject:
   m_ObjectHideFlags: 0
@@ -132,6 +163,8 @@ GameObject:
   - component: {fileID: 5667559860964636251}
   - component: {fileID: -4394223172999840241}
   - component: {fileID: 909184001}
+  - component: {fileID: 6038099416748624567}
+  - component: {fileID: 909184021}
   m_Layer: 3
   m_Name: Player_Rabbit
   m_TagString: Player
@@ -156,6 +189,7 @@ Transform:
   - {fileID: 695113933997386881}
   - {fileID: 5217516001389480293}
   - {fileID: 7223127367599460164}
+  - {fileID: 909184024}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5272817254947122251
@@ -183,6 +217,8 @@ MonoBehaviour:
   - {fileID: 5667559860964636251}
   - {fileID: -4394223172999840241}
   - {fileID: 909184001}
+  - {fileID: 6038099416748624567}
+  - {fileID: 909184021}
   - {fileID: 4630356534473329264}
   - {fileID: 8927662265328794544}
   ForceRemoteRenderTimeframe: 0
@@ -388,6 +424,8 @@ MonoBehaviour:
   holdPoint: {fileID: 5217516001389480293}
   _CurInteractObject: {fileID: 0}
   head: {fileID: 4630356534473329264}
+  dropForward: 0.85
+  dropHeight: 0.2
   _CurPassenger: {fileID: 0}
 --- !u!114 &-4394223172999840241
 MonoBehaviour:
@@ -418,6 +456,51 @@ MonoBehaviour:
   damageSprite: {fileID: 926748019128133554}
   _Health: 0
   _IsHacking:
+    RawValue: 0
+--- !u!114 &6038099416748624567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2817390880039839120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e523aafc74292ad488e544dfbdcb78cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Passenger
+  outlineMat: {fileID: 0}
+  playerModel: {fileID: 8804722460379092911}
+  bearCarryCharacter: 1
+  puppetKey: 0
+  _CurrentLifter: {fileID: 0}
+  _CanRide:
+    RawValue: 0
+--- !u!114 &909184021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2817390880039839120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29a38f32580fed9459e749a71ad04b9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MovingObject
+  canInteract: 1
+  moveSpeed: 3
+  arcHeight: 2
+  outline: {fileID: 0}
+  holdPivot: {fileID: 909184024}
+  tongueAlly: 1
+  tongueOnly: 0
+  _IsMoving:
+    RawValue: 0
+  _Holder: {fileID: 0}
+  _ReleasedByTongue:
+    RawValue: 0
+  _ReleasedByThrower:
     RawValue: 0
 --- !u!1 &7128324174896953473
 GameObject:

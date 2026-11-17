@@ -12,7 +12,9 @@ public class NetworkGameManager : NetworkBehaviour
     private NetworkArray<PlayerRef> CharacterOwners => default;
 
     public PlayerRef PlayerRef => Runner.LocalPlayer;
-    public enum SceneName { Title, Lobby, Malkuth, Map, Yesod, Hod, Netzach }
+    public enum SceneName { Title, Lobby, Malkuth, Map, Yesod, Hod, Netzach, Credits }
+
+    private float SceneCoverSeconds => ScenePresentation.CloseSeconds + 0.25f;
 
     [Networked] public NetworkBool MalkuthCleared { get; private set; }
     [Networked] public NetworkBool YesodCleared { get; private set; }
@@ -21,6 +23,7 @@ public class NetworkGameManager : NetworkBehaviour
     // loadingScene은 실제 씬을 로드 중인지, observedTransition은 이 화면에서 이미 닫기 연출을 시작했는지 나타냅니다. 타이머로 클라이언트들이 같은 씬 변경을 준비합니다.
     private bool loadingScene;
     private bool observedTransition;
+    [Networked] internal NetworkBool DemoCompleted { get; private set; }
     [Networked] private TickTimer SceneTransitionTimer { get; set; }
     [Networked] private int NextSceneIndex { get; set; }
 
@@ -44,6 +47,9 @@ public class NetworkGameManager : NetworkBehaviour
 
     public override void Render()
     {
+        if (DemoCompleted && SceneManager.GetActiveScene().name == nameof(SceneName.Netzach))
+            ScenePresentation.ShowDemoComplete(true);
+
         bool pending = SceneTransitionTimer.IsRunning;
         if (pending && !observedTransition)
             ScenePresentation.Cover();
@@ -53,7 +59,7 @@ public class NetworkGameManager : NetworkBehaviour
     // 현재 씬과 앞 스테이지 클리어 여부를 확인합니다. 조건을 만족하면 클리어 기록을 남기고 월드맵 전환을 예약합니다.
     public void CompleteStage(SceneName stage)
     {
-        if (!HasStateAuthority || !Runner.IsSceneAuthority || loadingScene || SceneTransitionTimer.IsRunning ||
+        if (!HasStateAuthority || !Runner.IsSceneAuthority || loadingScene || DemoCompleted || SceneTransitionTimer.IsRunning ||
             SceneManager.GetActiveScene().name != stage.ToString())
             return;
 
@@ -75,7 +81,15 @@ public class NetworkGameManager : NetworkBehaviour
         else
             return;
 
-        LoadScene(SceneName.Map.ToString());
+        LoadStageCompletion(stage == SceneName.Netzach);
+    }
+
+    private void LoadStageCompletion(bool demoComplete)
+    {
+        if (demoComplete)
+            DemoCompleted = true;
+        else
+            LoadScene(nameof(SceneName.Map));
     }
 
     // 개발 환경의 씬 권한자만 강제 완료할 수 있게 해 일반 빌드와 다른 참가자의 진행도를 보호합니다.
@@ -94,21 +108,39 @@ public class NetworkGameManager : NetworkBehaviour
         }
     }
 
-    // 입장 권한은 방에 공유하되, 실제 씬 이동은 기존 Fusion 씬 권한자가 처리합니다.
-    public bool CanManageDebugStageAccess
+    // 온라인에서는 방장이 두 명령을 실행합니다. 클리어 기록과 잠금 해제는 네트워크 상태로 같은 방에 공유됩니다.
+    private bool CanRunRoomStageCommands
     {
         get
         {
+            if (this != Instance || Object == null || !Object.IsValid || !HasStateAuthority ||
+                !Runner.IsSceneAuthority || loadingScene || DemoCompleted || SceneTransitionTimer.IsRunning)
+                return false;
+            if (Runner.IsSharedModeMasterClient)
+                return true;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            return Object != null && Object.IsValid && HasStateAuthority && Runner.IsSceneAuthority &&
-                (HackingConsole.IsGameplayScene(SceneManager.GetActiveScene()) ||
-                 SceneManager.GetActiveScene().name == nameof(SceneName.Map) ||
-                 SceneManager.GetActiveScene().name == nameof(SceneName.Lobby));
+            return Runner.IsSinglePlayer;
 #else
             return false;
 #endif
         }
     }
+
+    public bool CanForceClearStage => CanRunRoomStageCommands &&
+        IsStoryStageScene(SceneManager.GetActiveScene().name);
+
+    public bool CanManageDebugStageAccess
+    {
+        get
+        {
+            string scene = SceneManager.GetActiveScene().name;
+            return CanRunRoomStageCommands &&
+                (IsStoryStageScene(scene) || scene == nameof(SceneName.Map) || scene == nameof(SceneName.Lobby));
+        }
+    }
+
+    private static bool IsStoryStageScene(string scene) => scene is
+        nameof(SceneName.Malkuth) or nameof(SceneName.Yesod) or nameof(SceneName.Hod) or nameof(SceneName.Netzach);
 
     public void ToggleDebugStageAccess()
     {
@@ -124,7 +156,7 @@ public class NetworkGameManager : NetworkBehaviour
 
     public void DebugForceClear()
     {
-        if (this != Instance || !CanUseStageDebug)
+        if (!CanForceClearStage)
             return;
         switch (SceneManager.GetActiveScene().name)
         {
@@ -135,7 +167,7 @@ public class NetworkGameManager : NetworkBehaviour
                 MalkuthCleared = true; YesodCleared = true; BranchCleared = true; break;
             default: return;
         }
-        LoadScene(nameof(SceneName.Map));
+        LoadStageCompletion(SceneManager.GetActiveScene().name == nameof(SceneName.Netzach));
     }
 
     // 공유 세션의 마스터와 로컬 Single 세션에 씬 진입 권한을 준다. 둘 다 씬 권한과 맵 로딩 상태를 검사한다.
@@ -168,6 +200,7 @@ public class NetworkGameManager : NetworkBehaviour
         loadingScene = false;
         if (HasStateAuthority)
             SceneTransitionTimer = default;
+        ScenePresentation.ShowDemoComplete(false);
         ScenePresentation.Reveal();
     }
 
@@ -192,7 +225,7 @@ public class NetworkGameManager : NetworkBehaviour
     // 2. 다음 씬 번호와 닫기 시간을 공유합니다. 먼저 화면을 닫을 시간을 주고 타이머가 끝났을 때만 Fusion으로 씬을 불러옵니다.
     private void QueueScene(int buildIndex)
     {
-        if (!HasStateAuthority || !Runner.IsSceneAuthority || loadingScene || SceneTransitionTimer.IsRunning)
+        if (!HasStateAuthority || !Runner.IsSceneAuthority || loadingScene || DemoCompleted || SceneTransitionTimer.IsRunning)
             return;
         if (buildIndex < 0)
         {
@@ -201,7 +234,7 @@ public class NetworkGameManager : NetworkBehaviour
         }
 
         NextSceneIndex = buildIndex;
-        SceneTransitionTimer = TickTimer.CreateFromSeconds(Runner, ScenePresentation.CloseSeconds + 0.25f);
+        SceneTransitionTimer = TickTimer.CreateFromSeconds(Runner, SceneCoverSeconds);
     }
 
     public bool IsCharacterTaken(MyEnum.CharacterType type)

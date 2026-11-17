@@ -2,221 +2,144 @@ using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 
-// 돌이 날아가는 위치는 MovingObject가 계산. 해당 클래스는 충돌 판정만 합니다
-public class Rock : NetworkBehaviour
+[RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D))]
+public sealed class Rock : NetworkBehaviour
 {
-    private readonly List<RaycastHit2D> hits = new(16);
-    private readonly List<Collider2D> launchOverlaps = new(8);
-    private readonly List<Collider2D> overlaps = new(8);
-    private const float ImpactVisibleSeconds = 0.15f;
-    [Networked] private TickTimer ImpactTimer { get; set; }
-    private bool launched;
-    private Rigidbody2D body;
-    private MovingObject movingObject;
-    private Transform spriteTransform;
-    private Vector2 flightFrom;
-    private Vector2 flightTo;
-    private float steppedAt;
-    private float stepDuration;
-    internal bool HasImpacted => ImpactTimer.IsRunning;
-    [Networked] private Thrower LaunchOwner { get; set; } //돌 소유자는 돌 충돌에서 벗어나기 위해 캐싱
+    private const float ImpactLifetime = 0.6f;
 
-    
-    private Collider2D[] rockColliders; //돌과 던진 캐릭터는 충돌체가 여러 개일 수 있어 배열로 모으기
-    private Collider2D[] throwerColliders;
-    private Thrower collisionOwner;
+    private Rigidbody2D body;
+    private BoxCollider2D hitbox;
+    private readonly List<RaycastHit2D> flightHits = new(8);
+    private ContactFilter2D flightFilter;
+    private TickTimer lifetime;
+    private bool impacted;
 
     private void Awake()
     {
-        rockColliders = GetComponentsInChildren<Collider2D>();
         body = GetComponent<Rigidbody2D>();
-        movingObject = GetComponent<MovingObject>();
-        spriteTransform = transform.Find("Flight Visual");
+        hitbox = GetComponent<BoxCollider2D>();
+        int layers = Physics2D.GetLayerCollisionMask(gameObject.layer) & ~hitbox.excludeLayers.value;
+        flightFilter = new ContactFilter2D { useTriggers = true };
+        flightFilter.SetLayerMask(layers);
     }
 
-    public void SetThrower(Thrower thrower)
+    public override void Spawned()
     {
-        if (HasStateAuthority)
-            LaunchOwner = thrower;
+        body.simulated = HasStateAuthority;
     }
 
-    public override void Render()
+    internal void Launch(float signedRange, float angleDegrees, float speed)
     {
-        IgnoreThrowerContacts();
-        if (spriteTransform == null || !HasStateAuthority)
-            return;
-
-        spriteTransform.localPosition = Vector3.zero;
-        if (stepDuration <= 0f || !movingObject.IsMoving)
-            return;
-
-        float progress = Mathf.Clamp01((Time.time - steppedAt) / stepDuration);
-        Vector2 interpolated = Vector2.Lerp(flightFrom, flightTo, progress);
-        spriteTransform.position = new Vector3(interpolated.x, interpolated.y, transform.position.z);
-    }
-
-    public void TrackFlightStep(Vector2 from, Vector2 to, float duration)
-    {
-        flightFrom = from;
-        flightTo = to;
-        stepDuration = duration;
-        steppedAt = Time.time;
-    }
-
-    public void ResetFlightPose()
-    {
-        stepDuration = 0f;
-        if (spriteTransform != null)
-            spriteTransform.localPosition = Vector3.zero;
+        float radians = angleDegrees * Mathf.Deg2Rad;
+        body.gravityScale = 0f;
+        body.linearVelocity = new Vector2(Mathf.Sign(signedRange) * Mathf.Cos(radians),
+            Mathf.Sin(radians)) * speed;
+        lifetime = TickTimer.CreateFromSeconds(Runner, Mathf.Abs(signedRange) / speed);
     }
 
     public override void FixedUpdateNetwork()
     {
-        if (HasStateAuthority && ImpactTimer.Expired(Runner))
+        if (!HasStateAuthority || !lifetime.Expired(Runner))
+            return;
+
+        if (impacted)
             Runner.Despawn(Object);
+        else
+            Stop();
     }
 
-    public void IgnoreThrowerContacts()
+    private void FixedUpdate()
     {
-        if (LaunchOwner == null)
+        if (!CanImpact)
             return;
 
-        if (collisionOwner != LaunchOwner)
-        {
-            collisionOwner = LaunchOwner;
-            throwerColliders = LaunchOwner.Object.GetComponentsInChildren<Collider2D>();
-        }
+        Vector2 step = body.linearVelocity * Time.fixedDeltaTime;
+        float distance = step.magnitude;
+        if (distance <= 0f)
+            return;
 
-        // Unity clears IgnoreCollision when a collider is disabled while the rock is held.
-        foreach (var rockCollider in rockColliders)
-        foreach (var throwerCollider in throwerColliders)
-        {
-            if (rockCollider != null && rockCollider.isActiveAndEnabled &&
-                throwerCollider != null && throwerCollider.isActiveAndEnabled &&
-                !Physics2D.GetIgnoreCollision(rockCollider, throwerCollider))
-                Physics2D.IgnoreCollision(rockCollider, throwerCollider);
-        }
-    }
-
-    private bool IsThrowerCollider(Collider2D collider)
-    {
-        return LaunchOwner != null && collider.transform.IsChildOf(LaunchOwner.Object.transform);
-    }
-
-    public void BeginFlight()
-    {
-        launched = true;
-        launchOverlaps.Clear();
-        Physics2D.SyncTransforms();
-
-        foreach (Collider2D collider in rockColliders)
-        {
-            if (!collider.isActiveAndEnabled)
-                continue;
-
-            collider.Overlap(CreateImpactFilter(), overlaps);
-            foreach (Collider2D other in overlaps)
-            {
-                if (CanImpact(other) && !launchOverlaps.Contains(other))
-                    launchOverlaps.Add(other);
-            }
-        }
-    }
-
-    private ContactFilter2D CreateImpactFilter()
-    {
-        var filter = new ContactFilter2D { useTriggers = true };
-        filter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
-        return filter;
-    }
-
-    private bool CanImpact(Collider2D hit)
-    {
-        return hit != null && !hit.transform.IsChildOf(transform) && !IsThrowerCollider(hit) &&
-               (!hit.isTrigger || hit.GetComponentInParent<Switch>() != null ||
-                hit.GetComponentInParent<RobotBase>() != null || hit.GetComponentInParent<RollingDrum>() != null);
-    }
-
-    private bool StillOverlaps(Collider2D other)
-    {
-        if (other == null || !other.isActiveAndEnabled)
-            return false;
-
-        foreach (Collider2D collider in rockColliders)
-        {
-            if (collider.isActiveAndEnabled && collider.Distance(other).isOverlapped)
-                return true;
-        }
-
-        return false;
-    }
-
-    public bool TryImpactAlong(Vector2 destination)
-    {
-        Vector2 step = destination - body.position;
-        if (!HasStateAuthority || !launched || ImpactTimer.IsRunning || step.sqrMagnitude <= 0f)
-            return false;
-
-        launchOverlaps.RemoveAll(other => !StillOverlaps(other));
-        int count = body.Cast(step.normalized, CreateImpactFilter(), hits, step.magnitude);
-        Collider2D nearest = null;
+        Vector2 direction = step / distance;
+        hitbox.Cast(direction, flightFilter, flightHits, distance);
+        Component nearestTarget = null;
         float nearestDistance = float.PositiveInfinity;
-
-        for (int i = 0; i < count; i++)
+        foreach (var hit in flightHits)
         {
-            Collider2D hit = hits[i].collider;
-            if (!CanImpact(hit) || launchOverlaps.Contains(hit))
+            if (hit.distance >= nearestDistance || FindImpactTarget(hit.collider) is not { } target)
                 continue;
 
-            if (hits[i].distance < nearestDistance)
-            {
-                nearest = hit;
-                nearestDistance = hits[i].distance;
-            }
+            nearestTarget = target;
+            nearestDistance = hit.distance;
         }
 
-        if (nearest == null)
-            return false;
-
-        Vector2 impactPosition = body.position + step.normalized * nearestDistance;
-        Impact(nearest, impactPosition);
-        return true;
+        if (nearestTarget != null)
+        {
+            Vector2 contact = body.position + direction * nearestDistance;
+            body.position = contact;
+            transform.position = new Vector3(contact.x, contact.y, transform.position.z);
+            Impact(nearestTarget);
+        }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision) => TryImpact(collision.collider);
+
+    private void OnTriggerEnter2D(Collider2D other) => TryImpact(other);
+
+    private void TryImpact(Collider2D other)
     {
-        Impact(collision.collider, body.position);
+        if (CanImpact && FindImpactTarget(other) is { } target)
+            Impact(target);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private static Component FindImpactTarget(Collider2D other)
     {
-        if (other.GetComponentInParent<Switch>() != null || other.GetComponentInParent<RobotBase>() != null || other.GetComponentInParent<RollingDrum>() != null)
-            Impact(other, body.position);
+        if (other.GetComponentInParent<RobotBase>() is { } robot)
+            return robot.CanBeHitByRock ? robot : null;
+        if (other.GetComponentInParent<RollingDrum>() is { } drum)
+            return drum.IsActiveTarget ? drum : null;
+        if (other.GetComponentInParent<LaserButton>() is { } laserButton)
+            return laserButton;
+        if (other.GetComponentInParent<Switch>() is { } button)
+            return button;
+        if (other.GetComponentInParent<Key>() is { } key)
+            return key;
+        return other.isTrigger ? null : other;
     }
 
-    private void Impact(Collider2D hit, Vector2 position)
+    private bool CanImpact => Object != null && Object.IsValid && HasStateAuthority && !impacted;
+
+    internal void TryHitDrum(RollingDrum drum)
     {
-        if (Object == null || !Object.IsValid || !HasStateAuthority || !launched || ImpactTimer.IsRunning ||
-            !CanImpact(hit) || launchOverlaps.Contains(hit))
-            return;
+        if (CanImpact && drum.IsActiveTarget)
+            Impact(drum);
+    }
 
-        ImpactTimer = TickTimer.CreateFromSeconds(Runner, ImpactVisibleSeconds);
-        movingObject.StopRockAt(position);
+    private void Impact(Component target)
+    {
+        Stop();
+        switch (target)
+        {
+            case RobotBase robot:
+                robot.RPC_HitByRock(this);
+                break;
+            case RollingDrum drum:
+                drum.Remove();
+                break;
+            case LaserButton laserButton:
+                laserButton.OnRockHit();
+                break;
+            case Switch button:
+                button.OnRockHit();
+                break;
+            case Key key:
+                key.OnRockHit();
+                break;
+        }
+    }
 
-        //TO DO : 맞을 수 있는 걸 인터페이스로 빼보기
-        var button = hit.GetComponentInParent<Switch>();
-        if (button != null)
-            button.OnRockHit();
-
-        if (hit.GetComponentInParent<RobotBase>() is RobotBase enemy)
-            enemy.HitByRock();
-
-        if (hit.GetComponentInParent<RollingDrum>() is RollingDrum drum)
-            drum.Remove();
-
-        var key = hit.GetComponentInParent<Key>();
-        if (key != null)
-            key.OnRockHit();
-
+    private void Stop()
+    {
+        impacted = true;
+        body.simulated = false;
+        lifetime = TickTimer.CreateFromSeconds(Runner, ImpactLifetime);
     }
 }

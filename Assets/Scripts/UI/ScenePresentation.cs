@@ -10,13 +10,24 @@ public sealed class ScenePresentation : MonoBehaviour
     private const float FallbackCloseSeconds = 0.45f;
     private static ScenePresentation instance;
     private SceneTransitionView view;
+    private GameObject demoComplete;
     private bool loading;
 
     public static float CloseSeconds => instance != null && instance.view != null
         ? instance.view.CoverSeconds
         : FallbackCloseSeconds;
 
-    public static bool BlocksInput => instance != null && instance.view != null && instance.view.BlocksInput;
+    internal static bool IsDemoCompleteVisible =>
+        instance != null && instance.demoComplete != null && instance.demoComplete.activeSelf;
+
+    public static bool BlocksInput => IsDemoCompleteVisible ||
+        (instance != null && instance.view != null && instance.view.BlocksInput);
+
+    internal static void ShowDemoComplete(bool visible)
+    {
+        if (instance != null && instance.demoComplete != null && instance.demoComplete.activeSelf != visible)
+            instance.demoComplete.SetActive(visible);
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Bootstrap()
@@ -26,10 +37,13 @@ public sealed class ScenePresentation : MonoBehaviour
             return;
         var root = new GameObject("Game Presentation");
         DontDestroyOnLoad(root);
+        root.AddComponent<CharacterCursor>();
         instance = root.AddComponent<ScenePresentation>();
         instance.Initialize(assets);
         var ui = root.AddComponent<UIManager>();
         ui.Initialize(assets);
+        instance.demoComplete = ui.Mount(assets.demoComplete, UIManager.Layer.DemoComplete);
+        SceneManager.activeSceneChanged += instance.OnActiveSceneChanged;
     }
 
     private void Initialize(GamePresentationAssets assets)
@@ -98,8 +112,11 @@ public sealed class ScenePresentation : MonoBehaviour
         }
     }
 
+    private void OnActiveSceneChanged(Scene previous, Scene current) => ShowDemoComplete(false);
+
     private void OnDestroy()
     {
+        SceneManager.activeSceneChanged -= OnActiveSceneChanged;
         if (instance == this)
             instance = null;
     }

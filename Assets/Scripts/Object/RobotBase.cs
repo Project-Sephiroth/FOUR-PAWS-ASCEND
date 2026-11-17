@@ -7,7 +7,6 @@ using UnityEngine;
 /// </summary>
 public abstract class RobotBase : NetworkBehaviour
 {
-    internal static readonly System.Collections.Generic.HashSet<RobotBase> LiveRobots = new();
     [SerializeField] private BranchPuzzle encounter; //로봇은 해킹 진행에 따라 움직이지 못합니다
     [SerializeField] private Switch activationSwitch; //로봇 등장 스위치
     [Networked] private NetworkBool Activated { get; set; } //등장을 네트워크 동기화
@@ -18,10 +17,30 @@ public abstract class RobotBase : NetworkBehaviour
     [SerializeField] private float detectionRange = 5f; //플레이어 감지 범위
     [SerializeField, Range(1, 3)] private int damage = 1; //플레이어에게 줄 피해량
     [SerializeField, Min(1)] private int maxHealth = 2; 
-    [SerializeField] private RobotSpawner spawner; 
+    [SerializeField] private RobotSpawner spawner;
+    [SerializeField] private bool disableRespawn;
     [SerializeField, Min(0)] private int spawnerSlot;
     [Networked] private TickTimer FirstSpawnTimer { get; set; }
     [Networked] private NetworkBool RuntimePooled { get; set; }
+    [Networked] private NetworkBool HodPoolInactive { get; set; }
+
+    internal void DeactivateHodPoolSlot()
+    {
+        if (HodPoolInactive)
+            return;
+
+        HodPoolInactive = true;
+        AimTimer = default;
+        BulletActive = false;
+        ReleaseForDespawn();
+        ApplyAppearance();
+    }
+
+    internal void ReleaseForDespawn()
+    {
+        if (movingObject != null && movingObject.IsHeld)
+            movingObject.ReleaseRobotForRemoval();
+    }
 
     /// <summary>
     /// 로봇 스포너에서 호출
@@ -44,9 +63,7 @@ public abstract class RobotBase : NetworkBehaviour
     [Networked] private Vector3 SpawnPosition { get; set; }
     protected Vector3 spawnPosition => SpawnPosition;
 
-    private const float RockStunSeconds = 5f; //돌 맞았을 때 스턴이 될 시간
-    [Networked] private TickTimer StunTimer { get; set; }
-    public bool IsStunned => !StunTimer.ExpiredOrNotRunning(Runner);
+
 
     private const float FlashSeconds = 0.22f;
     private const float RemovalSeconds = 0.78f;
@@ -54,10 +71,22 @@ public abstract class RobotBase : NetworkBehaviour
     private static readonly Color HitColor = new(1f, 0.17f, 0.2f);
     [Networked] private TickTimer AttackCooldown { get; set; }
 
-    protected enum RobotState { Idle, Patrol, Chase, Held, Dead, Aim }
+    protected enum RobotState { Idle, Patrol, Chase, Struggling, Dead, Aim, Held }
 
     [Header("로봇 팔 회전 및 총 설정")]
     [SerializeField] private Animator robotAnimator;
+    [SerializeField] private AnimationClip heldStruggleClip;
+    [Networked] private TickTimer HeldStruggle { get; set; }
+
+    internal void StartHeldStruggle()
+    {
+        if (!HasStateAuthority)
+            return;
+
+        float seconds = heldStruggleClip != null ? heldStruggleClip.length : 0f;
+        HeldStruggle = seconds > 0f ? TickTimer.CreateFromSeconds(Runner, seconds) : default;
+        State = seconds > 0f ? RobotState.Struggling : RobotState.Held;
+    }
     [SerializeField] private SpriteRenderer gunArm;
     [SerializeField] private SpriteRenderer bulletVisual;
     [SerializeField] private bool shootsProjectiles;
@@ -73,15 +102,32 @@ public abstract class RobotBase : NetworkBehaviour
     [Networked] private TickTimer BulletLife { get; set; }
 
     protected bool UsesRangedAttack => bulletVisual != null && (shootsProjectiles || gunArm != null);
-    private Vector2 Shoulder => GetShoulder(FacingLeft);
+    protected BranchPuzzle Encounter => encounter;
 
-    private Vector2 GetShoulder(bool left) => gunArm == null ? transform.position : transform.TransformPoint(new Vector3(
-        Mathf.Abs(gunArm.transform.localPosition.x) * (left ? -1f : 1f),
-        gunArm.transform.localPosition.y, gunArm.transform.localPosition.z));
+    private ContactFilter2D sightFilter;
+    private ContactFilter2D bulletFilter;
+    private readonly RaycastHit2D[] sightHits = new RaycastHit2D[1];
+
+    protected bool CanShootFromHere(PlayerHealth target) => TryGetShot(target, out _, out _, out _);
+
+    private bool TryGetShot(PlayerHealth target, out Vector2 shoulder, out Vector2 delta, out bool facingLeft)
+    {
+        Vector2 point = GetTargetPoint(target);
+        facingLeft = point.x < transform.position.x;
+        shoulder = gunArm == null ? transform.position : gunArm.transform.parent.TransformPoint(GetShoulderOffset(facingLeft));
+        delta = point - shoulder;
+        return Physics2D.Linecast(shoulder, point, sightFilter, sightHits) == 0;
+    }
+
+    private Vector3 shoulderOffset;
+    private Vector3 GetShoulderOffset(bool facingLeft) => new Vector3(
+        facingLeft ? -shoulderOffset.x : shoulderOffset.x, shoulderOffset.y, shoulderOffset.z);
+
     [Networked] protected RobotState State { get; set; }
     [Networked] private NetworkBool Crushed { get; set; }
     [Networked] protected NetworkBool FacingLeft { get; set; }
     public bool IsCrushed => Crushed;
+    internal virtual bool RequiresCrushing => false;
     public bool IsTongueHeld => movingObject != null && movingObject.Holder is Tongue;
     private MovingObject movingObject; //로봇도 개구리가 잡거나 곰이 던질 수 있게 하기 위함
 
@@ -97,6 +143,10 @@ public abstract class RobotBase : NetworkBehaviour
 
     protected virtual void Awake()
     {
+        sightFilter = new ContactFilter2D { useTriggers = false };
+        sightFilter.SetLayerMask(LayerMask.GetMask("Ground"));
+        bulletFilter = new ContactFilter2D { useTriggers = false };
+        bulletFilter.SetLayerMask(LayerMask.GetMask("Ground", "Player", "Head"));
         movingObject = GetComponent<MovingObject>();
         if (model == null)
             model = GetComponent<SpriteRenderer>();
@@ -105,11 +155,20 @@ public abstract class RobotBase : NetworkBehaviour
         if (model != null)
             modelColor = model.color;
         if (gunArm != null)
+        {
             armColor = gunArm.color;
+            shoulderOffset = gunArm.transform.localPosition;
+            if (model != null)
+            {
+                gunArm.sortingLayerID = model.sortingLayerID;
+                gunArm.sortingOrder = model.sortingOrder + 1;
+            }
+        }
     }
 
     //해킹 콘솔 또는 스위치 on off 로 로봇들이 활성/비활성화 되기 때문에 아래 변수들 세팅
-    private bool HasAppeared => (spawner == null || spawner.AllowsSlot(spawnerSlot)) && !FirstSpawnTimer.IsRunning && (activationSwitch == null || Activated);
+    private bool HasAppeared => !HodPoolInactive && (spawner == null || spawner.AllowsSlot(spawnerSlot)) &&
+        !FirstSpawnTimer.IsRunning && (activationSwitch == null || Activated);
     private bool IsActive => !SuppressBody && (RuntimePooled || encounter == null || encounter.EnemyEnabled());
     public int Damage => Mathf.Clamp(damage, 1, 3);
 
@@ -118,27 +177,25 @@ public abstract class RobotBase : NetworkBehaviour
     /// </summary>
     public override void Spawned()
     {
-        LiveRobots.Add(this);
         if (HasStateAuthority)
         {
             Health = Mathf.Max(1, maxHealth);
             SpawnPosition = spawner != null ? spawner.SpawnPosition : transform.position;
             if (spawner != null && !RuntimePooled)
                 FirstSpawnTimer = spawner.StartFirstSpawnWait(Runner, spawnerSlot);
-            GoingRight = true;
+            GoingRight = spawner == null || !spawner.StartPatrolLeft;
+            FacingLeft = !GoingRight;
         }
 
         ApplyAppearance();
     }
-
-    public override void Despawned(NetworkRunner runner, bool hasState) => LiveRobots.Remove(this);
 
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority)
             return;
 
-        if (spawner != null && !spawner.AllowsSlot(spawnerSlot)) //정해진 만큼만 스폰
+        if (HodPoolInactive || (spawner != null && !spawner.AllowsSlot(spawnerSlot)))
             return;
 
         if (FirstSpawnTimer.IsRunning) //첫 스폰 
@@ -164,7 +221,8 @@ public abstract class RobotBase : NetworkBehaviour
         if (RemovalTimer.Expired(Runner) && (movingObject == null || !movingObject.RobotAirborne))
         {
             RemovalTimer = default;
-            RespawnTimer = spawner != null ? spawner.StartRespawnWait(Runner) : TickTimer.CreateFromSeconds(Runner, RobotSpawner.DefaultDelay);
+            if (!disableRespawn)
+                RespawnTimer = spawner != null ? spawner.StartRespawnWait(Runner) : TickTimer.CreateFromSeconds(Runner, RobotSpawner.DefaultDelay);
         }
 
         //없어졌다면 세팅 값 초기화
@@ -174,12 +232,12 @@ public abstract class RobotBase : NetworkBehaviour
             Crushed = false;
             RespawnTimer = default;
             HitFlash = default;
-            StunTimer = default;
+
             AimTimer = default;
             AttackCooldown = default;
             Health = Mathf.Max(1, maxHealth);
-            GoingRight = true;
-            FacingLeft = false;
+            GoingRight = spawner == null || !spawner.StartPatrolLeft;
+            FacingLeft = !GoingRight;
             State = RobotState.Idle;
             return;
         }
@@ -208,16 +266,12 @@ public abstract class RobotBase : NetworkBehaviour
         if (movingObject != null && movingObject.IsHeld)
         {
             AimTimer = default;
-            State = RobotState.Held;
+            State = !IsTongueHeld ? RobotState.Idle :
+                HeldStruggle.ExpiredOrNotRunning(Runner) ? RobotState.Held : RobotState.Struggling;
             return;
         }
 
-        //스턴 상태일 경우
-        if (IsStunned)
-        {
-            State = RobotState.Idle;
-            return;
-        }
+
 
         UpdateMovement();
     }
@@ -247,18 +301,14 @@ public abstract class RobotBase : NetworkBehaviour
             return false;
         }
 
-        Vector2 targetPoint = GetTargetPoint(target);
-        FacingLeft = targetPoint.x < transform.position.x;
-
-        Vector2 delta = targetPoint - Shoulder; //어깨 돌리기를 위한 변화량
-
-        if (delta.sqrMagnitude < 0.001f || Physics2D.Raycast(Shoulder, delta.normalized, delta.magnitude, 
-            LayerMask.GetMask("Ground"))) //ground 엔 총알 발사 X
+        if (!TryGetShot(target, out Vector2 shoulder, out Vector2 delta, out bool targetOnLeft) ||
+            delta.sqrMagnitude < 0.001f)
         {
             AimTimer = default;
             return false;
         }
 
+        FacingLeft = targetOnLeft;
         State = RobotState.Aim;
         AimDirection = delta.normalized;
 
@@ -267,9 +317,12 @@ public abstract class RobotBase : NetworkBehaviour
 
         else if (AimTimer.Expired(Runner))
         {
-            BulletPosition = Shoulder;
+            BulletPosition = shoulder;
             BulletDirection = AimDirection;
-            BulletLife = TickTimer.CreateFromSeconds(Runner, 1.4f);
+            float lifetime = 1.4f;
+            if (target.IsHacking && bulletSpeed > 0f)
+                lifetime = Mathf.Max(lifetime, delta.magnitude / bulletSpeed + Runner.DeltaTime * 2f);
+            BulletLife = TickTimer.CreateFromSeconds(Runner, lifetime);
             BulletActive = true;
             AimTimer = default;
             AttackCooldown = TickTimer.CreateFromSeconds(Runner, 1f);
@@ -292,10 +345,7 @@ public abstract class RobotBase : NetworkBehaviour
 
         float distance = initialStep > 0f ? initialStep : bulletSpeed * Runner.DeltaTime;
 
-        var filter = new ContactFilter2D { useTriggers = false };
-        filter.SetLayerMask(LayerMask.GetMask("Ground", "Player")); //지형 또는 플레이어는 총알을 맞습니다
-
-        if (Physics2D.Raycast(BulletPosition, BulletDirection, filter, bulletHits, distance) > 0)
+        if (Physics2D.Raycast(BulletPosition, BulletDirection, bulletFilter, bulletHits, distance) > 0)
         {
             Collider2D hit = bulletHits[0].collider;
             if (hit.GetComponentInParent<PlayerHealth>() is PlayerHealth player)
@@ -310,8 +360,9 @@ public abstract class RobotBase : NetworkBehaviour
 
     private readonly RaycastHit2D[] bulletHits = new RaycastHit2D[1];
 
-    private static Vector2 GetTargetPoint(PlayerHealth target) =>
-        target.TryGetComponent(out Collider2D body) ? (Vector2)body.bounds.center : (Vector2)target.transform.position;
+    protected static Vector2 GetTargetPoint(PlayerHealth target) =>
+        target.TryGetComponent(out Collider2D body) && body.bounds.size.sqrMagnitude > 0f
+            ? (Vector2)body.bounds.center : (Vector2)target.transform.position + Vector2.up * 0.5f;
 
     protected PlayerHealth FindTarget()
     {
@@ -326,26 +377,25 @@ public abstract class RobotBase : NetworkBehaviour
             if (!obj.TryGetComponent(out PlayerHealth candidate) || candidate.Health <= 0)
                 continue;
 
-            Vector2 delta = (Vector2)(obj.transform.position - transform.position);
-            if (Mathf.Abs(delta.y) > 1.4f)
-                continue;
+            Vector2 delta;
+            if (UsesRangedAttack)
+            {
+                if (!TryGetShot(candidate, out _, out delta, out _))
+                    continue;
+            }
+            else
+            {
+                delta = obj.transform.position - transform.position;
+                if (Mathf.Abs(delta.y) > 1.4f)
+                    continue;
+            }
 
             float distance = delta.magnitude;
             if (!candidate.IsHacking && distance > detectionRange)
                 continue;
 
-            if (UsesRangedAttack)
-            {
-                Vector2 point = GetTargetPoint(candidate);
-                Vector2 shoulder = GetShoulder(point.x < transform.position.x);
-                if (Physics2D.Linecast(shoulder, point, LayerMask.GetMask("Ground")))
-                    continue;
-            }
-
-            //우선순위는 가장 가까운 대상, 2순위는 멀리 있어도 해킹 중인 대상
-            int priority = UsesRangedAttack
-                ? (distance <= closeTargetRange ? 0 : candidate.IsHacking ? 1 : 2)
-                : (candidate.IsHacking ? 0 : 1);
+            // 사격할 수 있는 해킹 대상을 먼저 고르고, 일반 대상은 기존 근거리 우선순위로 비교합니다.
+            int priority = candidate.IsHacking ? 0 : UsesRangedAttack && distance > closeTargetRange ? 2 : 1;
             if (priority < bestPriority || (priority == bestPriority && distance < closest))
             {
                 closest = distance;
@@ -356,28 +406,32 @@ public abstract class RobotBase : NetworkBehaviour
         return best;
     }
 
-    public void HitByRock()
+    protected void TakeGroundImpact()
     {
-        if (Object != null && Object.IsValid)
-            RPC_HitByRock();
-    }
-
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    private void RPC_HitByRock()
-    {
-        if (SuppressBody || (movingObject != null && movingObject.IsHeld))
+        if (!HasStateAuthority || SuppressBody || Health <= 0)
             return;
 
-        Health = Mathf.Max(0, Health - 1);
+        Health--;
         if (Health == 0)
             BeginRemoval();
         else
-        {
-            StunTimer = TickTimer.CreateFromSeconds(Runner, RockStunSeconds);
-            AimTimer = default;
-            State = RobotState.Idle;
             HitFlash = TickTimer.CreateFromSeconds(Runner, FlashSeconds);
-        }
+    }
+
+    internal bool CanBeHitByRock => Object != null && Object.IsValid && !SuppressBody && Health > 0 &&
+        (movingObject == null || !movingObject.IsHeld || IsTongueHeld);
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    internal void RPC_HitByRock(Rock rock, RpcInfo info = default)
+    {
+        if (rock == null || rock.Object == null || !rock.Object.IsValid ||
+            (!Runner.IsSinglePlayer && info.Source != rock.Object.StateAuthority) || !CanBeHitByRock)
+            return;
+
+        if (RequiresCrushing)
+            HitFlash = TickTimer.CreateFromSeconds(Runner, FlashSeconds);
+        else
+            BeginRemoval();
     }
 
     /// <summary>
@@ -389,14 +443,15 @@ public abstract class RobotBase : NetworkBehaviour
             BeginRemoval();
     }
 
-    /// <summary>
-    /// 혀가 놓는 순간 로봇이 사라지게 되어있네
-    /// TODO : 혀가 놓으면 무조건 로봇이 사라지는 게 아니라, 혀가 놓음으로써 로봇이 떨어지고 낙사
-    /// </summary>
-    internal void DefeatFromDrop()
+
+    internal void HandleOutOfBounds()
     {
-        if (HasStateAuthority)
-            BeginRemoval();
+        if (IsCrushed)
+            return;
+        if (RequiresCrushing)
+            MoveToSpawn();
+        else
+            DefeatOnLanding();
     }
 
     public void Crush()
@@ -418,7 +473,7 @@ public abstract class RobotBase : NetworkBehaviour
 
         Health = 0;
         Crushed = true;
-        StunTimer = default;
+
         movingObject?.ReleaseRobotForRemoval();
         AimTimer = default;
         BulletActive = false;
@@ -443,7 +498,7 @@ public abstract class RobotBase : NetworkBehaviour
         float removal = RemovalTimer.RemainingTime(Runner) ?? 0f;
         bool falling = IsCrushed && movingObject != null && movingObject.RobotAirborne;
         bool removing = Crushed && (removal > 0f || falling);
-        bool dark = IsStunned && Mathf.FloorToInt((StunTimer.RemainingTime(Runner) ?? 0f) * 10f) % 2 == 0;
+
         bool visible = HasAppeared && (!IsCrushed || (removing && (flash > 0f || Mathf.FloorToInt((RemovalDuration - removal) * 14f) % 2 == 0)));
 
         if (spawner != null)
@@ -451,9 +506,9 @@ public abstract class RobotBase : NetworkBehaviour
 
         if (model != null)
         {
-            if (RuntimePooled && model.gameObject != gameObject)
+            if (model.gameObject != gameObject)
             {
-                bool inUse = HasAppeared && (!IsCrushed || removing); //활성화 된 로봇인가
+                bool inUse = !RuntimePooled || (HasAppeared && (!IsCrushed || removing));
 
                 if (model.gameObject.activeSelf != inUse)
                     model.gameObject.SetActive(inUse);
@@ -465,10 +520,11 @@ public abstract class RobotBase : NetworkBehaviour
                 model.flipX = FacingLeft;
 
             //깜박이는 연출
-            model.color = dark && flash <= 0f ? Color.black : Color.Lerp(modelColor, HitColor, flash);
+            model.color = Color.Lerp(modelColor, HitColor, flash);
+
         }
 
-        if (robotAnimator != null)
+        if (robotAnimator != null && robotAnimator.isActiveAndEnabled)
             robotAnimator.SetInteger("State", (int)State);
 
         if (!UsesRangedAttack)
@@ -476,21 +532,19 @@ public abstract class RobotBase : NetworkBehaviour
 
         if (gunArm != null)
         {
-            gunArm.enabled = visible && !removing && State != RobotState.Held;
-            gunArm.color = dark && flash <= 0f ? Color.black : Color.Lerp(armColor, HitColor, flash);
+            gunArm.enabled = visible && !removing && (movingObject == null || !movingObject.IsHeld);
+            gunArm.color = Color.Lerp(armColor, HitColor, flash);
         }
 
         //조준에 따른 팔의 회전
         if (gunArm != null && gunArm.enabled)
         {
-            Vector2 direction = State == RobotState.Aim ? AimDirection : (FacingLeft ? Vector2.left : Vector2.right);
+            Vector2 facing = FacingLeft ? Vector2.left : Vector2.right;
+            Vector2 direction = State == RobotState.Aim && AimDirection.sqrMagnitude > 0f ? AimDirection : facing;
 
-            gunArm.transform.localPosition = new Vector3(
-                Mathf.Abs(gunArm.transform.localPosition.x) * (FacingLeft ? -1f : 1f),
-                gunArm.transform.localPosition.y, gunArm.transform.localPosition.z);
-
-            gunArm.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+            gunArm.transform.localPosition = GetShoulderOffset(FacingLeft);
             gunArm.flipY = direction.x < 0f;
+            gunArm.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
         }
 
         bulletVisual.enabled = BulletActive;
@@ -504,12 +558,20 @@ public abstract class RobotBase : NetworkBehaviour
 
     protected void OnTriggerStay2D(Collider2D other)
     {
-        if (Object == null || !Object.IsValid || !HasStateAuthority || UsesRangedAttack || !IsActive || IsStunned || (movingObject != null && (movingObject.IsHeld || movingObject.IsMoving || movingObject.RobotAirborne)) ||
-            !AttackCooldown.ExpiredOrNotRunning(Runner))
+        if (Object == null || !Object.IsValid || !HasStateAuthority || UsesRangedAttack || !IsActive ||
+            (movingObject != null && (movingObject.IsHeld || movingObject.IsMoving || movingObject.RobotAirborne)))
             return;
 
         var body = other.attachedRigidbody;
         if (body == null || !body.CompareTag("Player") || !body.TryGetComponent(out PlayerHealth target))
+            return;
+
+        TryContactAttack(target);
+    }
+
+    protected void TryContactAttack(PlayerHealth target)
+    {
+        if (!AttackCooldown.ExpiredOrNotRunning(Runner))
             return;
 
         target.RPC_TakeHit(this);

@@ -84,6 +84,7 @@ GameObject:
   - component: {fileID: 2518324454468013248}
   - component: {fileID: 6578366675498130110}
   - component: {fileID: 722723225745794493}
+  - component: {fileID: 7800000000000000000}
   m_Layer: 5
   m_Name: StartGameButton
   m_TagString: Untagged
@@ -491,6 +492,7 @@ GameObject:
   - component: {fileID: 6456589002785114799}
   - component: {fileID: 3956744894316922753}
   - component: {fileID: 1027533122464203451}
+  - component: {fileID: 7800000000000000001}
   m_Layer: 5
   m_Name: QuitGameButton
   m_TagString: Untagged
@@ -612,3 +614,27 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7800000000000000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2825025518366723532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9109436116313328506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound

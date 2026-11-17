@@ -17,4 +17,6 @@ MonoBehaviour:
   settingsShortcut: {fileID: 4357087390534088134, guid: f3774f3eea569b9488aeb0379aea96b3, type: 3}
   healthHud: {fileID: 2396029167886396841, guid: 6aac207c6cd23fa40851d6c893df33dc, type: 3}
   puzzleProgressHud: {fileID: 3848158811948059097, guid: 11302354c7273b247ad0ec5794682909, type: 3}
+  spectatorViewHud: {fileID: 104, guid: 5a7c354987c542b691ee8cb17941ecb9, type: 3}
   sceneTransition: {fileID: 4452954055648919839, guid: 7b17b469ee9493043a160bf77f5ecde7, type: 3}
+  demoComplete: {fileID: 100, guid: 8b23d19a1de64338bdc35ea069e4e36f, type: 3}

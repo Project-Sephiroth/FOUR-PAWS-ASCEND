@@ -1,9 +1,16 @@
 using Fusion;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Passenger : NetworkBehaviour, ICarriable, IInteractable
 {
     [SerializeField] private InteractableOutline outlineMat;
+    [SerializeField] private GameObject playerModel;
+    [SerializeField] private MyEnum.CharacterType bearCarryCharacter;
+    internal MyEnum.CharacterType BearCarryCharacter => bearCarryCharacter;
+    internal bool CanBeLifted => bearCarryCharacter == MyEnum.CharacterType.Rabbit
+        ? SceneManager.GetActiveScene().name != nameof(NetworkGameManager.SceneName.Lobby)
+        : CanBeCarried;
 
     [Networked] private Carrier CurrentCarrier { get; set; }
     [SerializeField] private bool puppetKey;
@@ -14,7 +21,9 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
     [Networked] public NetworkBool CanRide { get; private set; }
 
     private PlayerInput input;
+    private SpriteRenderer modelSprite;
     private Rigidbody2D rb;
+    private bool hiddenForBearCarry;
     private bool physicsSuppressed;
     private bool wasSimulated;
     private bool attached;
@@ -26,8 +35,17 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
     private void Awake()
     {
         input = GetComponent<PlayerInput>();
+        if (playerModel != null)
+            modelSprite = playerModel.GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         originalParent = transform.parent;
+    }
+
+    internal bool TryHitModel(Ray ray, out SpriteRenderer sprite)
+    {
+        sprite = modelSprite;
+        return sprite != null && sprite.enabled && sprite.gameObject.activeInHierarchy && sprite.sprite != null &&
+            sprite.bounds.IntersectRay(ray);
     }
 
     public MyEnum.CharacterType CharacterType { get; private set; }
@@ -44,10 +62,7 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
             return;
 
         if (Flight.Expired(Runner))
-        {
-            Flight = default;
-            rb.gravityScale = originalGravity;
-        }
+            EndFlight();
 
         if (IsFlying)
             return;
@@ -62,7 +77,8 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
         if (input != null && input.JumpInput)
         {
             input.JumpInput = false;
-            OnDrop();
+            if (CurrentCarrier == null || !puppetKey)
+                Drop(CurrentCarrier != null ? CurrentCarrier.GetDropPosition() : null);
             return;
         }
 
@@ -72,6 +88,20 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
     public override void Render()
     {
         ApplyPhysics();
+        RefreshLiftModel();
+    }
+
+    private void RefreshLiftModel()
+    {
+        if (playerModel == null)
+            return;
+
+        bool hide = CurrentLifter != null && CurrentLifter.HasAllyCarryPose(BearCarryCharacter);
+        if (hiddenForBearCarry == hide)
+            return;
+
+        hiddenForBearCarry = hide;
+        playerModel.SetActive(!hide);
     }
 
     public void OnInteract(Interactor interactor)
@@ -94,32 +124,20 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
         if (carrier == null || (!Runner.IsSinglePlayer && info.Source != carrier.Object.StateAuthority))
             return;
 
-        if (!CanBeCarried || rb == null || IsFlying || carrier.Head == null || IsCarried)
+        if (!CanBeCarried || rb == null || IsFlying || carrier.Head == null || IsCarried || IsHeldByTongue)
         {
             if (CurrentCarrier != carrier)
                 carrier.RPC_RequestPassengerDrop(this);
             return;
         }
 
-        if (input != null)
-            input.JumpInput = false;
-
         CurrentCarrier = carrier;
-        attached = true;
-        ApplyPhysics();
-        transform.SetParent(carrier.Head.transform, true);
-        transform.localPosition = Vector3.zero;
+        AttachTo(carrier.Head.transform);
     }
 
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_RequestDrop(Carrier carrier, RpcInfo info = default)
-    {
-        if (carrier != null && CurrentCarrier == carrier &&
-            (Runner.IsSinglePlayer || info.Source == carrier.Object.StateAuthority))
-            OnDrop();
-    }
+    public void OnDrop() => Drop(null);
 
-    public void OnDrop()
+    private void Drop(Vector2? dropPosition)
     {
         if (!HasStateAuthority || !IsCarried)
             return;
@@ -129,6 +147,18 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
         CurrentCarrier = null;
         CurrentLifter = null;
         Detach();
+        if (dropPosition is Vector2 point && rb != null)
+        {
+            // 기존 부모에서 분리한 뒤 물리 위치와 네트워크 표시 위치를 같이 맞춥니다.
+            Vector3 position = new(point.x, point.y, transform.position.z);
+            rb.position = point;
+            transform.position = position;
+            if (rb.bodyType == RigidbodyType2D.Dynamic)
+                rb.linearVelocity = Vector2.zero;
+            if (TryGetComponent(out NetworkTransform sync))
+                sync.Teleport(position);
+        }
+        RefreshLiftModel();
         if (carrier != null)
             carrier.RPC_RequestPassengerDrop(this);
         if (lifter != null)
@@ -141,20 +171,16 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
         if (lifter == null || (!Runner.IsSinglePlayer && info.Source != lifter.Object.StateAuthority))
             return;
 
-        if (!CanBeCarried || rb == null || IsFlying || IsCarried || lifter.HoldPoint == null)
+        if (!CanBeLifted || rb == null || IsFlying || IsCarried || IsHeldByTongue || lifter.HoldPoint == null)
         {
             if (CurrentLifter != lifter)
                 lifter.RPC_ClearLift(this);
             return;
         }
 
-        if (input != null)
-            input.JumpInput = false;
         CurrentLifter = lifter;
-        attached = true;
-        ApplyPhysics();
-        transform.SetParent(lifter.HoldPoint, true);
-        transform.localPosition = Vector3.zero;
+        AttachTo(puppetKey ? lifter.PuppetKeyHoldPoint : lifter.HoldPoint);
+        RefreshLiftModel();
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -165,22 +191,47 @@ public class Passenger : NetworkBehaviour, ICarriable, IInteractable
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_Throw(Thrower lifter, Vector2 destination, float speed, float height, RpcInfo info = default)
+    public void RPC_Throw(Thrower lifter, Vector2 origin, Vector2 destination, float speed, float height, RpcInfo info = default)
     {
         if (lifter == null || CurrentLifter != lifter || (!Runner.IsSinglePlayer && info.Source != lifter.Object.StateAuthority))
             return;
 
-        Vector2 start = lifter.HoldPoint.position;
-        OnDrop();
-        rb.position = start;
+        Drop(origin);
 
-        Vector2 delta = destination - start;
+        Vector2 delta = destination - origin;
         float duration = Mathf.Max(Runner.DeltaTime, delta.magnitude / Mathf.Max(0.1f, speed));
         height = Mathf.Max(0.12f, height);
         originalGravity = rb.gravityScale;
         rb.gravityScale = 8f * height / (duration * duration * Mathf.Max(0.01f, -Physics2D.gravity.y));
         rb.linearVelocity = (delta + Vector2.up * (4f * height)) / duration;
         Flight = TickTimer.CreateFromSeconds(Runner, duration);
+    }
+
+    private bool IsHeldByTongue => TryGetComponent(out MovingObject item) && item.IsHeldByTongue;
+
+    internal void OnTongueGrabbed()
+    {
+        if (input != null)
+            input.JumpInput = false;
+        if (Flight.IsRunning)
+            EndFlight();
+    }
+
+    private void EndFlight()
+    {
+        Flight = default;
+        rb.gravityScale = originalGravity;
+    }
+
+    private void AttachTo(Transform anchor)
+    {
+        if (input != null)
+            input.JumpInput = false;
+
+        attached = true;
+        ApplyPhysics();
+        transform.SetParent(anchor, true);
+        transform.localPosition = Vector3.zero;
     }
 
     private void Detach()

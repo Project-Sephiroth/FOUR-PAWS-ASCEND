@@ -121,8 +121,7 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
         NetworkGameManager.Instance.OnSceneLoaded();
         if (SceneManager.GetActiveScene().name == nameof(SceneName.Lobby))
             return;
-        var spawnPoint = GameObject.FindWithTag("Spawn");
-        if (spawnPoint != null && spawnPoint.TryGetComponent(out PlayerSpawner spawner))
+        if (PlayerSpawner.TryFindInScene(out var spawner))
             spawner.SpawnCharacter(runner);
     }
 
@@ -142,7 +141,13 @@ public class NetworkLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        ReturnToLobby(runner);
+        var manager = NetworkGameManager.Instance;
+        if (ScenePresentation.IsDemoCompleteVisible ||
+            (manager != null && manager.Object != null && manager.Object.IsValid && manager.DemoCompleted))
+            return;
+
+        if (SceneManager.GetActiveScene().name != nameof(SceneName.Credits))
+            ReturnToLobby(runner);
     }
 
     public async void ReturnToLobby(NetworkRunner runner)

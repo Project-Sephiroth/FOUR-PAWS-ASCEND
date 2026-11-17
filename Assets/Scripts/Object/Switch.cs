@@ -121,7 +121,7 @@ public class Switch : NetworkBehaviour, IInteractable
         if (rockOnly || (tongueOnly && interactor is not Tongue) || Object == null || !Object.IsValid)
             return;
 
-        if (interactor == null || interactor is Tongue)
+        if (interactor == null || (interactor is Tongue && isWait))
             RPC_Switch(true);
         else
             RPC_Toggle();

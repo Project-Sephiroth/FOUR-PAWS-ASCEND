@@ -497,6 +497,7 @@ GameObject:
   - component: {fileID: 3849700083484070115}
   - component: {fileID: 1030950946044470598}
   - component: {fileID: 424829481686998910}
+  - component: {fileID: 7800000000000000000}
   m_Layer: 0
   m_Name: Exit Stage
   m_TagString: Untagged
@@ -1064,6 +1065,7 @@ GameObject:
   - component: {fileID: 7497102667090952006}
   - component: {fileID: 8027974640852003830}
   - component: {fileID: 7895291032236854119}
+  - component: {fileID: 7800000000000000001}
   m_Layer: 0
   m_Name: Clear Consoles
   m_TagString: Untagged
@@ -1185,6 +1187,7 @@ GameObject:
   - component: {fileID: 4446842192100397537}
   - component: {fileID: 6265402091851659671}
   - component: {fileID: 4912546022884253161}
+  - component: {fileID: 7800000000000000002}
   m_Layer: 0
   m_Name: Mouse
   m_TagString: Untagged
@@ -1464,6 +1467,7 @@ GameObject:
   - component: {fileID: 5154949881496093417}
   - component: {fileID: 3909126677088397479}
   - component: {fileID: 5636900181713804029}
+  - component: {fileID: 7800000000000000003}
   m_Layer: 0
   m_Name: Cancel
   m_TagString: Untagged
@@ -1585,6 +1589,7 @@ GameObject:
   - component: {fileID: 1297479355009508015}
   - component: {fileID: 2806950650500599243}
   - component: {fileID: 3974452151453507772}
+  - component: {fileID: 7800000000000000004}
   m_Layer: 0
   m_Name: Frog
   m_TagString: Untagged
@@ -2624,6 +2629,7 @@ GameObject:
   - component: {fileID: 1678895597758596530}
   - component: {fileID: 4630342345006120576}
   - component: {fileID: 8368292173883673990}
+  - component: {fileID: 7800000000000000005}
   m_Layer: 0
   m_Name: End Test and Return to Title
   m_TagString: Untagged
@@ -2820,6 +2826,7 @@ GameObject:
   - component: {fileID: 3906616215690866357}
   - component: {fileID: 9006108792753835264}
   - component: {fileID: 437653754090283252}
+  - component: {fileID: 7800000000000000006}
   m_Layer: 0
   m_Name: Force Stage Clear
   m_TagString: Untagged
@@ -3215,6 +3222,7 @@ GameObject:
   - component: {fileID: 1557977882133451001}
   - component: {fileID: 7623597711453584105}
   - component: {fileID: 8087347800067533855}
+  - component: {fileID: 7800000000000000007}
   m_Layer: 0
   m_Name: Rabbit
   m_TagString: Untagged
@@ -3422,6 +3430,7 @@ GameObject:
   - component: {fileID: 4660313556696066148}
   - component: {fileID: 6350099096173693719}
   - component: {fileID: 8498226792674955183}
+  - component: {fileID: 7800000000000000008}
   m_Layer: 0
   m_Name: Bear
   m_TagString: Untagged
@@ -4118,6 +4127,7 @@ GameObject:
   - component: {fileID: 298966964181290655}
   - component: {fileID: 8835266374686228095}
   - component: {fileID: 7644281549946008826}
+  - component: {fileID: 7800000000000000009}
   m_Layer: 0
   m_Name: Confirm
   m_TagString: Untagged
@@ -4919,6 +4929,7 @@ GameObject:
   - component: {fileID: 1426610158504658358}
   - component: {fileID: 5635488398667015010}
   - component: {fileID: 6624732455851042351}
+  - component: {fileID: 7800000000000000010}
   m_Layer: 0
   m_Name: Start Local Test
   m_TagString: Untagged
@@ -5856,6 +5867,7 @@ GameObject:
   - component: {fileID: 7039078065886275278}
   - component: {fileID: 2388869918838903911}
   - component: {fileID: 5770016876346615901}
+  - component: {fileID: 7800000000000000011}
   m_Layer: 0
   m_Name: Stage Access
   m_TagString: Untagged
@@ -5977,6 +5989,7 @@ GameObject:
   - component: {fileID: 3203544391285545696}
   - component: {fileID: 6599851431482438967}
   - component: {fileID: 5303861695754079189}
+  - component: {fileID: 7800000000000000012}
   m_Layer: 0
   m_Name: Close
   m_TagString: Untagged
@@ -6242,3 +6255,159 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7800000000000000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193113831160087975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1869208870129691884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1908619875092128629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2630851271661968743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2670711782042914083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4409910954198533930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4966103986385311190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5718875769356865101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5785292096762722324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6612836585241461156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7261362626301431328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9166297368045695573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9185970256159237381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound

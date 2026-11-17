@@ -17,6 +17,8 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] WindowPanel createNewSession;
     [SerializeField] WindowPanel joinAlert;
 
+    public void QuitGame() => GameMenu.ExitGame();
+
     private void Awake()
     {
         launcher.OnLobbyJoined += ShowUI;

@@ -13,6 +13,8 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
     private const string ManagerPrefabGuid = "171131909f6593543a529c097f12b625";
     // 메뉴를 여는 확인용 코드다. 빌드에 포함되므로 보안 인증으로 사용하지 않는다.
     private const string AccessCode = "user257";
+    private const string ForceClearCode = "forceClear257";
+    private const string UnlockAllCode = "unlockAll257";
     private static readonly string[] Stages = { "Malkuth", "Yesod", "Hod", "Netzach" };
     private static LocalMultiplayerDebug instance;
     // Fusion 참가자는 한 명이다. 씬에 생성한 테스트 캐릭터는 이 목록으로 따로 추적한다.
@@ -29,7 +31,8 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
     private bool promptVisible;
     private bool shortcutHeld;
     [SerializeField] private LocalDebugMenuView view;
-    private bool invalidCode;
+    private string expectedCode;
+    private string promptError;
     private bool busy;
     private string status;
 
@@ -72,35 +75,65 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
         if (!toggled || busy || GameMenu.BlocksInput || ScenePresentation.BlocksInput)
             return;
 
-        if (visible)
-            visible = false;
-        else if (promptVisible)
+        if (promptVisible)
             ClosePrompt();
+        else if (visible)
+            visible = false;
         else
-        {
-            promptVisible = true;
-            UIManager.EnsureLocalEventSystem();
-            view.prompt.SetActive(true);
-            view.FocusCode();
-        }
+            OpenPrompt();
+    }
+
+    private void OpenPrompt(string requiredCode = null)
+    {
+        expectedCode = requiredCode;
+        promptError = null;
+        promptVisible = true;
+        RefreshMenu();
+        view.FocusCode();
     }
 
     // 입력창을 닫을 때 오류 표시도 초기화합니다. 다음에 열면 프리팹의 입력칸을 비운 뒤 다시 초점을 줍니다.
     private void ClosePrompt()
     {
         promptVisible = false;
-        invalidCode = false;
+        expectedCode = null;
+        promptError = null;
     }
 
     private void SubmitCode()
     {
-        // 코드가 정확히 일치했을 때만 세션 메뉴로 진입한다.
-        if (!string.Equals(view.accessInput.text, AccessCode, StringComparison.Ordinal))
+        if (!promptVisible)
+            return;
+
+        string code = view.accessInput.text;
+        if ((expectedCode != null && !string.Equals(code, expectedCode, StringComparison.Ordinal)) ||
+            (code != AccessCode && code != ForceClearCode && code != UnlockAllCode))
         {
-            invalidCode = true;
-            UIManager.EnsureLocalEventSystem();
-            view.prompt.SetActive(true);
+            promptError = "Incorrect code. Try again.";
             view.FocusCode();
+            return;
+        }
+
+        if (code != AccessCode)
+        {
+            var stageManager = NetworkGameManager.Instance;
+            bool forceClear = code == ForceClearCode;
+            if (stageManager == null || (forceClear ? !stageManager.CanForceClearStage : !stageManager.CanManageDebugStageAccess))
+            {
+                promptError = "This command is unavailable in the current scene or session.";
+                view.FocusCode();
+                return;
+            }
+
+            bool stageAccessButton = expectedCode == UnlockAllCode;
+            ClosePrompt();
+            if (forceClear)
+            {
+                visible = false;
+                stageManager.DebugForceClear();
+            }
+            else if (stageAccessButton || !stageManager.DebugStageAccess)
+                stageManager.ToggleDebugStageAccess();
             return;
         }
 
@@ -160,11 +193,11 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
         if (view.clearConsoles != null)
             view.clearConsoles.onClick.AddListener(ClearSceneConsoles);
         if (view.forceClearStage != null)
-            view.forceClearStage.onClick.AddListener(() => NetworkGameManager.Instance?.DebugForceClear());
+            view.forceClearStage.onClick.AddListener(() => OpenPrompt(ForceClearCode));
         if (view.exitStage != null)
             view.exitStage.onClick.AddListener(() => NetworkGameManager.Instance?.DebugExitStage());
         if (view.toggleStageAccess != null)
-            view.toggleStageAccess.onClick.AddListener(() => NetworkGameManager.Instance?.ToggleDebugStageAccess());
+            view.toggleStageAccess.onClick.AddListener(() => OpenPrompt(UnlockAllCode));
         RefreshMenu();
     }
 
@@ -191,11 +224,14 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
     // 현재 상태를 그립니다. 러너 시작 전에는 씬과 참가자를, 시작 뒤에는 전환 가능한 캐릭터를 표시합니다.
     private void RefreshMenu()
     {
+        if ((promptVisible || visible) && !ScenePresentation.BlocksInput)
+            UIManager.EnsureLocalEventSystem();
+
         view.prompt.SetActive(promptVisible);
-        view.panel.SetActive(visible);
+        view.panel.SetActive(visible && !promptVisible);
         if (promptVisible)
-            view.accessMessage.text = invalidCode ? "Incorrect code. Try again." : "Enter access code.";
-        if (!visible)
+            view.accessMessage.text = promptError ?? "Enter access code.";
+        if (!visible || promptVisible)
             return;
 
         bool inSession = runner != null;
@@ -207,7 +243,8 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
         if (view.sessionTools != null)
             view.sessionTools.SetActive(true);
         if (view.clearConsoles != null) view.clearConsoles.interactable = inStage && !busy;
-        if (view.forceClearStage != null) view.forceClearStage.interactable = inStage && !busy;
+        if (view.forceClearStage != null)
+            view.forceClearStage.interactable = !busy && stageManager != null && stageManager.CanForceClearStage;
         if (view.exitStage != null) view.exitStage.interactable = inStage && !busy;
         if (view.toggleStageAccess != null)
         {
@@ -249,6 +286,14 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
             }
         }
 
+        string path = "Assets/Scenes/" + Stages[stageIndex] + ".unity";
+        int buildIndex = SceneUtility.GetBuildIndexByScenePath(path);
+        if (buildIndex < 0)
+        {
+            status = "The selected stage is missing from the build.";
+            return;
+        }
+
         busy = true;
         status = "Starting local test...";
         try
@@ -262,12 +307,6 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
             events.OnSceneLoadStart.AddListener(OnSceneLoadStarted);
             events.OnSceneLoadDone.AddListener(OnSceneLoaded);
 
-            // 빌드 목록의 씬 인덱스를 Fusion에 전달해 기존 씬 네트워크 오브젝트도 등록되게 한다.
-            string path = "Assets/Scenes/" + Stages[stageIndex] + ".unity";
-            int buildIndex = SceneUtility.GetBuildIndexByScenePath(path);
-            if (buildIndex < 0)
-                throw new InvalidOperationException("The selected stage is missing from the build.");
-
             // Photon 방에 접속할 필요 없이 Fusion의 스폰, RPC, 씬 로드 경로를 사용한다.
             await ScenePresentation.CoverAsync();
             var result = await runner.StartGame(new StartGameArgs
@@ -279,7 +318,11 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
             });
 
             if (!result.Ok)
-                throw new InvalidOperationException(result.ShutdownReason.ToString());
+            {
+                await Shutdown();
+                status = "Local test failed: " + result.ShutdownReason;
+                return;
+            }
 
             // 세션 시작 결과를 받은 뒤 기존 매니저 프리팹을 생성한다. 이후 로드는 OnSceneLoaded에서 처리한다.
             selectedType = Character.Rabbit;
@@ -333,8 +376,7 @@ public sealed class LocalMultiplayerDebug : MonoBehaviour
     // 기존 씬의 프리팹과 시작 위치를 재사용한다. 스폰 지점이 없는 Map 같은 씬에서는 목록을 비워 둔다.
     private void SpawnPlayers()
     {
-        var root = GameObject.FindWithTag("Spawn");
-        if (root == null || !root.TryGetComponent(out PlayerSpawner spawner))
+        if (!PlayerSpawner.TryFindInScene(out var spawner))
             return;
 
         for (Character type = Character.Rabbit; type < Character.Count; type++)

@@ -106,7 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RobotSpawner
   respawnDelay: 5
   useRandomDroneSchedule: 0
-  maxDrones: 3
+  maxCount: 3
   minSpawnDelay: 2
   maxSpawnDelay: 5
   robotPrefab: {fileID: 0}

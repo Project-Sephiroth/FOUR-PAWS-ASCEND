@@ -162,6 +162,7 @@ GameObject:
   - component: {fileID: 1557349771054662417}
   - component: {fileID: 7611956565029748477}
   - component: {fileID: 8334405410104943551}
+  - component: {fileID: 7800000000000000000}
   - component: {fileID: 4613444944837941362}
   m_Layer: 5
   m_Name: Button_SelectRabbit
@@ -906,6 +907,7 @@ GameObject:
   - component: {fileID: 8955963499239643992}
   - component: {fileID: 2252910756593080384}
   - component: {fileID: 4491113158715059926}
+  - component: {fileID: 7800000000000000001}
   - component: {fileID: 805312868205923635}
   m_Layer: 5
   m_Name: Button_SelectBear
@@ -1132,6 +1134,7 @@ GameObject:
   - component: {fileID: 6093714617994124108}
   - component: {fileID: 4513935532786180495}
   - component: {fileID: 6863152172061253465}
+  - component: {fileID: 7800000000000000002}
   - component: {fileID: 6330623374061718820}
   m_Layer: 5
   m_Name: Button_SelectFrog
@@ -1523,6 +1526,7 @@ GameObject:
   - component: {fileID: 4711044796232001671}
   - component: {fileID: 3344366098776998730}
   - component: {fileID: 2459637414808338337}
+  - component: {fileID: 7800000000000000003}
   - component: {fileID: 732926315350420090}
   m_Layer: 5
   m_Name: Button_SelectMouse
@@ -1993,3 +1997,51 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+--- !u!114 &7800000000000000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1085648201708652623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6187269624031943257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7231875367637088510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound
+--- !u!114 &7800000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8497059688558379936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b5ad3352f54ca89b6fe4aee1b6359d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonClickSound

@@ -129,16 +129,10 @@ public class PCS_CubeClickLauncher : MonoBehaviour
 
         Debug.Log("[PCS] 퍼즐 완료!");
 
-        // 기존 PCS 닫기 버튼 호출
+        // 닫기 버튼 연결 여부와 관계없이 완료한 세션을 닫습니다.
+        session.CloseHack();
         if (closeButton != null)
-        {
             closeButton.onClick.Invoke();
-            Debug.Log("[PCS] 해킹 UI 닫기 요청!");
-        }
-        else
-        {
-            Debug.LogWarning("[PCS] Close Button 참조 누락!");
-        }
 
         // 퍼즐 성공 후 외부 상호작용 실행
         onPuzzleCompleted?.Invoke();

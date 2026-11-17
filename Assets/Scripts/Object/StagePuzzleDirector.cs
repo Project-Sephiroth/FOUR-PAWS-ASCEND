@@ -17,27 +17,16 @@ public sealed class StagePuzzleDirector : MonoBehaviour
     [Serializable]
     private sealed class YesodPuzzle
     {
-        public StageCircuitTerminal upperTerminal;
-        public LaserHazard upperLaser;
         public StageCircuitTerminal lowerTerminal;
         public LaserHazard lowerLaser;
         public Elevator lowerElevator;
-        public Switch[] batterySwitches = Array.Empty<Switch>();
+        public StageCircuitTerminal upperTerminal;
         public StageBattery battery;
-    }
-
-    [Serializable]
-    private struct PressurePad
-    {
-        public Vector2 center;
     }
 
     [Serializable]
     private sealed class HodPuzzle
     {
-        public PressurePad leftPad;
-        public PressurePad rightPad;
-        [Min(0f)] public float padRadius = 1.45f;
         public StageCircuitTerminal innerTerminal;
         public GameObject innerGate;
         public StageCircuitTerminal exitTerminal;
@@ -51,15 +40,15 @@ public sealed class StagePuzzleDirector : MonoBehaviour
     private sealed class NetzachPuzzle
     {
         public BranchControl generator;
+        public Generate generatorLogic;
         public Vector2 generatorCenter;
         public BranchControl crusherLever;
         public Vector2 crusherLeverCenter;
-        public Transform crusher;
-        public SpriteRenderer crusherPlate;
-        public AnimationClip crusherMotion;
-        [Min(0f)] public float crusherTravel = 2.4f;
-        [Range(0f, 1f)] public float requiredPower = 0.25f;
+        public CrusherMechanism crusher;
+        public GeneratorProgressView generatorProgress;
         public StageCircuitTerminal terminal;
+        public DrumRemovalZone drumBarrier;
+        public BranchControl barrierSwitch;
     }
 
     [SerializeField] private NetworkGameManager.SceneName stage;
@@ -70,6 +59,7 @@ public sealed class StagePuzzleDirector : MonoBehaviour
 
     [SerializeField] private Elevator exitElevator;
     private MovingFloor mouseDoor;
+    private BranchPuzzle branch;
 
     // 퍼즐이 모두 끝나고 참가한 플레이어가 발판 위에 모이면 출발합니다. 승강이 끝난 시점에 기존 맵 전환을 호출합니다.
     public bool TryExitByElevator(NetworkRunner runner)
@@ -83,7 +73,7 @@ public sealed class StagePuzzleDirector : MonoBehaviour
         return false;
     }
 
-    // 완료할 때만 올라가는 씬과, 세기와 함께 오르내리는 발전기를 같은 0~1 값으로 표시합니다.
+    // 스테이지 목표의 완료율을 0~1 값으로 표시합니다.
     public float ReadProgress()
     {
         switch (stage)
@@ -97,16 +87,14 @@ public sealed class StagePuzzleDirector : MonoBehaviour
                             opened++;
                 return Mathf.Clamp01(opened / 4f);
             case NetworkGameManager.SceneName.Yesod:
-                return ((Ready(yesod.upperLaser) && yesod.upperLaser.IsOff ? 1f : 0f) +
-                    (Ready(yesod.lowerLaser) && yesod.lowerLaser.IsOff ? 1f : 0f) +
+                return ((yesod.lowerElevator != null && yesod.lowerElevator.HasRisen ? 1f : 0f) +
+                    (Ready(yesod.lowerLaser) && yesod.lowerLaser.HasSwitched ? 1f : 0f) +
                     (Ready(yesod.battery) && yesod.battery.HasBeenPickedUp ? 1f : 0f)) / 3f;
             case NetworkGameManager.SceneName.Hod:
-                var hodBranch = GetComponent<BranchPuzzle>();
-                return Ready(hodBranch) ? ((hodBranch.FirstTerminalDone ? 1f : 0f) +
-                    (hodBranch.FinalTerminalDone ? 1f : 0f)) / 2f : 0f;
+                return Ready(branch) ? ((branch.FirstTerminalDone ? 1f : 0f) +
+                    (branch.FinalTerminalDone ? 1f : 0f)) / 2f : 0f;
             case NetworkGameManager.SceneName.Netzach:
-                var netzachBranch = GetComponent<BranchPuzzle>();
-                return Ready(netzachBranch) ? netzachBranch.GeneratorProgress : 0f;
+                return Ready(branch) ? branch.HackProgress : 0f;
             default:
                 return 0f;
         }
@@ -116,15 +104,27 @@ public sealed class StagePuzzleDirector : MonoBehaviour
         item != null && item.Object != null && item.Object.IsValid;
 
     public bool UsesPressurePads => stage == NetworkGameManager.SceneName.Hod;
-    public Transform Crusher => netzach.crusher;
-    public float CrusherTravel => netzach.crusherTravel;
-    public AnimationClip CrusherMotion => netzach.crusherMotion;
-    public Bounds CrusherPlateBounds => netzach.crusherPlate != null ? netzach.crusherPlate.bounds : default;
-    public float RequiredPower => netzach.requiredPower;
+    public CrusherMechanism Crusher => netzach.crusher;
+
+    internal void ApplyDrumBarrier(bool blocking, float leverProgress, bool canOperate)
+    {
+        if (netzach.drumBarrier != null)
+            netzach.drumBarrier.gameObject.SetActive(blocking);
+        if (netzach.barrierSwitch != null)
+            netzach.barrierSwitch.SetLeverPosition(leverProgress, canOperate);
+    }
+    public Generate Generator => netzach.generatorLogic;
+    internal float ReadGeneratorProgress() => Ready(branch) ? branch.GeneratorProgress : 0f;
+    internal int NetzachHackStageCount => netzach.terminal != null ? netzach.terminal.CircuitStageCount : 0;
     public Vector2 GetControlPosition(int control)
     {
-        var device = control == 0 ? netzach.generator : netzach.crusherLever;
-        return device != null ? (Vector2)device.transform.position : control == 0 ? netzach.generatorCenter : netzach.crusherLeverCenter;
+        return control switch
+        {
+            0 => netzach.generator != null ? (Vector2)netzach.generator.transform.position : netzach.generatorCenter,
+            1 => netzach.crusherLever != null ? (Vector2)netzach.crusherLever.transform.position : netzach.crusherLeverCenter,
+            BranchControl.BarrierSwitch when netzach.barrierSwitch != null => netzach.barrierSwitch.transform.position,
+            _ => new Vector2(float.PositiveInfinity, float.PositiveInfinity)
+        };
     }
 
     // 1. 현재 씬에 해당하는 묶음을 고릅니다.
@@ -139,19 +139,12 @@ public sealed class StagePuzzleDirector : MonoBehaviour
                 mouseDoor = FindMouseDoor();
                 break;
             case NetworkGameManager.SceneName.Yesod:
-                yesod.upperTerminal?.AddCompletionAction(CompleteUpperHack);
                 yesod.lowerTerminal?.AddCompletionAction(CompleteLowerHack);
-                yesod.battery?.SetDirector(this, yesod.upperLaser, yesod.lowerLaser);
-                foreach (var batterySwitch in yesod.batterySwitches)
-                {
-                    if (batterySwitch == null)
-                        continue;
-                    batterySwitch.switchAction ??= new UnityEngine.Events.UnityEvent<bool>();
-                    batterySwitch.switchAction.AddListener(TryReleaseBattery);
-                }
+                yesod.battery?.SetDirector(this);
+                yesod.upperTerminal?.AddCompletionAction(CompleteUpperHack);
                 break;
             case NetworkGameManager.SceneName.Hod:
-                var hodBranch = GetComponent<BranchPuzzle>();
+                branch = GetComponent<BranchPuzzle>();
                 // 이전 씬 데이터에도 적용되도록 이름으로 명시된 두 단말의 역할을 맞춥니다.
                 var consoleB = FindSceneObject("HackingConsoleB");
                 var consoleA = FindSceneObject("HackingConsoleA");
@@ -164,14 +157,16 @@ public sealed class StagePuzzleDirector : MonoBehaviour
                     var lift = FindSceneObject("Elevator");
                     if (lift != null) exitElevator = lift.GetComponent<Elevator>();
                 }
-                hod.innerTerminal?.SetBranch(hodBranch, 0);
-                hod.exitTerminal?.SetBranch(hodBranch, 1);
+                hod.innerTerminal?.SetBranch(branch, 0);
+                hod.exitTerminal?.SetBranch(branch, 1);
                 break;
             case NetworkGameManager.SceneName.Netzach:
-                var netzachBranch = GetComponent<BranchPuzzle>();
-                netzach.generator?.SetPuzzle(netzachBranch, 0);
-                netzach.crusherLever?.SetPuzzle(netzachBranch, 1);
-                netzach.terminal?.SetBranch(netzachBranch, 2);
+                branch = GetComponent<BranchPuzzle>();
+                netzach.generator?.SetPuzzle(branch, 0);
+                netzach.generatorProgress?.Bind(this);
+                netzach.crusherLever?.SetPuzzle(branch, 1);
+                netzach.barrierSwitch?.SetPuzzle(branch, BranchControl.BarrierSwitch);
+                netzach.terminal?.SetBranch(branch, 2);
                 break;
         }
     }
@@ -198,15 +193,9 @@ public sealed class StagePuzzleDirector : MonoBehaviour
         return null;
     }
 
-    private void CompleteUpperHack() => yesod.upperLaser?.TurnOff();
+    private void CompleteUpperHack() => yesod.battery?.TrySpawn();
 
-    private void TryReleaseBattery(bool enabled) => yesod.battery?.TrySpawn(enabled);
-
-    private void CompleteLowerHack()
-    {
-        yesod.lowerLaser?.TurnOff();
-        yesod.lowerElevator?.DoUp(true);
-    }
+    private void CompleteLowerHack() => yesod.lowerElevator?.DoUp(true);
 
     public bool TryCompleteStage()
     {
@@ -217,36 +206,14 @@ public sealed class StagePuzzleDirector : MonoBehaviour
         return true;
     }
 
-    public bool CanHack(int terminal, bool innerDone, bool exitDone, NetworkRunner runner)
+    public bool CanHack(int terminal, bool innerDone, bool exitDone, bool padsActivated)
     {
         return terminal switch
         {
-            0 => !innerDone && PadsOccupied(runner),
+            0 => !innerDone && padsActivated,
             1 => innerDone && !exitDone,
             _ => false
         };
-    }
-
-    // 캐릭터 종류에 관계없이 서로 다른 두 플레이어가 왼쪽과 오른쪽 패드를 각각 밟아야 합니다.
-    private bool PadsOccupied(NetworkRunner runner)
-    {
-        var manager = NetworkGameManager.Instance;
-        if (manager == null)
-            return false;
-
-        NetworkObject left = null;
-        NetworkObject right = null;
-        foreach (var player in NetworkGameManager.GetPlayerObjects(runner))
-        {
-            Vector2 position = player.transform.position;
-            bool onLeft = Vector2.Distance(position, hod.leftPad.center) <= hod.padRadius;
-            bool onRight = Vector2.Distance(position, hod.rightPad.center) <= hod.padRadius;
-            if ((onLeft && right != null && player != right) || (onRight && left != null && player != left))
-                return true;
-            if (onLeft) left = player;
-            if (onRight) right = player;
-        }
-        return false;
     }
 
     public void ApplyGates(bool innerDone, bool exitDone)
@@ -269,9 +236,6 @@ public sealed class StagePuzzleDirector : MonoBehaviour
     {
         if (!UsesPressurePads)
             return;
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(hod.leftPad.center, hod.padRadius);
-        Gizmos.DrawWireSphere(hod.rightPad.center, hod.padRadius);
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(hod.exitCenter, hod.exitRadius);
     }

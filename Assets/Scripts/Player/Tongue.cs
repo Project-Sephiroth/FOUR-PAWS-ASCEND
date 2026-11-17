@@ -8,7 +8,13 @@ public class Tongue : Interactor
     [SerializeField] private Transform tonguePivot;
     [SerializeField] private LineRenderer line;
     [SerializeField] private float tongueSpeed = 15f;
+    [SerializeField, Min(0.01f)] private float lengthPerScroll = 0.25f;
+    [SerializeField, Min(0.01f)] private float minHoldLength = 0.5f;
+    [SerializeField, Min(0.01f)] private float maxHoldLength = 7f;
+    private float pendingScroll;
+    private Vector2 scrollAimPosition;
     [SerializeField] private Mover mover;
+    private Passenger passenger;
 
     public enum TongueState
     {
@@ -20,9 +26,22 @@ public class Tongue : Interactor
     [Networked] public Vector2 HoldOffset { get; private set; }
     [Networked] public float TongueProgress { get; private set; }
     [Networked] private float PhaseDuration { get; set; }
-    [Networked] private MovingObject AttachedTarget { get; set; }
+    [Networked] private NetworkBehaviour AttachedTarget { get; set; }
+    private Vector2 TargetGrip => AttachedTarget switch
+    {
+        MovingObject item => item.TongueGripPosition,
+        RollingDrum drum => drum.TongueGripPosition,
+        _ => EndPos
+    };
+    private bool TargetUnavailable => AttachedTarget switch
+    {
+        MovingObject item => item.TongueTargetUnavailable,
+        RollingDrum drum => !drum.IsActiveTarget,
+        _ => true
+    };
     public bool IsTongueActive => State != TongueState.Idle;
-    protected override bool CanShowInteractionOutline => State == TongueState.Idle;
+    private bool IsCarried => passenger != null && passenger.IsCarried;
+    protected override bool CanShowInteractionOutline => State == TongueState.Idle && !IsCarried;
 
     private Switch targetSwitch;
     private Vector3 mouthOffset;
@@ -41,6 +60,7 @@ public class Tongue : Interactor
 
     private void Awake()
     {
+        passenger = GetComponentInParent<Passenger>();
         if (line == null)
             line = GetComponent<LineRenderer>();
         if (line != null)
@@ -56,11 +76,31 @@ public class Tongue : Interactor
         interactWithRange = false;
     }
 
+    public override void Update()
+    {
+        base.Update();
+        if (Object == null || !Object.IsValid || !HasStateAuthority || !CanUseWorldInput ||
+            State != TongueState.Holding || AttachedTarget is not MovingObject)
+            return;
+
+        float scroll = Input.mouseScrollDelta.y;
+        Vector3 cursor = Input.mousePosition;
+        if (scroll != 0f && Camera.main is Camera camera && camera.pixelRect.Contains(cursor))
+        {
+            scrollAimPosition = camera.ScreenToWorldPoint(cursor);
+            pendingScroll += scroll;
+        }
+    }
+
     protected override void TryIntetact()
     {
+        if (IsCarried)
+            return;
+
         if (State == TongueState.Holding)
         {
-            BeginRetraction();
+            if (AttachedTarget == null || !AttachedTarget.TryGetComponent<Passenger>(out _))
+                ReleaseTarget();
             return;
         }
 
@@ -76,24 +116,42 @@ public class Tongue : Interactor
         {
             key.OnInteract(this);
         }
-        else if (curClick.TryGetComponent(out MovingObject movingObject))
+        else if (curClick.TryGetComponent(out MovingObject item))
         {
-            movingObject.OnInteract(this);
+            item.OnInteract(this);
+        }
+        else if (curClick.TryGetComponent(out RollingDrum drum))
+        {
+            drum.OnInteract(this);
         }
     }
 
-    public void TryTongue(MovingObject movingObject)
+    public void TryTongue(MovingObject item)
     {
-        if (!HasStateAuthority || State != TongueState.Idle || movingObject == null ||
-            tonguePivot == null || movingObject.IsHeld || movingObject.IsMoving)
+        if (item != null && item.CanBeTongueHeld)
+            AimAt(item);
+    }
+
+    internal void TryTongue(RollingDrum drum)
+    {
+        if (drum != null && drum.CanBeHeld)
+            AimAt(drum);
+    }
+
+    private void AimAt(NetworkBehaviour target)
+    {
+        if (!HasStateAuthority || State != TongueState.Idle || IsCarried || target.Object == Object || tonguePivot == null)
             return;
 
-        AttachedTarget = movingObject;
-        BeginExtension(movingObject.transform.position);
+        AttachedTarget = target;
+        BeginExtension(TargetGrip);
     }
 
     private void BeginExtension(Vector2 target)
     {
+        if (mover != null)
+            mover.FaceWorldX(mousePos.x);
+
         EndPos = target;
         SetPhase(TongueState.Extending, Vector2.Distance(MouthPosition, target));
     }
@@ -103,22 +161,27 @@ public class Tongue : Interactor
         if (!HasStateAuthority)
             return;
 
+        if (IsCarried && (State == TongueState.Extending || State == TongueState.WaitingForHold || State == TongueState.Holding))
+            ReleaseTarget();
+
         switch (State)
         {
             case TongueState.Extending:
                 if (AttachedTarget != null)
-                    EndPos = AttachedTarget.transform.position;
+                    EndPos = TargetGrip;
 
                 if (AdvancePhase())
                     ReachTarget();
                 break;
             case TongueState.WaitingForHold:
             case TongueState.Holding:
-                if (AttachedTarget == null || AttachedTarget.IsCrushed)
+                if (TargetUnavailable)
                 {
                     AttachedTarget = null;
                     BeginRetraction();
                 }
+                else if (State == TongueState.Holding)
+                    AdjustHeldLength();
                 break;
             case TongueState.Retracting:
                 if (AdvancePhase())
@@ -127,11 +190,40 @@ public class Tongue : Interactor
         }
     }
 
+    private void ReleaseTarget()
+    {
+        var target = AttachedTarget;
+        bool requestedHold = State == TongueState.WaitingForHold || State == TongueState.Holding;
+        BeginRetraction();
+        AttachedTarget = null;
+        targetSwitch = null;
+        if (!requestedHold)
+            return;
+
+        if (target is MovingObject item)
+            item.RPC_RequestRelease(this, EndPos);
+        else if (target is RollingDrum drum)
+            drum.RPC_RequestRelease(this);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_AllyReleased(MovingObject target, RpcInfo info = default)
+    {
+        if (target == null || AttachedTarget != target ||
+            (!Runner.IsSinglePlayer && info.Source != target.Object.StateAuthority))
+            return;
+
+        BeginRetraction();
+        AttachedTarget = null;
+    }
+
     private void ReachTarget()
     {
         if (targetSwitch != null)
         {
             targetSwitch.OnInteract(this);
+            if (targetSwitch.TryGetComponent(out BranchControl control))
+                control.OperateByTongue();
             targetSwitch = null;
         }
 
@@ -142,12 +234,15 @@ public class Tongue : Interactor
         }
 
         State = TongueState.WaitingForHold;
-        HoldOffset = (Vector2)AttachedTarget.transform.position - (Vector2)MouthPosition;
-        AttachedTarget.RPC_RequestHold(this);
+        HoldOffset = TargetGrip - (Vector2)MouthPosition;
+        if (AttachedTarget is MovingObject item)
+            item.RPC_RequestHold(this);
+        else if (AttachedTarget is RollingDrum drum)
+            drum.RPC_RequestHold(this);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_HoldResult(MovingObject target, bool accepted, RpcInfo info = default)
+    public void RPC_HoldResult(NetworkBehaviour target, bool accepted, RpcInfo info = default)
     {
         if (State != TongueState.WaitingForHold || target == null || AttachedTarget != target ||
             (!Runner.IsSinglePlayer && info.Source != target.Object.StateAuthority))
@@ -163,26 +258,34 @@ public class Tongue : Interactor
         State = TongueState.Holding;
     }
 
-    private Vector2 DropPosition
+    /// <summary>
+    /// 마우스 휠에 따라 혀 집어넣거나 내밀기
+    /// </summary>
+    private void AdjustHeldLength()
     {
-        get
-        {
-            if (holdPoint == null)
-                return MouthPosition;
+        if (pendingScroll == 0f)
+            return;
 
-            Vector3 offset = holdPoint.localPosition;
-            if (mover != null && mover.FacesLeftNow)
-                offset.x = -offset.x;
+        if (mover != null)
+            mover.FaceWorldX(scrollAimPosition.x);
 
-            return holdPoint.parent.TransformPoint(offset);
-        }
+        Vector2 direction = scrollAimPosition - (Vector2)MouthPosition;
+        if (direction.sqrMagnitude < 0.0001f)
+            direction = HoldOffset.sqrMagnitude > 0.0001f ? HoldOffset :
+                (mover != null && mover.FacesLeftNow ? Vector2.left : Vector2.right);
+
+        float length = Mathf.Clamp(HoldOffset.magnitude + pendingScroll * lengthPerScroll,
+            minHoldLength, Mathf.Max(minHoldLength, maxHoldLength));
+        HoldOffset = direction.normalized * length;
+        pendingScroll = 0f;
     }
+
 
     private void BeginRetraction()
     {
+        pendingScroll = 0f;
         EndPos = GetTongueTip();
-        Vector2 destination = AttachedTarget != null ? DropPosition : (Vector2)MouthPosition;
-        SetPhase(TongueState.Retracting, Vector2.Distance(EndPos, destination));
+        SetPhase(TongueState.Retracting, Vector2.Distance(EndPos, MouthPosition));
     }
 
     private void SetPhase(TongueState state, float distance)
@@ -198,13 +301,7 @@ public class Tongue : Interactor
         return TongueProgress >= 1f;
     }
 
-    public Vector2 GetFollowPosition()
-    {
-        if (State == TongueState.Retracting)
-            return Vector2.Lerp(EndPos, DropPosition, TongueProgress);
-
-        return (Vector2)MouthPosition + HoldOffset;
-    }
+    internal Vector2 GetFollowPosition() => (Vector2)MouthPosition + HoldOffset;
 
     public Vector2 GetTongueTip()
     {
@@ -214,11 +311,11 @@ public class Tongue : Interactor
             case TongueState.Extending:
                 return Vector2.Lerp(start, EndPos, TongueProgress);
             case TongueState.Holding:
-                return AttachedTarget != null ? (Vector2)AttachedTarget.transform.position : EndPos;
+                return TargetGrip;
             case TongueState.WaitingForHold:
                 return EndPos;
             case TongueState.Retracting:
-                return AttachedTarget != null && !AttachedTarget.IsCrushed ? (Vector2)AttachedTarget.transform.position : Vector2.Lerp(EndPos, start, TongueProgress);
+                return Vector2.Lerp(EndPos, start, TongueProgress);
             default:
                 return start;
         }
@@ -244,8 +341,6 @@ public class Tongue : Interactor
 
     private void FinishTongue()
     {
-        if (AttachedTarget != null)
-            AttachedTarget.RPC_RequestRelease(this, DropPosition);
 
         AttachedTarget = null;
         State = TongueState.Idle;

@@ -1,34 +1,34 @@
-using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(BoxCollider2D))]
 public sealed class FloorStepButton : MonoBehaviour
 {
-    [SerializeField] private MovingFloor floor;
-    private readonly HashSet<Rigidbody2D> pressing = new();
+    [SerializeField] private Transform buttonVisual;
 
-    // 플레이어의 몸만 검사합니다. 머리와 감지 트리거까지 세면 한 번 밟아도 여러 번 방향이 바뀝니다.
-    private void OnTriggerStay2D(Collider2D other)
+    private BoxCollider2D trigger;
+    private Vector3 restPosition;
+
+    private void Awake()
     {
-        var body = other.attachedRigidbody;
-        if (floor == null || floor.Object == null || !floor.Object.IsValid || !IsPlayerBody(other, body) ||
-            !body.TryGetComponent(out NetworkObject player) || !player.IsValid || !player.HasStateAuthority ||
-            !pressing.Add(body))
-            return;
-
-        floor.StartMove(true);
+        trigger = GetComponent<BoxCollider2D>();
+        restPosition = buttonVisual.localPosition;
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    internal bool IsPressedBy(NetworkObject player)
     {
-        var body = other.attachedRigidbody;
-        if (IsPlayerBody(other, body))
-            pressing.Remove(body);
+        if (!isActiveAndEnabled || !trigger.enabled || !player.TryGetComponent(out Mover mover) ||
+            (player.TryGetComponent(out Passenger passenger) && (passenger.IsCarried || passenger.IsFlying)))
+            return false;
+
+        Vector2 foot = transform.InverseTransformPoint(mover.FeetPosition);
+        Vector2 delta = foot - trigger.offset;
+        Vector2 halfSize = trigger.size * 0.5f;
+        const float footToleranceBelowButton = 0.3f;
+        return Mathf.Abs(delta.x) <= halfSize.x && delta.y <= halfSize.y &&
+            delta.y >= -halfSize.y - footToleranceBelowButton;
     }
 
-    private static bool IsPlayerBody(Collider2D collider, Rigidbody2D body) =>
-        body != null && body.CompareTag("Player") && collider.gameObject == body.gameObject && !collider.isTrigger;
-
-    private void OnDisable() => pressing.Clear();
+    internal void ShowPressed(bool pressed) =>
+        buttonVisual.localPosition = restPosition + Vector3.down * (pressed ? 0.1f : 0f);
 }

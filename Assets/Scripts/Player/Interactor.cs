@@ -1,7 +1,8 @@
-using System.Collections.Generic;
 using Fusion;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class Interactor : NetworkBehaviour
 {
@@ -46,7 +47,10 @@ public class Interactor : NetworkBehaviour
         CanUseWorldInput && Input.GetMouseButtonDown(0) && !PointerOnUi &&
         Camera.main is Camera camera && camera.pixelRect.Contains(Input.mousePosition);
 
-    private bool CanUseWorldInput => !LocalMultiplayerDebug.BlocksWorldClick && !GameMenu.BlocksWorldClick &&
+    internal static bool WorldInteractionsDisabled =>
+        SceneManager.GetActiveScene().name == nameof(NetworkGameManager.SceneName.Lobby);
+
+    protected bool CanUseWorldInput => !WorldInteractionsDisabled && !LocalMultiplayerDebug.BlocksWorldClick && !GameMenu.BlocksWorldClick &&
         !HackingConsole.IsLocalHackOpen && LocalMultiplayerDebug.AllowsInput(Object);
 
     private static bool PointerOnUi => EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
@@ -114,9 +118,18 @@ public class Interactor : NetworkBehaviour
         if (target.TryGetComponent(out Key key))
             return key.CanInteractWith(this);
         if (target.TryGetComponent(out Passenger passenger))
-            return (this is Carrier || this is Thrower) && passenger.CanBeCarried && !passenger.IsCarried;
+        {
+            target.TryGetComponent(out MovingObject ally);
+            if (this is Tongue)
+                return ally != null && ally.Object != Object && ally.CanBeTongueHeld;
+            return (this is Thrower ? passenger.CanBeLifted : this is Carrier && passenger.CanBeCarried) &&
+                !passenger.IsCarried &&
+                (ally == null || !ally.IsHeld);
+        }
+        if (target.TryGetComponent(out RollingDrum drum))
+            return this is Tongue && drum.CanBeHeld;
         if (target.TryGetComponent(out MovingObject item))
-            return (this is Tongue || this is Thrower) && item.CanInteract;
+            return (this is Tongue || this is Thrower) && item.CanInteract && item.AllowsHolder(this);
         if (target.TryGetComponent(out Switch button))
             return button.CanInteractWith(this);
         return target.GetComponent<IInteractable>() != null;
@@ -128,18 +141,52 @@ public class Interactor : NetworkBehaviour
         if (camera == null || !camera.pixelRect.Contains(Input.mousePosition))
             return null;
         mousePos = camera.ScreenToWorldPoint(Input.mousePosition);
+        if (this is Tongue && FindVisibleAlly(camera.ScreenPointToRay(Input.mousePosition)) is { } ally)
+            return ally;
+
         var filter = new ContactFilter2D { useTriggers = true };
-        filter.SetLayerMask(detectLayer);
+        int playerLayers = this is Tongue ? LayerMask.GetMask("Player", "Head") : 0;
+        filter.SetLayerMask(detectLayer.value | playerLayers);
         Physics2D.OverlapPoint(mousePos, filter, cursorHits);
         foreach (var hit in cursorHits)
         {
             if (hit.GetComponentInParent<IInteractable>() is not Component component)
                 continue;
             var target = component.gameObject;
+            // 아군의 상호작용 감지용 트리거는 클릭 영역으로 쓰지 않습니다.
+            if (this is Tongue && hit.isTrigger && target.GetComponent<Passenger>() != null)
+                continue;
             if (CanInteractWith(target) && IsInInteractionRange(target))
                 return target;
         }
         return null;
+    }
+
+    private GameObject FindVisibleAlly(Ray cursorRay)
+    {
+        GameObject target = null;
+        int frontLayer = int.MinValue;
+        int frontOrder = int.MinValue;
+        float nearest = float.PositiveInfinity;
+        foreach (var player in NetworkGameManager.GetPlayerObjects(Runner))
+        {
+            if (!player.TryGetComponent(out Passenger ally) || !CanInteractWith(player.gameObject) ||
+                !ally.TryHitModel(cursorRay, out SpriteRenderer sprite))
+                continue;
+
+            int layer = SortingLayer.GetLayerValueFromID(sprite.sortingLayerID);
+            int order = sprite.sortingOrder;
+            float distance = ((Vector2)sprite.bounds.center - mousePos).sqrMagnitude;
+            if (layer < frontLayer || (layer == frontLayer &&
+                (order < frontOrder || (order == frontOrder && distance >= nearest))))
+                continue;
+
+            target = player.gameObject;
+            frontLayer = layer;
+            frontOrder = order;
+            nearest = distance;
+        }
+        return target;
     }
 
     private bool IsInInteractionRange(GameObject target) => !interactWithRange ||
